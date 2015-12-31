@@ -1,4 +1,4 @@
-# Cogctl
+# cogctl
 
 CLI admin interface for Cog.
 
