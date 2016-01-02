@@ -9,14 +9,28 @@ CLI admin interface for Cog.
 ## Examples
 
         > cogctl bootstrap -s
-        The system has been bootstrapped.
+        bootstrapped
         > cogctl --help
-        Usage: cogctl [bootstrap | bundles]
+        Usage: cogctl [bootstrap | profiles]
 
         cogctl <action> --help will display action specific help information.
         > cogctl bootstrap --help
-        Usage: cogctl bootstrap [--help] [-n [<node>]] [-s]
+        Usage: cogctl bootstrap [-?] [-h [<host>]] [-p [<port>]] [-u] [--pw]
+        [--profile [<profile>]] [-s]
 
-        --help        Displays brief help
-        -n, --node    Set name of remote bot VM [default: loop_dev@localhost]
+        -?, --help    Displays this brief help
+        -h, --host    Host name or network address of the target Cog instance
+        [default: localhost]
+        -p, --port    REST API port of the target Cog instances [default: 4000]
+        -u, --user    REST API user
+        --pw          REST API password
+        --profile     $HOME/.cogctl profile to use [default: undefined]
         -s, --status  Queries Cog's current bootstrap status
+
+        > cogctl profiles
+        Profile: localhost
+        User: admin
+        Password: ***
+        URL: https://localhost:4000
+
+        >
