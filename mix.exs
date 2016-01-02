@@ -18,24 +18,19 @@ defmodule Cogctl.Mixfile do
     [applications: [:logger]]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
-    [{:getopt, github: "jcomellas/getopt", tag: "v0.8.2"}]
+    [{:getopt, github: "jcomellas/getopt", tag: "v0.8.2"},
+     {:ibrowse, "~> 4.2.2"},
+     {:poison, "~> 1.5.0"},
+     {:httpotion, "~> 2.1.0"},
+     {:configparser_ex, "~> 0.2.0"}]
   end
 
   defp escript do
     [main_module: Cogctl,
      name: "cogctl",
      app: :cogctl,
-     emu_args: "-sname cogctl@localhost -hidden -noshell"]
+     emu_args: "-noshell"]
   end
 
   defp aliases do

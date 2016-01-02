@@ -1,1 +1,5 @@
-%{"getopt": {:git, "https://github.com/jcomellas/getopt.git", "388dc95caa7fb97ec7db8cfc39246a36aba61bd8", [tag: "v0.8.2"]}}
+%{"configparser_ex": {:hex, :configparser_ex, "0.2.0"},
+  "getopt": {:git, "https://github.com/jcomellas/getopt.git", "388dc95caa7fb97ec7db8cfc39246a36aba61bd8", [tag: "v0.8.2"]},
+  "httpotion": {:hex, :httpotion, "2.1.0"},
+  "ibrowse": {:hex, :ibrowse, "4.2.2"},
+  "poison": {:hex, :poison, "1.5.0"}}
