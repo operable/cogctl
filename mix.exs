@@ -9,7 +9,6 @@ defmodule Cogctl.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps,
-     compilers: [:elixir, :app],
      escript: escript,
      aliases: aliases]
   end

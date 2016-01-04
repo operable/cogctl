@@ -1,17 +1,24 @@
 defmodule Cogctl.Optparse do
 
-  @valid_actions [Cogctl.Actions.Bootstrap,
-                  Cogctl.Actions.Profiles]
+  alias Cogctl.Util
 
-  def parse([action|args]) do
-    case parse_action(action) do
+  @valid_actions [Cogctl.Actions.Bootstrap,
+                  Cogctl.Actions.Profiles,
+                  Cogctl.Actions.BundleList,
+                  Cogctl.Actions.BundleDelete]
+
+  def parse([arg]) when arg in ["--help", "-?"] do
+    parse(nil)
+  end
+  def parse(args) when length(args) > 0 do
+    case parse_action(args) do
       :nil ->
-        IO.puts "Unknown action '#{action}'"
+        IO.puts "Unable to parse '#{Enum.join(args, " ")}'"
         exit({:shutdown, 1})
-      handler ->
-        args = Enum.map(args, &String.to_char_list(&1))
+      {handler, other_args} ->
+        other_args = Enum.map(other_args, &String.to_char_list(&1))
         {name, specs} = opt_specs(handler)
-        {:ok, {options, remaining}} = :getopt.parse(specs, args)
+        {:ok, {options, remaining}} = :getopt.parse(specs, other_args)
         case Enum.member?(options, :help) do
           true ->
             :getopt.usage(specs, name)
@@ -22,40 +29,52 @@ defmodule Cogctl.Optparse do
     end
   end
   def parse(_) do
-    actions = Enum.join(valid_actions, " | ")
+    actions = Enum.join(display_valid_actions, " | ")
     IO.puts "Usage: cogctl [#{actions}]"
     IO.puts "\n       cogctl <action> --help will display action specific help information."
     :done
   end
 
-  defp parse_action(action) do
-    Enum.reduce(@valid_actions, nil,
-      fn(handler, accum) -> if handler.name() == action do
-                              handler
-                            else
-                              accum
-                            end end)
+  defp parse_action(args) do
+    args = Util.enum_to_set(args)
+    handlers = handler_patterns()
+    Enum.reduce(handlers, nil,
+      fn(%{handler: handler, pattern: pattern}, nil) ->
+        if MapSet.subset?(pattern, args) do
+          {handler, MapSet.difference(args, pattern)}
+        else
+          nil
+        end
+        (_handler, accum) -> accum
+      end)
   end
 
-  defp valid_actions() do
+  defp handler_patterns() do
+    handlers = for handler <- @valid_actions do
+      %{handler: handler, pattern: handler.name()}
+    end
+    Enum.sort(handlers, &MapSet.size(&1.pattern) > MapSet.size(&2.pattern))
+  end
+
+  defp display_valid_actions() do
     for handler <- @valid_actions do
-      handler.name()
+      handler.display_name()
     end
   end
 
   defp opt_specs(handler) do
-    name = String.to_char_list("cogctl " <> handler.name())
+    name = String.to_char_list("cogctl " <> handler.display_name())
     specs = handler.option_spec()
     {name, global_opts(specs)}
   end
 
   defp global_opts(opts) do
-    [{:help, ??, 'help', :undefined, 'Displays this brief help'},
+    opts ++ [{:help, ??, 'help', :undefined, 'Displays this brief help'},
      {:host, ?h, 'host', {:string, 'localhost'}, 'Host name or network address of the target Cog instance'},
      {:port, ?p, 'port', {:integer, 4000}, 'REST API port of the target Cog instances'},
      {:user, ?u, 'user', :undefined, 'REST API user'},
      {:password, :undefined, 'pw', :undefined, 'REST API password'},
-     {:profile, :undefined, 'profile', {:string, :undefined}, '$HOME/.cogctl profile to use'}] ++ opts
+     {:profile, :undefined, 'profile', {:string, :undefined}, '$HOME/.cogctl profile to use'}]
   end
   defp ensure_elixir_strings(items) do
     ensure_elixir_strings(items, [])
