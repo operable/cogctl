@@ -45,10 +45,13 @@ defmodule Cogctl.Actions.BundleList do
         cmdout = Enum.join(for command <- commands do
                              "  #{command["name"]} (#{command["id"]})"
                             end, "\n")
-        out = "Bundle: #{name} (#{id}, ns: #{ns_id})\nInstalled: #{installed}\n" <>
+        msg = "Bundle: #{name} (#{id}, ns: #{ns_id})\nInstalled: #{installed}\n" <>
               "Commands (#{length(commands)})\n" <> cmdout
-        IO.puts out
+        IO.puts msg
         :ok
+      {:error, error} ->
+        IO.puts error["error"]
+        :error
     end
   end
 end
