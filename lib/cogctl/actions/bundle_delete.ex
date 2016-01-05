@@ -24,7 +24,7 @@ defmodule Cogctl.Actions.BundleDelete do
   end
   defp do_delete(bundle_id, client) do
     case CogApi.bundle_delete(client, bundle_id) do
-      {:ok, _} ->
+      :ok ->
         IO.puts "ok"
         :ok
       {:error, error} ->

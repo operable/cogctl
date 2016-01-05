@@ -55,7 +55,7 @@ defmodule Cogctl.CogApi do
   def bundle_delete(%__MODULE__{}=api, bundle_id) do
     response = HTTPotion.delete(make_url(api, fn -> "bundles/" <> URI.encode(bundle_id) end),
                                 headers: make_headers(api))
-    {response_type(response), Poison.decode!(response.body)}
+    response_type(response)
   end
 
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
