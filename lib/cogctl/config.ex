@@ -20,9 +20,10 @@ defmodule Cogctl.Config do
     :ok
   end
   def save(%__MODULE__{values: values}) do
+    creating = not(File.exists?(config_file))
     case File.open(config_file(:write), [:write]) do
       {:ok, fd} ->
-        case write_values(fd, values) do
+        case write_values(fd, values, creating) do
           :ok ->
             File.rename(config_file(:write), config_file)
           error ->
@@ -33,9 +34,19 @@ defmodule Cogctl.Config do
     end
   end
 
-  defp write_values(fd, values) do
-    sections = Enum.sort(Map.keys(values))
+  defp write_values(fd, values, creating) do
+    keys = Map.keys(values)
+    write_default_profile(fd, keys, creating)
+    sections = Enum.sort(keys)
     write_sections(fd, sections, values)
+  end
+
+  defp write_default_profile(_fd, _keys, false) do
+    :ok
+  end
+  defp write_default_profile(fd, [default|_], true) do
+    IO.write(fd, "[defaults]\n")
+    IO.write(fd, "profile=#{default}\n\n")
   end
 
   defp write_sections(fd, [], _) do
