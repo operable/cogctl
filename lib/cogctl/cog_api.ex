@@ -57,6 +57,10 @@ defmodule Cogctl.CogApi do
     get(api, "users")
   end
 
+  def user_show(%__MODULE__{}=api, user_id) do
+    get(api, "users/#{URI.encode(user_id)}")
+  end
+
   def bundle_delete(%__MODULE__{}=api, bundle_id) do
     response = HTTPotion.delete(make_url(api, fn -> "bundles/" <> URI.encode(bundle_id) end),
                                 headers: make_headers(api))
