@@ -78,7 +78,7 @@ defmodule Cogctl.CogApi do
     end
   end
 
-  defp make_headers(api, others \\ [])
+  defp make_headers(api, others \\ ["Accept": "application/json"])
 
   defp make_headers(%__MODULE__{token: nil}, others) do
     others
