@@ -40,6 +40,12 @@ defmodule Cogctl.CogApi do
     {response_type(response), Poison.decode!(response.body)}
   end
 
+  def post(%__MODULE__{}=api, resource, params) do
+    body = Poison.encode!(params)
+    response = HTTPotion.post(make_url(api, resource), body: body, headers: make_headers(api, ["Content-Type": "application/json"]))
+    {response_type(response), Poison.decode!(response.body)}
+  end
+
   def bootstrap(%__MODULE__{}=api) do
     response = HTTPotion.post(make_url(api, "bootstrap"))
     {response_type(response), Poison.decode!(response.body)}
@@ -59,6 +65,10 @@ defmodule Cogctl.CogApi do
 
   def user_show(%__MODULE__{}=api, user_id) do
     get(api, "users/#{URI.encode(user_id)}")
+  end
+
+  def user_create(%__MODULE__{}=api, params) do
+    post(api, "users", params)
   end
 
   def bundle_delete(%__MODULE__{}=api, bundle_id) do

@@ -5,7 +5,7 @@ defmodule CogctlTest do
 
   test "cogctl" do
     assert run("cogctl") == """
-    Usage: cogctl [bootstrap | profiles | bundle list | bundle delete | user list | user show]
+    Usage: cogctl [bootstrap | profiles | bundle list | bundle delete | user list | user show | user create]
 
            cogctl <action> --help will display action specific help information.
     """
@@ -38,5 +38,26 @@ defmodule CogctlTest do
       username: (.*)
       email_address: (.*)
     """
+  end
+
+  test "cogctl user create" do
+    output = run(~S"""
+    cogctl user create
+      --first-name=Kevin
+      --last-name=Smith
+      --email=kevin@operable.io
+      --username=kevsmith
+      --password=password
+    """)
+
+    assert output =~ ~r"""
+    Created user: Kevin Smith \(.*\)
+    """
+
+    [_, id] = ~r"""
+    Created user: Kevin Smith \((.*)\)
+    """ |> Regex.run(output)
+
+    run("cogctl user delete #{id}")
   end
 end
