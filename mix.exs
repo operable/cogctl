@@ -10,7 +10,8 @@ defmodule Cogctl.Mixfile do
      start_permanent: Mix.env == :prod,
      deps: deps,
      escript: escript,
-     aliases: aliases]
+     aliases: aliases,
+     elixirc_paths: elixirc_paths(Mix.env)]
   end
 
   def application do
@@ -36,4 +37,6 @@ defmodule Cogctl.Mixfile do
     ["escript": ["deps.get", "deps.compile", "escript.build"]]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 end
