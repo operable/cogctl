@@ -35,21 +35,26 @@ defmodule Cogctl.CogApi do
     {response_type(response), Poison.decode!(response.body)}
   end
 
+  def get(%__MODULE__{}=api, resource) do
+    response = HTTPotion.get(make_url(api, resource), headers: make_headers(api))
+    {response_type(response), Poison.decode!(response.body)}
+  end
+
   def bootstrap(%__MODULE__{}=api) do
     response = HTTPotion.post(make_url(api, "bootstrap"))
     {response_type(response), Poison.decode!(response.body)}
   end
 
   def list_all_bundles(%__MODULE__{}=api) do
-    response = HTTPotion.get(make_url(api, "bundles"),
-                             headers: make_headers(api))
-    {response_type(response), Poison.decode!(response.body)}
+    get(api, "bundles")
   end
 
   def bundle_info(%__MODULE__{}=api, bundle_id) do
-    response = HTTPotion.get(make_url(api, fn -> "bundles/" <> URI.encode(bundle_id) end),
-                             headers: make_headers(api))
-    {response_type(response), Poison.decode!(response.body)}
+    get(api, "bundles/#{URI.encode(bundle_id)}")
+  end
+
+  def user_list(%__MODULE__{}=api) do
+    get(api, "users")
   end
 
   def bundle_delete(%__MODULE__{}=api, bundle_id) do
