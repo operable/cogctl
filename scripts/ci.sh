@@ -26,6 +26,11 @@ done
 
 cd ../cogctl
 
-mix test
+set -e
+test_status=0
+mix test || test_status=$?
+set +e
 
 ps x | grep elixir | grep -v grep | cut -d ' ' -f 1 | xargs kill
+
+exit $test_status
