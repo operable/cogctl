@@ -8,7 +8,8 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.BundleDelete,
                   Cogctl.Actions.User.List,
                   Cogctl.Actions.User.Show,
-                  Cogctl.Actions.User.Create]
+                  Cogctl.Actions.User.Create,
+                  Cogctl.Actions.User.Update]
 
   def parse([arg]) when arg in ["--help", "-?"] do
     parse(nil)
