@@ -25,3 +25,5 @@ elixir --detached -S mix phoenix.server
 while ! nc -z localhost 4000; do
   sleep 0.1
 done
+
+cd ../cogctl
