@@ -1,5 +1,7 @@
 #!/bin/sh
 
+COG_DIR=cogctl_cog
+
 cd ../$COG_DIR
 
 pid_file="pid.$BUILDKITE_BUILD_NUMBER"
