@@ -1,0 +1,33 @@
+#!/bin/sh
+
+export DATABASE_URL=$DATABASE_URL.$BUILDKITE_BUILD_NUMBER
+export COG_DIR=cogctl_cog
+
+cd ..
+
+if [ ! -d $COG_DIR ]; then
+  echo "Setting up cog..."
+
+  git clone git@github.com:operable/cog.git $COG_DIR
+  cd $COG_DIR
+else
+  echo "Making sure cog is up-to-date..."
+
+  cd $COG_DIR
+  git pull origin master
+fi
+
+mix do deps.get, ecto.create, ecto.migrate
+
+echo "Starting cog..."
+
+elixir \
+--detached \
+-e "File.write!(\"pid.$BUILDKITE_BUILD_NUMBER\", System.get_pid)" \
+-S mix phoenix.server
+
+while ! nc -z localhost 4000; do
+  sleep 0.1
+done
+
+cd ../cogctl

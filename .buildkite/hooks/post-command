@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd ../$COG_DIR
+
+pid_file="pid.$BUILDKITE_BUILD_NUMBER"
+
+cat $pid_file | xargs kill
+rm $pid_file
+
+cd ../cogctl
