@@ -33,6 +33,8 @@ defmodule Support.CliCase do
     case run("cogctl bootstrap") do
       "Already bootstrapped\n" ->
         :ok
+      "ok\n" ->
+        :ok
       _ ->
         raise "An instance of cog must already be running."
     end
