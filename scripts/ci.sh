@@ -30,7 +30,7 @@ cd ../cogctl
 
 set -e
 test_status=0
-(mix compile --warnings-as-errors && mix test) || test_status=$?
+(mix deps.get && mix compile --warnings-as-errors && mix test) || test_status=$?
 set +e
 
 ps x | grep elixir | grep -v grep | cut -d ' ' -f 1 | xargs kill
