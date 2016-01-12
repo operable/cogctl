@@ -5,22 +5,22 @@ cd ..
 if [ ! -d cog ]; then
   echo "Setting up cog..."
 
-  git clone git@github.com:operable/cog.git &> /dev/null
+  git clone git@github.com:operable/cog.git
   cd cog
-  mix do deps.get, ecto.create, ecto.migrate &> /dev/null
+  mix do deps.get, ecto.create, ecto.migrate
 else
   echo "Making sure cog is up-to-date..."
 
   cd cog
-  git pull origin master &> /dev/null
-  mix ecto.migrate &> /dev/null
+  git pull origin master
+  mix ecto.migrate
 fi
 
 echo "Starting cog..."
 
-elixir --detached -S mix phoenix.server &> /dev/null
+elixir --detached -S mix phoenix.server
 
-while ! nc -z localhost 4000 &> /dev/null; do   
+while ! nc -z localhost 4000 do
   sleep 0.1
 done
 
