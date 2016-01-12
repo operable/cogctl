@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export DATABASE_URL=$DATABASE_URL.$BUILDKITE_BUILD_NUMBER
+
 cd ..
 
 if [ ! -d cog ]; then
@@ -7,20 +9,20 @@ if [ ! -d cog ]; then
 
   git clone git@github.com:operable/cog.git
   cd cog
-  mix do deps.get, ecto.create, ecto.migrate
 else
   echo "Making sure cog is up-to-date..."
 
   cd cog
   git pull origin master
-  mix ecto.migrate
 fi
+
+mix do deps.get, ecto.create, ecto.migrate
 
 echo "Starting cog..."
 
 elixir --detached -S mix phoenix.server
 
-while ! nc -z localhost 4000 do
+while ! nc -z localhost 4000; do
   sleep 0.1
 done
 
