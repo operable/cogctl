@@ -5,7 +5,7 @@ export COG_DIR=cogctl_cog
 
 cd ..
 
-if [! -d $COG_DIR]; then
+if [ ! -d $COG_DIR ]; then
   echo "Setting up cog..."
 
   git clone git@github.com:operable/cog.git $COG_DIR
