@@ -1,18 +1,19 @@
 #!/bin/sh
 
 export DATABASE_URL=$DATABASE_URL.$BUILDKITE_BUILD_NUMBER
+export COG_DIR=cogctl_cog
 
 cd ..
 
-if [ ! -d cog ]; then
+if [! -d $COG_DIR]; then
   echo "Setting up cog..."
 
-  git clone git@github.com:operable/cog.git
-  cd cog
+  git clone git@github.com:operable/cog.git $COG_DIR
+  cd $COG_DIR
 else
   echo "Making sure cog is up-to-date..."
 
-  cd cog
+  cd $COG_DIR
   git pull origin master
 fi
 

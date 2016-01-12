@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ../cog
+cd ../$COG_DIR
 
 pid_file="pid.$BUILDKITE_BUILD_NUMBER"
 
