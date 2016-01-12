@@ -20,7 +20,10 @@ mix do deps.get, ecto.create, ecto.migrate
 
 echo "Starting cog..."
 
-elixir --detached -S mix phoenix.server
+elixir \
+--detached \
+-e "File.write!(\"pid.$BUILDKITE_BUILD_NUMBER\", System.get_pid)" \
+-S mix phoenix.server
 
 while ! nc -z localhost 4000; do
   sleep 0.1
