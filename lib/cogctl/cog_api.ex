@@ -35,21 +35,64 @@ defmodule Cogctl.CogApi do
     {response_type(response), Poison.decode!(response.body)}
   end
 
+  def get(%__MODULE__{}=api, resource) do
+    response = HTTPotion.get(make_url(api, resource), headers: make_headers(api))
+    {response_type(response), Poison.decode!(response.body)}
+  end
+
+  def post(%__MODULE__{}=api, resource, params) do
+    body = Poison.encode!(params)
+    response = HTTPotion.post(make_url(api, resource), body: body, headers: make_headers(api, ["Content-Type": "application/json"]))
+    {response_type(response), Poison.decode!(response.body)}
+  end
+
+  def patch(%__MODULE__{}=api, resource, params) do
+    body = Poison.encode!(params)
+    response = HTTPotion.patch(make_url(api, resource), body: body, headers: make_headers(api, ["Content-Type": "application/json"]))
+    {response_type(response), Poison.decode!(response.body)}
+  end
+
+  def delete(%__MODULE__{}=api, resource) do
+    response = HTTPotion.delete(make_url(api, resource), headers: make_headers(api))
+    case response_type(response) do
+      :ok ->
+        :ok
+      :error ->
+        {:error, Poison.decode!(response.body)}
+    end
+  end
+
   def bootstrap(%__MODULE__{}=api) do
     response = HTTPotion.post(make_url(api, "bootstrap"))
     {response_type(response), Poison.decode!(response.body)}
   end
 
   def list_all_bundles(%__MODULE__{}=api) do
-    response = HTTPotion.get(make_url(api, "bundles"),
-                             headers: make_headers(api))
-    {response_type(response), Poison.decode!(response.body)}
+    get(api, "bundles")
   end
 
   def bundle_info(%__MODULE__{}=api, bundle_id) do
-    response = HTTPotion.get(make_url(api, fn -> "bundles/" <> URI.encode(bundle_id) end),
-                             headers: make_headers(api))
-    {response_type(response), Poison.decode!(response.body)}
+    get(api, "bundles/#{URI.encode(bundle_id)}")
+  end
+
+  def user_list(%__MODULE__{}=api) do
+    get(api, "users")
+  end
+
+  def user_show(%__MODULE__{}=api, user_id) do
+    get(api, "users/#{URI.encode(user_id)}")
+  end
+
+  def user_create(%__MODULE__{}=api, params) do
+    post(api, "users", params)
+  end
+
+  def user_update(%__MODULE__{}=api, user_id, params) do
+    patch(api, "users/#{URI.encode(user_id)}", params)
+  end
+
+  def user_delete(%__MODULE__{}=api, user_id) do
+    delete(api, "users/#{URI.encode(user_id)}")
   end
 
   def bundle_delete(%__MODULE__{}=api, bundle_id) do
@@ -78,7 +121,7 @@ defmodule Cogctl.CogApi do
     end
   end
 
-  defp make_headers(api, others \\ [])
+  defp make_headers(api, others \\ ["Accept": "application/json"])
 
   defp make_headers(%__MODULE__{token: nil}, others) do
     others
