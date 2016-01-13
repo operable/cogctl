@@ -117,6 +117,22 @@ defmodule Cogctl.CogApi do
     delete(api, "groups/#{URI.encode(group_id)}")
   end
 
+  def role_list(%__MODULE__{}=api) do
+    get(api, "roles")
+  end
+
+  def role_create(%__MODULE__{}=api, params) do
+    post(api, "roles", params)
+  end
+
+  def role_update(%__MODULE__{}=api, role_id, params) do
+    patch(api, "roles/#{URI.encode(role_id)}", params)
+  end
+
+  def role_delete(%__MODULE__{}=api, role_id) do
+    delete(api, "roles/#{URI.encode(role_id)}")
+  end
+
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
                             version: version}, route, params \\ []) do
     route = if is_function(route) do

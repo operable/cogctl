@@ -5,7 +5,7 @@ defmodule CogctlTest do
 
   test "cogctl" do
     assert run("cogctl") == """
-    Usage: cogctl [bootstrap | profiles | bundle list | bundle delete | user list | user show | user create | user update | user delete | group list | group create | group update | group delete]
+    Usage: cogctl [bootstrap | profiles | bundle list | bundle delete | user list | user show | user create | user update | user delete | group list | group create | group update | group delete | role list | role create | role update | role delete]
 
            cogctl <action> --help will display action specific help information.
     """
@@ -161,6 +161,63 @@ defmodule CogctlTest do
 
     assert run("cogctl group delete #{id}") =~ ~r"""
     Deleted group: #{id}
+    """
+  end
+
+  test "cogctl role list" do
+    output = run("cogctl role create --name=developer")
+
+    [_, id] = ~r"""
+    Created role: developer \((.*)\)
+    """ |> Regex.run(output)
+
+    assert run("cogctl role list") =~ ~r"""
+    Role: developer \(#{id}\)
+    """
+
+    run("cogctl role delete #{id}")
+  end
+
+  test "cogctl role create" do
+    output = run("cogctl role create --name=admin")
+
+    assert output =~ ~r"""
+    Created role: admin \((.*)\)
+    """
+
+    [_, id] = ~r"""
+    Created role: admin \((.*)\)
+    """ |> Regex.run(output)
+
+    run("cogctl role delete #{id}")
+  end
+
+  test "cogctl role update" do
+    output = run("cogctl role create --name=admin")
+
+    [_, id] = ~r"""
+    Created role: admin \((.*)\)
+    """ |> Regex.run(output)
+
+    output = run("cogctl role update #{id} --name=ops")
+
+    assert output =~ ~r"""
+    Updated role: ops \(#{id}\)
+    """
+
+    run("cogctl role delete #{id}")
+  end
+
+
+  test "cogctl role delete" do
+    output = run("cogctl role create --name=admin")
+
+    [_, id] = ~r"""
+    Created role: admin \((.*)\)
+    """ |> Regex.run(output)
+
+    assert run("cogctl role delete #{id}") =~ ~r"""
+    Deleted role: #{id}
     """
   end
 end
