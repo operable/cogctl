@@ -67,11 +67,17 @@ defmodule Cogctl.CogApi do
     {response_type(response), Poison.decode!(response.body)}
   end
 
-  def list_all_bundles(%__MODULE__{}=api) do
+  def bundle_index(%__MODULE__{}=api) do
     get(api, "bundles")
   end
 
-  def bundle_info(%__MODULE__{}=api, bundle_id) do
+  def bundle_show(%__MODULE__{}=api, bundle_name) do
+    {:ok, %{"bundles" => bundles}} = get(api, "bundles")
+
+    %{"id" => bundle_id} = Enum.find(bundles, fn bundle ->
+      bundle["name"] == bundle_name
+    end)
+
     get(api, "bundles/#{URI.encode(bundle_id)}")
   end
 
@@ -81,11 +87,17 @@ defmodule Cogctl.CogApi do
     response_type(response)
   end
 
-  def user_list(%__MODULE__{}=api) do
+  def user_index(%__MODULE__{}=api) do
     get(api, "users")
   end
 
-  def user_show(%__MODULE__{}=api, user_id) do
+  def user_show(%__MODULE__{}=api, user_username) do
+    {:ok, %{"users" => users}} = get(api, "users")
+
+    %{"id" => user_id} = Enum.find(users, fn user ->
+      user["username"] == user_username
+    end)
+
     get(api, "users/#{URI.encode(user_id)}")
   end
 
@@ -93,15 +105,27 @@ defmodule Cogctl.CogApi do
     post(api, "users", params)
   end
 
-  def user_update(%__MODULE__{}=api, user_id, params) do
+  def user_update(%__MODULE__{}=api, user_username, params) do
+    {:ok, %{"users" => users}} = get(api, "users")
+
+    %{"id" => user_id} = Enum.find(users, fn user ->
+      user["username"] == user_username
+    end)
+
     patch(api, "users/#{URI.encode(user_id)}", params)
   end
 
-  def user_delete(%__MODULE__{}=api, user_id) do
+  def user_delete(%__MODULE__{}=api, user_username) do
+    {:ok, %{"users" => users}} = get(api, "users")
+
+    %{"id" => user_id} = Enum.find(users, fn user ->
+      user["username"] == user_username
+    end)
+
     delete(api, "users/#{URI.encode(user_id)}")
   end
 
-  def group_list(%__MODULE__{}=api) do
+  def group_index(%__MODULE__{}=api) do
     get(api, "groups")
   end
 
@@ -109,15 +133,27 @@ defmodule Cogctl.CogApi do
     post(api, "groups", params)
   end
 
-  def group_update(%__MODULE__{}=api, group_id, params) do
+  def group_update(%__MODULE__{}=api, group_name, params) do
+    {:ok, %{"groups" => groups}} = get(api, "groups")
+
+    %{"id" => group_id} = Enum.find(groups, fn group ->
+      group["name"] == group_name
+    end)
+
     patch(api, "groups/#{URI.encode(group_id)}", params)
   end
 
-  def group_delete(%__MODULE__{}=api, group_id) do
+  def group_delete(%__MODULE__{}=api, group_name) do
+    {:ok, %{"groups" => groups}} = get(api, "groups")
+
+    %{"id" => group_id} = Enum.find(groups, fn group ->
+      group["name"] == group_name
+    end)
+
     delete(api, "groups/#{URI.encode(group_id)}")
   end
 
-  def role_list(%__MODULE__{}=api) do
+  def role_index(%__MODULE__{}=api) do
     get(api, "roles")
   end
 
@@ -125,11 +161,23 @@ defmodule Cogctl.CogApi do
     post(api, "roles", params)
   end
 
-  def role_update(%__MODULE__{}=api, role_id, params) do
+  def role_update(%__MODULE__{}=api, role_name, params) do
+    {:ok, %{"roles" => roles}} = get(api, "roles")
+
+    %{"id" => role_id} = Enum.find(roles, fn role ->
+      role["name"] == role_name
+    end)
+
     patch(api, "roles/#{URI.encode(role_id)}", params)
   end
 
-  def role_delete(%__MODULE__{}=api, role_id) do
+  def role_delete(%__MODULE__{}=api, role_name) do
+    {:ok, %{"roles" => roles}} = get(api, "roles")
+
+    %{"id" => role_id} = Enum.find(roles, fn role ->
+      role["name"] == role_name
+    end)
+
     delete(api, "roles/#{URI.encode(role_id)}")
   end
 

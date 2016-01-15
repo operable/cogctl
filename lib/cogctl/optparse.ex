@@ -4,21 +4,22 @@ defmodule Cogctl.Optparse do
 
   @valid_actions [Cogctl.Actions.Bootstrap,
                   Cogctl.Actions.Profiles,
-                  Cogctl.Actions.BundleList,
+                  Cogctl.Actions.Bundles,
+                  Cogctl.Actions.Bundles.Info,
                   Cogctl.Actions.BundleDelete,
-                  Cogctl.Actions.User.List,
-                  Cogctl.Actions.User.Show,
-                  Cogctl.Actions.User.Create,
-                  Cogctl.Actions.User.Update,
-                  Cogctl.Actions.User.Delete,
-                  Cogctl.Actions.Group.List,
-                  Cogctl.Actions.Group.Create,
-                  Cogctl.Actions.Group.Update,
-                  Cogctl.Actions.Group.Delete,
-                  Cogctl.Actions.Role.List,
-                  Cogctl.Actions.Role.Create,
-                  Cogctl.Actions.Role.Update,
-                  Cogctl.Actions.Role.Delete]
+                  Cogctl.Actions.Users,
+                  Cogctl.Actions.Users.Info,
+                  Cogctl.Actions.Users.Create,
+                  Cogctl.Actions.Users.Update,
+                  Cogctl.Actions.Users.Delete,
+                  Cogctl.Actions.Groups,
+                  Cogctl.Actions.Groups.Create,
+                  Cogctl.Actions.Groups.Update,
+                  Cogctl.Actions.Groups.Delete,
+                  Cogctl.Actions.Roles,
+                  Cogctl.Actions.Roles.Create,
+                  Cogctl.Actions.Roles.Update,
+                  Cogctl.Actions.Roles.Delete]
 
   def parse([arg]) when arg in ["--help", "-?"] do
     parse(nil)
