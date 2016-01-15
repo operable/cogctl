@@ -176,6 +176,30 @@ defmodule Cogctl.CogApi do
     delete_by(api, "roles", name: role_name)
   end
 
+  def role_grant(%__MODULE__{}=api, role_name, type, item_to_grant)
+      when type in ["users", "groups"] do
+    id = case type do
+      "users" ->
+        find_id_by(api, type, username: item_to_grant)
+      "groups" ->
+        find_id_by(api, type, name: item_to_grant)
+    end
+
+    post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{grant: [role_name]}})
+  end
+
+  def role_revoke(%__MODULE__{}=api, role_name, type, item_to_revoke)
+      when type in ["users", "groups"] do
+    id = case type do
+      "users" ->
+        find_id_by(api, type, username: item_to_revoke)
+      "groups" ->
+        find_id_by(api, type, name: item_to_revoke)
+    end
+
+    post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
+  end
+
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
                             version: version}, route, params \\ []) do
     route = if is_function(route) do

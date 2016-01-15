@@ -21,7 +21,9 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Roles,
                   Cogctl.Actions.Roles.Create,
                   Cogctl.Actions.Roles.Update,
-                  Cogctl.Actions.Roles.Delete]
+                  Cogctl.Actions.Roles.Delete,
+                  Cogctl.Actions.Roles.Grant,
+                  Cogctl.Actions.Roles.Revoke]
 
   def parse([arg]) when arg in ["--help", "-?"] do
     parse(nil)
