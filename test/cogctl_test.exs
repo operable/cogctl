@@ -5,7 +5,7 @@ defmodule CogctlTest do
 
   test "cogctl" do
     assert run("cogctl") == """
-    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups create | groups update | groups delete | roles | roles create | roles update | roles delete]
+    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups create | groups update | groups delete | groups add | roles | roles create | roles update | roles delete]
 
            cogctl <action> --help will display action specific help information.
     """
@@ -114,6 +114,10 @@ defmodule CogctlTest do
 
     ID    .*
     Name  ops                                 
+    """
+
+    assert run("cogctl groups add ops --user=admin") =~ ~r"""
+    Added admin to ops
     """
 
     assert run("cogctl groups delete ops") =~ ~r"""

@@ -16,6 +16,7 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Groups.Create,
                   Cogctl.Actions.Groups.Update,
                   Cogctl.Actions.Groups.Delete,
+                  Cogctl.Actions.Groups.Add,
                   Cogctl.Actions.Roles,
                   Cogctl.Actions.Roles.Create,
                   Cogctl.Actions.Roles.Update,

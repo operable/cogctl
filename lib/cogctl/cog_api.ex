@@ -79,7 +79,7 @@ defmodule Cogctl.CogApi do
     delete(api, resource <> "/" <> URI.encode(id))
   end
 
-  defp find_id_by(api, resource, [{param_key, param_value}]) do
+  def find_id_by(api, resource, [{param_key, param_value}]) do
     {:ok, %{^resource => items}} = get(api, resource)
 
     %{"id" => id} = Enum.find(items, fn item ->
@@ -132,6 +132,10 @@ defmodule Cogctl.CogApi do
     get(api, "groups")
   end
 
+  def group_show(%__MODULE__{}=api, group_name) do
+    get_by(api, "groups", name: group_name)
+  end
+
   def group_create(%__MODULE__{}=api, params) do
     post(api, "groups", params)
   end
@@ -142,6 +146,12 @@ defmodule Cogctl.CogApi do
 
   def group_delete(%__MODULE__{}=api, group_name) do
     delete_by(api, "groups", name: group_name)
+  end
+
+  def group_add(%__MODULE__{}=api, group_name, type, item_to_add)
+      when type in [:users, :groups] do
+    group_id = find_id_by(api, "groups", name: group_name)
+    post(api, "groups/#{URI.encode(group_id)}/membership", %{members: Map.put(%{}, type, %{add: [item_to_add]})})
   end
 
   def role_index(%__MODULE__{}=api) do
