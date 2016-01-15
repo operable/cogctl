@@ -1,9 +1,9 @@
-defmodule Cogctl.Actions.User.Delete do
-  use Cogctl.Action, "user delete"
+defmodule Cogctl.Actions.Users.Delete do
+  use Cogctl.Action, "users delete"
   alias Cogctl.CogApi
 
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'User id'}]
+    [{:user, :undefined, :undefined, {:string, :undefined}, 'Username'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -16,10 +16,10 @@ defmodule Cogctl.Actions.User.Delete do
     end
   end
 
-  def do_delete(client, user_id) do
-    case CogApi.user_delete(client, user_id) do
+  def do_delete(client, user_username) do
+    case CogApi.user_delete(client, user_username) do
       :ok ->
-        IO.puts "Deleted user: #{user_id}"
+        IO.puts("Deleted #{user_username}")
         :ok
       {:error, resp} ->
         {:error, resp}

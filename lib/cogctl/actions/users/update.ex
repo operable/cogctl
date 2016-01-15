@@ -1,11 +1,12 @@
-defmodule Cogctl.Actions.User.Update do
-  use Cogctl.Action, "user update"
+defmodule Cogctl.Actions.Users.Update do
+  use Cogctl.Action, "users update"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   @params [:first_name, :last_name, :email_address, :username, :password]
 
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'User id'},
+    [{:user, :undefined, :undefined, {:string, :undefined}, 'Username'},
      {:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name'},
      {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name'},
      {:email_address, :undefined, 'email', {:string, :undefined}, 'Email address'},
@@ -23,24 +24,21 @@ defmodule Cogctl.Actions.User.Update do
     end
   end
 
-  def do_update(client, user_id, options) do
+  def do_update(client, user_username, options) do
     params = make_user_params(options)
-    case CogApi.user_update(client, user_id, %{user: params}) do
+    case CogApi.user_update(client, user_username, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]
-        id = user["id"]
-        first_name = user["first_name"]
-        last_name = user["last_name"]
-        email_address = user["email_address"]
         username = user["username"]
 
-        IO.puts """
-        Updated user: #{first_name} #{last_name} (#{id})
-          first_name: #{first_name}
-          last_name: #{last_name}
-          email_address: #{email_address}
-          username: #{username}
-        """ |> String.rstrip
+        user_attrs = for {title, attr} <- [{"ID", "id"}, {"Username", "username"}, {"First Name", "first_name"}, {"Last Name", "last_name"}, {"Email", "email_address"}] do
+          [title, user[attr]]
+        end
+
+        IO.puts("Updated #{username}")
+        IO.puts("")
+        IO.puts(Table.format(user_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}
