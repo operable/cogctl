@@ -1,6 +1,7 @@
-defmodule Cogctl.Actions.Role.List do
-  use Cogctl.Action, "role list"
+defmodule Cogctl.Actions.Roles do
+  use Cogctl.Action, "roles"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   def option_spec do
     []
@@ -16,15 +17,16 @@ defmodule Cogctl.Actions.Role.List do
     end
   end
 
-  def do_list(client) do
-    case CogApi.role_list(client) do
+  defp do_list(client) do
+    case CogApi.role_index(client) do
       {:ok, resp} ->
         roles = resp["roles"]
-        for role <- roles do
-          id = role["id"]
-          name = role["name"]
-          IO.puts "Role: #{name} (#{id})"
+        role_attrs = for role <- roles do
+          [role["name"], role["id"]]
         end
+
+        IO.puts(Table.format([["NAME", "ID"]] ++ role_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}

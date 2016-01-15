@@ -1,6 +1,7 @@
-defmodule Cogctl.Actions.User.List do
-  use Cogctl.Action, "user list"
+defmodule Cogctl.Actions.Users do
+  use Cogctl.Action, "users"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   def option_spec do
     []
@@ -16,16 +17,16 @@ defmodule Cogctl.Actions.User.List do
     end
   end
 
-  def do_list(client) do
-    case CogApi.user_list(client) do
+  defp do_list(client) do
+    case CogApi.user_index(client) do
       {:ok, resp} ->
         users = resp["users"]
-        for user <- users do
-          id = user["id"]
-          first_name = user["first_name"]
-          last_name = user["last_name"]
-          IO.puts "User: #{first_name} #{last_name} (#{id})"
+        user_attrs = for user <- users do
+          [user["username"], user["first_name"] <> " " <> user["last_name"]]
         end
+
+        IO.puts(Table.format([["USERNAME", "FULL NAME"]] ++ user_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}

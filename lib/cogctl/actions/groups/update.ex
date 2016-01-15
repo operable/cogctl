@@ -1,6 +1,7 @@
-defmodule Cogctl.Actions.Group.Update do
-  use Cogctl.Action, "group update"
+defmodule Cogctl.Actions.Groups.Update do
+  use Cogctl.Action, "groups update"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   @params [:name]
 
@@ -19,21 +20,26 @@ defmodule Cogctl.Actions.Group.Update do
     end
   end
 
-  def do_update(client, group_id, options) do
+  defp do_update(client, group_name, options) do
     params = make_group_params(options)
-    case CogApi.group_update(client, group_id, %{group: params}) do
+    case CogApi.group_update(client, group_name, %{group: params}) do
       {:ok, resp} ->
         group = resp["group"]
-        id = group["id"]
-        name = group["name"]
-        IO.puts "Updated group: #{name} (#{id})"
+        group_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}] do
+          [title, group[attr]]
+        end
+
+        IO.puts("Updated #{group_name}")
+        IO.puts("")
+        IO.puts(Table.format(group_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}
     end
   end
 
-  def make_group_params(options) do
+  defp make_group_params(options) do
     options
     |> Keyword.take(@params)
     |> Enum.reject(&match?({_, :undefined}, &1))

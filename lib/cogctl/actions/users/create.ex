@@ -1,6 +1,7 @@
-defmodule Cogctl.Actions.User.Create do
-  use Cogctl.Action, "user create"
+defmodule Cogctl.Actions.Users.Create do
+  use Cogctl.Action, "users create"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   @params [:first_name, :last_name, :email_address, :username, :password]
 
@@ -22,22 +23,28 @@ defmodule Cogctl.Actions.User.Create do
     end
   end
 
-  def do_create(client, options) do
+  defp do_create(client, options) do
     params = make_user_params(options)
     case CogApi.user_create(client, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]
-        id = user["id"]
-        first_name = user["first_name"]
-        last_name = user["last_name"]
-        IO.puts "Created user: #{first_name} #{last_name} (#{id})"
+        username = user["username"]
+
+        user_attrs = for {title, attr} <- [{"ID", "id"}, {"Username", "username"}, {"First Name", "first_name"}, {"Last Name", "last_name"}, {"Email", "email_address"}] do
+          [title, user[attr]]
+        end
+
+        IO.puts("Created #{username}")
+        IO.puts("")
+        IO.puts(Table.format(user_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}
     end
   end
 
-  def make_user_params(options) do
+  defp make_user_params(options) do
     options
     |> Keyword.take(@params)
     |> Enum.reject(&match?({_, :undefined}, &1))

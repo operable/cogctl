@@ -1,6 +1,7 @@
-defmodule Cogctl.Actions.Group.List do
-  use Cogctl.Action, "group list"
+defmodule Cogctl.Actions.Groups do
+  use Cogctl.Action, "groups"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   def option_spec do
     []
@@ -16,15 +17,16 @@ defmodule Cogctl.Actions.Group.List do
     end
   end
 
-  def do_list(client) do
-    case CogApi.group_list(client) do
+  defp do_list(client) do
+    case CogApi.group_index(client) do
       {:ok, resp} ->
         groups = resp["groups"]
-        for group <- groups do
-          id = group["id"]
-          name = group["name"]
-          IO.puts "Group: #{name} (#{id})"
+        group_attrs = for group <- groups do
+          [group["name"], group["id"]]
         end
+
+        IO.puts(Table.format([["NAME", "ID"]] ++ group_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}

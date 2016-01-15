@@ -62,17 +62,44 @@ defmodule Cogctl.CogApi do
     end
   end
 
+  # TODO: Replace the following with single parameterized get call once it
+  # exists in the Cog API
+  def get_by(%__MODULE__{}=api, resource, filter) do
+    id = find_id_by(api, resource, filter)
+    get(api, resource <> "/" <> URI.encode(id))
+  end
+
+  def patch_by(%__MODULE__{}=api, resource, filter, params) do
+    id = find_id_by(api, resource, filter)
+    patch(api, resource <> "/" <> URI.encode(id), params)
+  end
+
+  def delete_by(%__MODULE__{}=api, resource, filter) do
+    id = find_id_by(api, resource, filter)
+    delete(api, resource <> "/" <> URI.encode(id))
+  end
+
+  defp find_id_by(api, resource, [{param_key, param_value}]) do
+    {:ok, %{^resource => items}} = get(api, resource)
+
+    %{"id" => id} = Enum.find(items, fn item ->
+      item[to_string(param_key)] == param_value
+    end)
+
+    id
+  end
+
   def bootstrap(%__MODULE__{}=api) do
     response = HTTPotion.post(make_url(api, "bootstrap"))
     {response_type(response), Poison.decode!(response.body)}
   end
 
-  def list_all_bundles(%__MODULE__{}=api) do
+  def bundle_index(%__MODULE__{}=api) do
     get(api, "bundles")
   end
 
-  def bundle_info(%__MODULE__{}=api, bundle_id) do
-    get(api, "bundles/#{URI.encode(bundle_id)}")
+  def bundle_show(%__MODULE__{}=api, bundle_name) do
+    get_by(api, "bundles", name: bundle_name)
   end
 
   def bundle_delete(%__MODULE__{}=api, bundle_id) do
@@ -81,27 +108,27 @@ defmodule Cogctl.CogApi do
     response_type(response)
   end
 
-  def user_list(%__MODULE__{}=api) do
+  def user_index(%__MODULE__{}=api) do
     get(api, "users")
   end
 
-  def user_show(%__MODULE__{}=api, user_id) do
-    get(api, "users/#{URI.encode(user_id)}")
+  def user_show(%__MODULE__{}=api, user_username) do
+    get_by(api, "users", username: user_username)
   end
 
   def user_create(%__MODULE__{}=api, params) do
     post(api, "users", params)
   end
 
-  def user_update(%__MODULE__{}=api, user_id, params) do
-    patch(api, "users/#{URI.encode(user_id)}", params)
+  def user_update(%__MODULE__{}=api, user_username, params) do
+    patch_by(api, "users", [username: user_username], params)
   end
 
-  def user_delete(%__MODULE__{}=api, user_id) do
-    delete(api, "users/#{URI.encode(user_id)}")
+  def user_delete(%__MODULE__{}=api, user_username) do
+    delete_by(api, "users", username: user_username)
   end
 
-  def group_list(%__MODULE__{}=api) do
+  def group_index(%__MODULE__{}=api) do
     get(api, "groups")
   end
 
@@ -109,15 +136,15 @@ defmodule Cogctl.CogApi do
     post(api, "groups", params)
   end
 
-  def group_update(%__MODULE__{}=api, group_id, params) do
-    patch(api, "groups/#{URI.encode(group_id)}", params)
+  def group_update(%__MODULE__{}=api, group_name, params) do
+    patch_by(api, "groups", [name: group_name], params)
   end
 
-  def group_delete(%__MODULE__{}=api, group_id) do
-    delete(api, "groups/#{URI.encode(group_id)}")
+  def group_delete(%__MODULE__{}=api, group_name) do
+    delete_by(api, "groups", name: group_name)
   end
 
-  def role_list(%__MODULE__{}=api) do
+  def role_index(%__MODULE__{}=api) do
     get(api, "roles")
   end
 
@@ -125,12 +152,12 @@ defmodule Cogctl.CogApi do
     post(api, "roles", params)
   end
 
-  def role_update(%__MODULE__{}=api, role_id, params) do
-    patch(api, "roles/#{URI.encode(role_id)}", params)
+  def role_update(%__MODULE__{}=api, role_name, params) do
+    patch_by(api, "roles", [name: role_name], params)
   end
 
-  def role_delete(%__MODULE__{}=api, role_id) do
-    delete(api, "roles/#{URI.encode(role_id)}")
+  def role_delete(%__MODULE__{}=api, role_name) do
+    delete_by(api, "roles", name: role_name)
   end
 
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
