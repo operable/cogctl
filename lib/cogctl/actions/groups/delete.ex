@@ -1,9 +1,9 @@
-defmodule Cogctl.Actions.Group.Delete do
-  use Cogctl.Action, "group delete"
+defmodule Cogctl.Actions.Groups.Delete do
+  use Cogctl.Action, "groups delete"
   alias Cogctl.CogApi
 
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group id'}]
+    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -16,10 +16,10 @@ defmodule Cogctl.Actions.Group.Delete do
     end
   end
 
-  def do_delete(client, group_id) do
-    case CogApi.group_delete(client, group_id) do
+  def do_delete(client, group_name) do
+    case CogApi.group_delete(client, group_name) do
       :ok ->
-        IO.puts "Deleted group: #{group_id}"
+        IO.puts "Deleted #{group_name}"
         :ok
       {:error, resp} ->
         {:error, resp}
