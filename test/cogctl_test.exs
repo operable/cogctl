@@ -38,6 +38,7 @@ defmodule CogctlTest do
     rules          .*
     stack          .*
     stackoverflow  .*
+    sum            .*
     table          .*
     thorn          .*
     wc             .*
