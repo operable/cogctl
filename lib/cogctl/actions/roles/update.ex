@@ -1,6 +1,7 @@
-defmodule Cogctl.Actions.Role.Update do
-  use Cogctl.Action, "role update"
+defmodule Cogctl.Actions.Roles.Update do
+  use Cogctl.Action, "roles update"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   @params [:name]
 
@@ -19,14 +20,19 @@ defmodule Cogctl.Actions.Role.Update do
     end
   end
 
-  def do_update(client, role_id, options) do
+  def do_update(client, role_name, options) do
     params = make_role_params(options)
-    case CogApi.role_update(client, role_id, %{role: params}) do
+    case CogApi.role_update(client, role_name, %{role: params}) do
       {:ok, resp} ->
         role = resp["role"]
-        id = role["id"]
-        name = role["name"]
-        IO.puts "Updated role: #{name} (#{id})"
+        role_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}] do
+          [title, role[attr]]
+        end
+
+        IO.puts("Updated #{role_name}")
+        IO.puts("")
+        IO.puts(Table.format(role_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}

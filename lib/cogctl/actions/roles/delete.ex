@@ -1,9 +1,9 @@
-defmodule Cogctl.Actions.Role.Delete do
-  use Cogctl.Action, "role delete"
+defmodule Cogctl.Actions.Roles.Delete do
+  use Cogctl.Action, "roles delete"
   alias Cogctl.CogApi
 
   def option_spec do
-    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role id'}]
+    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -16,10 +16,10 @@ defmodule Cogctl.Actions.Role.Delete do
     end
   end
 
-  def do_delete(client, role_id) do
-    case CogApi.role_delete(client, role_id) do
+  def do_delete(client, role_name) do
+    case CogApi.role_delete(client, role_name) do
       :ok ->
-        IO.puts "Deleted role: #{role_id}"
+        IO.puts "Deleted #{role_name}"
         :ok
       {:error, resp} ->
         {:error, resp}

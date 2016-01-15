@@ -1,6 +1,7 @@
-defmodule Cogctl.Actions.Role.Create do
-  use Cogctl.Action, "role create"
+defmodule Cogctl.Actions.Roles.Create do
+  use Cogctl.Action, "roles create"
   alias Cogctl.CogApi
+  alias Cogctl.Table
 
   @params [:name]
 
@@ -23,9 +24,16 @@ defmodule Cogctl.Actions.Role.Create do
     case CogApi.role_create(client, %{role: params}) do
       {:ok, resp} ->
         role = resp["role"]
-        id = role["id"]
         name = role["name"]
-        IO.puts "Created role: #{name} (#{id})"
+
+        role_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}] do
+          [title, role[attr]]
+        end
+
+        IO.puts("Created #{name}")
+        IO.puts("")
+        IO.puts(Table.format(role_attrs))
+
         :ok
       {:error, resp} ->
         {:error, resp}
