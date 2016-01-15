@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Users.Delete do
     end
   end
 
-  def do_delete(client, user_username) do
+  defp do_delete(client, user_username) do
     case CogApi.user_delete(client, user_username) do
       :ok ->
         IO.puts("Deleted #{user_username}")

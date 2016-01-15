@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Groups.Delete do
     end
   end
 
-  def do_delete(client, group_name) do
+  defp do_delete(client, group_name) do
     case CogApi.group_delete(client, group_name) do
       :ok ->
         IO.puts "Deleted #{group_name}"

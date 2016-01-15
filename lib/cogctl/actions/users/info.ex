@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Users.Info do
     end
   end
 
-  def do_info(client, user_username) do
+  defp do_info(client, user_username) do
     case CogApi.user_show(client, user_username) do
       {:ok, resp} ->
         user = resp["user"]

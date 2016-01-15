@@ -19,7 +19,7 @@ defmodule Cogctl.Actions.Roles.Create do
     end
   end
 
-  def do_create(client, options) do
+  defp do_create(client, options) do
     params = make_role_params(options)
     case CogApi.role_create(client, %{role: params}) do
       {:ok, resp} ->
@@ -40,7 +40,7 @@ defmodule Cogctl.Actions.Roles.Create do
     end
   end
 
-  def make_role_params(options) do
+  defp make_role_params(options) do
     options
     |> Keyword.take(@params)
     |> Enum.reject(&match?({_, :undefined}, &1))

@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Roles.Delete do
     end
   end
 
-  def do_delete(client, role_name) do
+  defp do_delete(client, role_name) do
     case CogApi.role_delete(client, role_name) do
       :ok ->
         IO.puts "Deleted #{role_name}"

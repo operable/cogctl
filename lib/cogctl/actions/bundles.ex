@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Bundles do
     end
   end
 
-  def do_list(client) do
+  defp do_list(client) do
     case CogApi.bundle_index(client) do
       {:ok, resp} ->
         bundles = for bundle <- resp["bundles"] do

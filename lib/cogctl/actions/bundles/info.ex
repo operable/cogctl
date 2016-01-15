@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Bundles.Info do
     end
   end
 
-  def do_info(client, bundle_name) do
+  defp do_info(client, bundle_name) do
     case CogApi.bundle_show(client, bundle_name) do
       {:ok, resp} ->
         bundle = resp["bundle"]

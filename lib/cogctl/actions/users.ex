@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Users do
     end
   end
 
-  def do_list(client) do
+  defp do_list(client) do
     case CogApi.user_index(client) do
       {:ok, resp} ->
         users = resp["users"]

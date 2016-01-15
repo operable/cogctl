@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Roles do
     end
   end
 
-  def do_list(client) do
+  defp do_list(client) do
     case CogApi.role_index(client) do
       {:ok, resp} ->
         roles = resp["roles"]

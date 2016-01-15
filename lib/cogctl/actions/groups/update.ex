@@ -20,7 +20,7 @@ defmodule Cogctl.Actions.Groups.Update do
     end
   end
 
-  def do_update(client, group_name, options) do
+  defp do_update(client, group_name, options) do
     params = make_group_params(options)
     case CogApi.group_update(client, group_name, %{group: params}) do
       {:ok, resp} ->
@@ -39,7 +39,7 @@ defmodule Cogctl.Actions.Groups.Update do
     end
   end
 
-  def make_group_params(options) do
+  defp make_group_params(options) do
     options
     |> Keyword.take(@params)
     |> Enum.reject(&match?({_, :undefined}, &1))

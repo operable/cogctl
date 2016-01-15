@@ -24,7 +24,7 @@ defmodule Cogctl.Actions.Users.Update do
     end
   end
 
-  def do_update(client, user_username, options) do
+  defp do_update(client, user_username, options) do
     params = make_user_params(options)
     case CogApi.user_update(client, user_username, %{user: params}) do
       {:ok, resp} ->
@@ -45,7 +45,7 @@ defmodule Cogctl.Actions.Users.Update do
     end
   end
 
-  def make_user_params(options) do
+  defp make_user_params(options) do
     options
     |> Keyword.take(@params)
     |> Enum.reject(&match?({_, :undefined}, &1))

@@ -19,7 +19,7 @@ defmodule Cogctl.Actions.Groups.Create do
     end
   end
 
-  def do_create(client, options) do
+  defp do_create(client, options) do
     params = make_group_params(options)
     case CogApi.group_create(client, %{group: params}) do
       {:ok, resp} ->
@@ -40,7 +40,7 @@ defmodule Cogctl.Actions.Groups.Create do
     end
   end
 
-  def make_group_params(options) do
+  defp make_group_params(options) do
     options
     |> Keyword.take(@params)
     |> Enum.reject(&match?({_, :undefined}, &1))

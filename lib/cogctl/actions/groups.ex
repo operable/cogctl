@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Groups do
     end
   end
 
-  def do_list(client) do
+  defp do_list(client) do
     case CogApi.group_index(client) do
       {:ok, resp} ->
         groups = resp["groups"]

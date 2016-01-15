@@ -23,7 +23,7 @@ defmodule Cogctl.Actions.Users.Create do
     end
   end
 
-  def do_create(client, options) do
+  defp do_create(client, options) do
     params = make_user_params(options)
     case CogApi.user_create(client, %{user: params}) do
       {:ok, resp} ->
@@ -44,7 +44,7 @@ defmodule Cogctl.Actions.Users.Create do
     end
   end
 
-  def make_user_params(options) do
+  defp make_user_params(options) do
     options
     |> Keyword.take(@params)
     |> Enum.reject(&match?({_, :undefined}, &1))
