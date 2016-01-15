@@ -5,7 +5,7 @@ defmodule CogctlTest do
 
   test "cogctl" do
     assert run("cogctl") == """
-    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups info | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke]
+    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups info | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke | permissions | permissions create | permissions delete | permissions grant | permissions revoke]
 
            cogctl <action> --help will display action specific help information.
     """
@@ -207,6 +207,36 @@ defmodule CogctlTest do
 
     assert run("cogctl roles delete support") =~ ~r"""
     Deleted support
+    """
+  end
+
+  test "cogctl permissions" do
+    assert run("cogctl permissions") =~ ~r"""
+    NAME                ID                                  
+    builds              .*
+    help                .*
+    manage_commands     .*
+    manage_groups       .*
+    manage_roles        .*
+    manage_users        .*
+    stackoverflow       .*
+    manage_permissions  .*
+    """
+
+    assert run("cogctl permissions create --name=echo") =~ ~r"""
+    Created echo
+    """
+
+    assert run("cogctl permissions grant echo --user=admin") =~ ~r"""
+    Granted echo to admin
+    """
+
+    assert run("cogctl permissions revoke echo --user=admin") =~ ~r"""
+    Revoked echo from admin
+    """
+
+    assert run("cogctl permissions delete echo") =~ ~r"""
+    Deleted echo
     """
   end
 end

@@ -209,6 +209,42 @@ defmodule Cogctl.CogApi do
     post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
   end
 
+  def permission_index(%__MODULE__{}=api) do
+    get(api, "permissions")
+  end
+
+  def permission_create(%__MODULE__{}=api, params) do
+    post(api, "permissions", params)
+  end
+
+  def permission_delete(%__MODULE__{}=api, permission_name) do
+    delete_by(api, "permissions", name: permission_name)
+  end
+
+  def permission_grant(%__MODULE__{}=api, permission_name, type, item_to_grant)
+      when type in ["users", "roles", "groups"] do
+    id = case type do
+      "users" ->
+        find_id_by(api, type, username: item_to_grant)
+      type when type in ["roles", "groups"] ->
+        find_id_by(api, type, name: item_to_grant)
+    end
+
+    post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{grant: [permission_name]}})
+  end
+
+  def permission_revoke(%__MODULE__{}=api, permission_name, type, item_to_revoke)
+      when type in ["users", "roles", "groups"] do
+    id = case type do
+      "users" ->
+        find_id_by(api, type, username: item_to_revoke)
+      type when type in ["roles", "groups"] ->
+        find_id_by(api, type, name: item_to_revoke)
+    end
+
+    post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{revoke: [permission_name]}})
+  end
+
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
                             version: version}, route, params \\ []) do
     route = if is_function(route) do
