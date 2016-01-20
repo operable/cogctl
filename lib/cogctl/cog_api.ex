@@ -79,7 +79,7 @@ defmodule Cogctl.CogApi do
     delete(api, resource <> "/" <> URI.encode(id))
   end
 
-  defp find_id_by(api, resource, [{param_key, param_value}]) do
+  def find_id_by(api, resource, [{param_key, param_value}]) do
     {:ok, %{^resource => items}} = get(api, resource)
 
     %{"id" => id} = Enum.find(items, fn item ->
@@ -132,6 +132,10 @@ defmodule Cogctl.CogApi do
     get(api, "groups")
   end
 
+  def group_show(%__MODULE__{}=api, group_name) do
+    get_by(api, "groups", name: group_name)
+  end
+
   def group_create(%__MODULE__{}=api, params) do
     post(api, "groups", params)
   end
@@ -142,6 +146,18 @@ defmodule Cogctl.CogApi do
 
   def group_delete(%__MODULE__{}=api, group_name) do
     delete_by(api, "groups", name: group_name)
+  end
+
+  def group_add(%__MODULE__{}=api, group_name, type, item_to_add)
+      when type in [:users, :groups] do
+    group_id = find_id_by(api, "groups", name: group_name)
+    post(api, "groups/#{URI.encode(group_id)}/membership", %{members: Map.put(%{}, type, %{add: [item_to_add]})})
+  end
+
+  def group_remove(%__MODULE__{}=api, group_name, type, item_to_remove)
+      when type in [:users, :groups] do
+    group_id = find_id_by(api, "groups", name: group_name)
+    post(api, "groups/#{URI.encode(group_id)}/membership", %{members: Map.put(%{}, type, %{remove: [item_to_remove]})})
   end
 
   def role_index(%__MODULE__{}=api) do
@@ -158,6 +174,30 @@ defmodule Cogctl.CogApi do
 
   def role_delete(%__MODULE__{}=api, role_name) do
     delete_by(api, "roles", name: role_name)
+  end
+
+  def role_grant(%__MODULE__{}=api, role_name, type, item_to_grant)
+      when type in ["users", "groups"] do
+    id = case type do
+      "users" ->
+        find_id_by(api, type, username: item_to_grant)
+      "groups" ->
+        find_id_by(api, type, name: item_to_grant)
+    end
+
+    post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{grant: [role_name]}})
+  end
+
+  def role_revoke(%__MODULE__{}=api, role_name, type, item_to_revoke)
+      when type in ["users", "groups"] do
+    id = case type do
+      "users" ->
+        find_id_by(api, type, username: item_to_revoke)
+      "groups" ->
+        find_id_by(api, type, name: item_to_revoke)
+    end
+
+    post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
   end
 
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
