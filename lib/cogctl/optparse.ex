@@ -1,7 +1,5 @@
 defmodule Cogctl.Optparse do
 
-  alias Cogctl.Util
-
   @valid_actions [Cogctl.Actions.Bootstrap,
                   Cogctl.Actions.Profiles,
                   Cogctl.Actions.Bundles,
@@ -54,12 +52,11 @@ defmodule Cogctl.Optparse do
   end
 
   defp parse_action(args) do
-    args = Util.enum_to_set(args)
     handlers = handler_patterns()
     Enum.reduce(handlers, nil,
       fn(%{handler: handler, pattern: pattern}, nil) ->
-        if MapSet.subset?(pattern, args) do
-          {handler, MapSet.difference(args, pattern)}
+        if starts_with?(args, pattern) do
+          {handler, args -- pattern}
         else
           nil
         end
@@ -71,7 +68,7 @@ defmodule Cogctl.Optparse do
     handlers = for handler <- @valid_actions do
       %{handler: handler, pattern: handler.name()}
     end
-    Enum.sort(handlers, &MapSet.size(&1.pattern) > MapSet.size(&2.pattern))
+    Enum.sort(handlers, &(length(&1.pattern) > length(&2.pattern)))
   end
 
   defp display_valid_actions() do
@@ -109,6 +106,16 @@ defmodule Cogctl.Optparse do
   end
   defp ensure_elixir_strings([h|t], accum) do
     ensure_elixir_strings(t, [h|accum])
+  end
+
+  def starts_with?([data|dt], [pattern|pt]) when data == pattern do
+    starts_with?(dt, pt)
+  end
+  def starts_with?(_data, []) do
+    true
+  end
+  def starts_with?(_, _) do
+    false
   end
 
 end

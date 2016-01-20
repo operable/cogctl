@@ -14,7 +14,7 @@ defmodule Cogctl.Action do
     quote do
       @behaviour unquote(__MODULE__)
 
-      def name(), do: Cogctl.Util.enum_to_set(unquote(pattern))
+      def name(), do: unquote(pattern)
       def display_name, do: unquote(name)
     end
   end
