@@ -23,25 +23,22 @@ defmodule CogctlTest do
     Installed  .*
 
     Commands
-    NAME           ID                                  
-    builds         .*
-    echo           .*
-    giphy          .*
-    greet          .*
-    group          .*
-    help           .*
-    math           .*
-    max            .*
-    min            .*
-    permissions    .*
-    role           .*
-    rules          .*
-    stack          .*
-    stackoverflow  .*
-    sum            .*
-    table          .*
-    thorn          .*
-    wc             .*
+    NAME         ID                                  
+    echo         .*
+    filter       .*
+    greet        .*
+    group        .*
+    help         .*
+    max          .*
+    min          .*
+    permissions  .*
+    role         .*
+    rules        .*
+    sum          .*
+    table        .*
+    thorn        .*
+    unique       .*
+    wc           .*
     """
   end
 
