@@ -5,7 +5,7 @@ defmodule CogctlTest do
 
   test "cogctl" do
     assert run("cogctl") == """
-    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke]
+    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups info | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke]
 
            cogctl <action> --help will display action specific help information.
     """
@@ -101,28 +101,79 @@ defmodule CogctlTest do
     Name  admin                               
     """
 
-    assert run("cogctl groups") =~ ~r"""
-    NAME   ID                                  
-    admin  .*
-    """
-
-    assert run("cogctl groups update admin --name=ops") =~ ~r"""
-    Updated admin
+    assert run("cogctl groups create --name=ops") =~ ~r"""
+    Created ops
 
     ID    .*
     Name  ops                                 
     """
 
-    assert run("cogctl groups add ops --user=admin") =~ ~r"""
-    Added admin to ops
+    assert run("cogctl groups") =~ ~r"""
+    NAME   ID                                  
+    admin  .*
+    ops    .*
     """
 
-    assert run("cogctl groups remove ops --user=admin") =~ ~r"""
-    Removed admin from ops
+    assert run("cogctl groups update ops --name=devops") =~ ~r"""
+    Updated ops
+
+    ID    .*
+    Name  devops                              
     """
 
-    assert run("cogctl groups delete ops") =~ ~r"""
-    Deleted ops
+    assert run("cogctl groups add admin --user=admin") =~ ~r"""
+    Added admin to admin
+
+    User Memberships
+    USERNAME  ID                                  
+    admin     .*
+
+    Group Memberships
+    NAME  ID
+    """
+
+    assert run("cogctl groups add admin --group=devops") =~ ~r"""
+    Added devops to admin
+
+    User Memberships
+    USERNAME  ID                                  
+    admin     .*
+
+    Group Memberships
+    NAME    ID                                  
+    devops  .*
+    """
+
+    assert run("cogctl groups info admin") =~ ~r"""
+    ID    .*
+    Name  admin                               
+
+    User Memberships
+    USERNAME  ID                                  
+    admin     .*
+
+    Group Memberships
+    NAME    ID                                  
+    devops  .*
+    """
+
+    assert run("cogctl groups remove admin --user=admin") =~ ~r"""
+    Removed admin from admin
+
+    User Memberships
+    USERNAME  ID
+
+    Group Memberships
+    NAME    ID                                  
+    devops  .*
+    """
+
+    assert run("cogctl groups delete devops") =~ ~r"""
+    Deleted devops
+    """
+
+    assert run("cogctl groups delete admin") =~ ~r"""
+    Deleted admin
     """
   end
 

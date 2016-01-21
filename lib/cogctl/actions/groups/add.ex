@@ -1,5 +1,6 @@
 defmodule Cogctl.Actions.Groups.Add do
   use Cogctl.Action, "groups add"
+  alias Cogctl.Actions.Groups
   alias Cogctl.CogApi
 
   @params [:name]
@@ -23,20 +24,30 @@ defmodule Cogctl.Actions.Groups.Add do
     end
   end
 
-  defp do_add(client, group, user_to_add, :undefined) do
-    case CogApi.group_add(client, group, :users, user_to_add) do
-      {:ok, _resp} ->
-        IO.puts("Added #{user_to_add} to #{group}")
+  defp do_add(client, group_name, user_to_add, :undefined) do
+    case CogApi.group_add(client, group_name, :users, user_to_add) do
+      {:ok, resp} ->
+        group = resp["group"]
+
+        IO.puts("Added #{user_to_add} to #{group_name}")
+        IO.puts("")
+        Groups.puts_memberships(group)
+
         :ok
       {:error, resp} ->
         {:error, resp}
     end
   end
 
-  defp do_add(client, group, :undefined, group_to_add) do
-    case CogApi.group_add(client, group, :groups, group_to_add) do
-      {:ok, _resp} ->
-        IO.puts("Added #{group_to_add} to #{group}")
+  defp do_add(client, group_name, :undefined, group_to_add) do
+    case CogApi.group_add(client, group_name, :groups, group_to_add) do
+      {:ok, resp} ->
+        group = resp["group"]
+
+        IO.puts("Added #{group_to_add} to #{group_name}")
+        IO.puts("")
+        Groups.puts_memberships(group)
+
         :ok
       {:error, resp} ->
         {:error, resp}

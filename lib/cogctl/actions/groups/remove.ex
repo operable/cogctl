@@ -1,5 +1,6 @@
 defmodule Cogctl.Actions.Groups.Remove do
   use Cogctl.Action, "groups remove"
+  alias Cogctl.Actions.Groups
   alias Cogctl.CogApi
 
   @params [:name]
@@ -23,20 +24,30 @@ defmodule Cogctl.Actions.Groups.Remove do
     end
   end
 
-  defp do_remove(client, group, user_to_remove, :undefined) do
-    case CogApi.group_remove(client, group, :users, user_to_remove) do
-      {:ok, _resp} ->
-        IO.puts("Removed #{user_to_remove} from #{group}")
+  defp do_remove(client, group_name, user_to_remove, :undefined) do
+    case CogApi.group_remove(client, group_name, :users, user_to_remove) do
+      {:ok, resp} ->
+        group = resp["group"]
+
+        IO.puts("Removed #{user_to_remove} from #{group_name}")
+        IO.puts("")
+        Groups.puts_memberships(group)
+
         :ok
       {:error, resp} ->
         {:error, resp}
     end
   end
 
-  defp do_remove(client, group, :undefined, group_to_remove) do
-    case CogApi.group_remove(client, group, :groups, group_to_remove) do
-      {:ok, _resp} ->
-        IO.puts("Removed #{group_to_remove} from #{group}")
+  defp do_remove(client, group_name, :undefined, group_to_remove) do
+    case CogApi.group_remove(client, group_name, :groups, group_to_remove) do
+      {:ok, resp} ->
+        group = resp["group"]
+
+        IO.puts("Removed #{group_to_remove} from #{group_name}")
+        IO.puts("")
+        Groups.puts_memberships(group)
+
         :ok
       {:error, resp} ->
         {:error, resp}

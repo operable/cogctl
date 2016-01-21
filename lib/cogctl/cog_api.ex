@@ -133,7 +133,10 @@ defmodule Cogctl.CogApi do
   end
 
   def group_show(%__MODULE__{}=api, group_name) do
-    get_by(api, "groups", name: group_name)
+    group_id = find_id_by(api, "groups", name: group_name)
+    {:ok, group} = get(api, "groups/#{URI.encode(group_id)}")
+    {:ok, members} = get(api, "groups/#{URI.encode(group_id)}/memberships")
+    {:ok, Map.update!(group, "group", &Map.merge(&1, members))}
   end
 
   def group_create(%__MODULE__{}=api, params) do
@@ -151,13 +154,19 @@ defmodule Cogctl.CogApi do
   def group_add(%__MODULE__{}=api, group_name, type, item_to_add)
       when type in [:users, :groups] do
     group_id = find_id_by(api, "groups", name: group_name)
+    {:ok, group} = get(api, "groups/#{URI.encode(group_id)}")
     post(api, "groups/#{URI.encode(group_id)}/membership", %{members: Map.put(%{}, type, %{add: [item_to_add]})})
+    {:ok, members} = get(api, "groups/#{URI.encode(group_id)}/memberships")
+    {:ok, Map.update!(group, "group", &Map.merge(&1, members))}
   end
 
   def group_remove(%__MODULE__{}=api, group_name, type, item_to_remove)
       when type in [:users, :groups] do
     group_id = find_id_by(api, "groups", name: group_name)
+    {:ok, group} = get(api, "groups/#{URI.encode(group_id)}")
     post(api, "groups/#{URI.encode(group_id)}/membership", %{members: Map.put(%{}, type, %{remove: [item_to_remove]})})
+    {:ok, members} = get(api, "groups/#{URI.encode(group_id)}/memberships")
+    {:ok, Map.update!(group, "group", &Map.merge(&1, members))}
   end
 
   def role_index(%__MODULE__{}=api) do

@@ -32,4 +32,20 @@ defmodule Cogctl.Actions.Groups do
         {:error, resp}
     end
   end
+
+  def puts_memberships(%{"members" => %{"users" => users, "groups" => groups}}) do
+    user_attrs = for user <- users do
+      [user["username"], user["id"]]
+    end
+
+    group_attrs = for group <- groups do
+      [group["name"], group["id"]]
+    end
+
+    IO.puts("User Memberships")
+    IO.puts(Table.format([["USERNAME", "ID"]] ++ user_attrs))
+    IO.puts("")
+    IO.puts("Group Memberships")
+    IO.puts(Table.format([["NAME", "ID"]] ++ group_attrs))
+  end
 end
