@@ -13,10 +13,17 @@ defmodule Support.CliCase do
   end
 
   def run("cogctl" <> args) do
+    #x = args
+    #|> String.split
+    #|> smart_split([])
+    #|> Cogctl.main
+    #IO.inspect(x)
+
     capture_io(fn ->
       try do
         args
         |> String.split
+        |> smart_split([])
         |> Cogctl.main
       catch
         _, _ ->
@@ -29,13 +36,47 @@ defmodule Support.CliCase do
     raise ~s(Commands must start with "cogctl")
   end
 
+  defp smart_split([], acc), do: acc
+  defp smart_split([head|tail], acc) do
+    {start, sub} = check?(head)
+    if start do
+      sublist = append_it([head|tail], sub)
+      substr = Enum.join(sublist, " ")
+      tail = tail -- sublist
+      smart_split(tail, acc ++[substr])
+    else
+      smart_split(tail, acc ++[head])
+    end
+  end
+
+  defp check?(str) do
+    {String.contains?(str, ["'", "\""]), []}
+  end
+
+  defp append_it([head|tail], acc) do
+    if String.ends_with?(head, ["'", "\""]) do
+      smart_split(tail, acc ++[remove_quote(head)])
+    else
+      append_it(tail, acc ++ [remove_quote(head)])
+    end
+  end
+
+  defp remove_quote(str) do
+    if String.contains?(str, "'") do
+      String.replace(str, "'", "")
+    else
+      String.replace(str, "\"", "")
+    end
+  end
+
   defp ensure_started do
     case run("cogctl bootstrap") do
       "Already bootstrapped\n" ->
         :ok
       "ok\n" ->
         :ok
-      _ ->
+      w ->
+        IO.inspect(w)
         raise "An instance of cog must already be running."
     end
   end
