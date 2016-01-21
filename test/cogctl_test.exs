@@ -213,13 +213,11 @@ defmodule CogctlTest do
   test "cogctl permissions" do
     assert run("cogctl permissions") =~ ~r"""
     NAME                ID                                  
-    builds              .*
     help                .*
     manage_commands     .*
     manage_groups       .*
     manage_roles        .*
     manage_users        .*
-    stackoverflow       .*
     manage_permissions  .*
     """
 
