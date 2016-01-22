@@ -35,8 +35,8 @@ defmodule Cogctl.CogApi do
     {response_type(response), Poison.decode!(response.body)}
   end
 
-  def get(%__MODULE__{}=api, resource) do
-    response = HTTPotion.get(make_url(api, resource), headers: make_headers(api))
+  def get(%__MODULE__{}=api, resource, params \\ []) do
+    response = HTTPotion.get(make_url(api, resource, params), headers: make_headers(api))
     {response_type(response), Poison.decode!(response.body)}
   end
 
@@ -217,8 +217,8 @@ defmodule Cogctl.CogApi do
     post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
   end
 
-  def permission_index(%__MODULE__{}=api) do
-    get(api, "permissions")
+  def permission_index(%__MODULE__{}=api, params \\ []) do
+    get(api, "permissions", params)
   end
 
   def permission_create(%__MODULE__{}=api, params) do

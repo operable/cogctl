@@ -229,12 +229,32 @@ defmodule CogctlTest do
     Granted site:echo to admin
     """
 
+    assert run("cogctl groups create --name=ops") =~ ~r"""
+    Created ops
+
+    ID    .*
+    Name  ops                                 
+    """
+
+    assert run("cogctl permissions grant site:echo --group=ops") =~ ~r"""
+    Granted site:echo to ops
+    """
+
+    assert run("cogctl permissions --group=ops") =~ ~r"""
+    NAME       ID                                  
+    site:echo  .*
+    """
+
     assert run("cogctl permissions revoke site:echo --user=admin") =~ ~r"""
     Revoked site:echo from admin
     """
 
     assert run("cogctl permissions delete site:echo") =~ ~r"""
     Deleted site:echo
+    """
+
+    assert run("cogctl groups delete ops") =~ ~r"""
+    Deleted ops
     """
   end
 end
