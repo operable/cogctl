@@ -79,14 +79,22 @@ defmodule Cogctl.CogApi do
     delete(api, resource <> "/" <> URI.encode(id))
   end
 
-  def find_id_by(api, resource, [{param_key, param_value}]) do
+  def find_id_by(api, resource, find_fun)
+      when is_function(find_fun) do
     {:ok, %{^resource => items}} = get(api, resource)
 
-    %{"id" => id} = Enum.find(items, fn item ->
+    case Enum.find(items, find_fun) do
+      %{"id" => id} ->
+        id
+      nil ->
+        nil
+    end
+  end
+
+  def find_id_by(api, resource, [{param_key, param_value}]) do
+    find_id_by(api, resource, fn item ->
       item[to_string(param_key)] == param_value
     end)
-
-    id
   end
 
   def bootstrap(%__MODULE__{}=api) do
@@ -217,8 +225,11 @@ defmodule Cogctl.CogApi do
     post(api, "permissions", params)
   end
 
-  def permission_delete(%__MODULE__{}=api, permission_name) do
-    delete_by(api, "permissions", name: permission_name)
+  def permission_delete(%__MODULE__{}=api, name) do
+    delete_by(api, "permissions", fn item ->
+      item["name"] == name &&
+        item["namespace"]["name"] == "site"
+    end)
   end
 
   def permission_grant(%__MODULE__{}=api, permission_name, type, item_to_grant)

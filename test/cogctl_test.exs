@@ -212,29 +212,29 @@ defmodule CogctlTest do
 
   test "cogctl permissions" do
     assert run("cogctl permissions") =~ ~r"""
-    NAME                ID                                  
-    help                .*
-    manage_commands     .*
-    manage_groups       .*
-    manage_roles        .*
-    manage_users        .*
-    manage_permissions  .*
+    NAME                         ID                                  
+    operable:help                .*
+    operable:manage_commands     .*
+    operable:manage_groups       .*
+    operable:manage_roles        .*
+    operable:manage_users        .*
+    operable:manage_permissions  .*
     """
 
-    assert run("cogctl permissions create --name=echo") =~ ~r"""
-    Created echo
+    assert run("cogctl permissions create site:echo") =~ ~r"""
+    Created site:echo
     """
 
-    assert run("cogctl permissions grant echo --user=admin") =~ ~r"""
-    Granted echo to admin
+    assert run("cogctl permissions grant site:echo --user=admin") =~ ~r"""
+    Granted site:echo to admin
     """
 
-    assert run("cogctl permissions revoke echo --user=admin") =~ ~r"""
-    Revoked echo from admin
+    assert run("cogctl permissions revoke site:echo --user=admin") =~ ~r"""
+    Revoked site:echo from admin
     """
 
-    assert run("cogctl permissions delete echo") =~ ~r"""
-    Deleted echo
+    assert run("cogctl permissions delete site:echo") =~ ~r"""
+    Deleted site:echo
     """
   end
 end

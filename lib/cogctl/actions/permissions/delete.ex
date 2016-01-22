@@ -16,13 +16,17 @@ defmodule Cogctl.Actions.Permissions.Delete do
     end
   end
 
-  defp do_delete(client, permission_name) do
-    case CogApi.permission_delete(client, permission_name) do
+  defp do_delete(client, "site:" <> name) do
+    case CogApi.permission_delete(client, name) do
       :ok ->
-        IO.puts "Deleted #{permission_name}"
+        IO.puts "Deleted site:#{name}"
         :ok
       {:error, resp} ->
         {:error, resp}
     end
+  end
+
+  defp do_delete(_client, _name) do
+    {:error, "Only permissions under the site namespace can be deleted"}
   end
 end

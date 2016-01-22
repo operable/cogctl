@@ -22,7 +22,10 @@ defmodule Cogctl.Actions.Permissions do
       {:ok, resp} ->
         permissions = resp["permissions"]
         permission_attrs = for permission <- permissions do
-          [permission["name"], permission["id"]]
+          namespace_name = permission["namespace"]["name"]
+          permission_name = permission["name"]
+
+          ["#{namespace_name}:#{permission_name}", permission["id"]]
         end
 
         IO.puts(Table.format([["NAME", "ID"]] ++ permission_attrs))
