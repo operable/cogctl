@@ -13,12 +13,6 @@ defmodule Support.CliCase do
   end
 
   def run("cogctl" <> args) do
-    #x = args
-    #|> String.split
-    #|> smart_split([])
-    #|> Cogctl.main
-    #IO.inspect(x)
-
     capture_io(fn ->
       try do
         args
@@ -75,8 +69,8 @@ defmodule Support.CliCase do
         :ok
       "ok\n" ->
         :ok
-      w ->
-        IO.inspect(w)
+      response ->
+        IO.inspect("Error when bootstrapping: #{inspect response}")
         raise "An instance of cog must already be running."
     end
   end
