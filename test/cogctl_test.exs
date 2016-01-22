@@ -34,6 +34,7 @@ defmodule CogctlTest do
     permissions  .*
     role         .*
     rules        .*
+    sort         .*
     sum          .*
     table        .*
     thorn        .*
