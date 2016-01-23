@@ -214,7 +214,6 @@ defmodule CogctlTest do
   test "cogctl permissions" do
     assert run("cogctl permissions") =~ ~r"""
     NAME                ID                                  
-    help                .*
     manage_commands     .*
     manage_groups       .*
     manage_roles        .*
@@ -245,7 +244,7 @@ defmodule CogctlTest do
     """
 
     # Set up the permission
-    run("cogctl permission create --name test")
+    run("cogctl permissions create --name=test")
 
     assert run("cogctl rules create --rule_text='when command is operable:echo must have site:test'") =~ ~r"""
     Added the rule 'when command is operable:echo must have site:test'
