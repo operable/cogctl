@@ -210,7 +210,7 @@ defmodule Cogctl.CogApi do
   end
 
   def rule_show(%__MODULE__{}=api, command) do
-    get(api, "rules/" <> URI.encode(command))
+    get(api, "rules?for-command=" <> URI.encode(command))
   end
 
   def rule_create(%__MODULE__{}=api, params) do
