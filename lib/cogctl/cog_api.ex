@@ -116,6 +116,19 @@ defmodule Cogctl.CogApi do
     response_type(response)
   end
 
+  def bundle_status(%__MODULE__{}=api, bundle_name, status) do
+    bundle_id = find_id_by(api, "bundles", name: bundle_name)
+    post(api, "bundles/#{bundle_id}/status", %{status: status})
+  end
+
+  def bundle_enable(%__MODULE__{}=api, bundle_name) do
+    bundle_status(api, bundle_name, "enabled")
+  end
+
+  def bundle_disable(%__MODULE__{}=api, bundle_name) do
+    bundle_status(api, bundle_name, "disabled")
+  end
+
   def user_index(%__MODULE__{}=api) do
     get(api, "users")
   end

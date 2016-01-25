@@ -5,6 +5,8 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Bundles,
                   Cogctl.Actions.Bundles.Info,
                   Cogctl.Actions.BundleDelete,
+                  Cogctl.Actions.Bundles.Enable,
+                  Cogctl.Actions.Bundles.Disable,
                   Cogctl.Actions.Users,
                   Cogctl.Actions.Users.Info,
                   Cogctl.Actions.Users.Create,
