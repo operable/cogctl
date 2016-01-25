@@ -217,7 +217,20 @@ defmodule Cogctl.CogApi do
     post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
   end
 
-  def permission_index(%__MODULE__{}=api, params \\ []) do
+  def permission_index(api, params \\ [])
+
+  def permission_index(%__MODULE__{}=api, [user: user_username]) do
+    user_id = find_id_by(api, "users", username: user_username)
+    get(api, "users/#{user_id}/permissions")
+  end
+
+  def permission_index(%__MODULE__{}=api, [group: group_name]) do
+    group_id = find_id_by(api, "groups", name: group_name)
+    get(api, "groups/#{group_id}/permissions")
+  end
+
+  def permission_index(%__MODULE__{}=api, params) do
+    IO.inspect(params)
     get(api, "permissions", params)
   end
 
