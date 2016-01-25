@@ -5,7 +5,7 @@ defmodule CogctlTest do
 
   test "cogctl" do
     assert run("cogctl") == """
-    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | bundles enable | bundles disable | users | users info | users create | users update | users delete | groups | groups info | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke | rules | rules create | rules delete | permissions | permissions create | permissions delete | permissions grant | permissions revoke]
+    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundles delete | bundles enable | bundles disable | users | users info | users create | users update | users delete | groups | groups info | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke | rules | rules create | rules delete | permissions | permissions create | permissions delete | permissions grant | permissions revoke]
 
            cogctl <action> --help will display action specific help information.
     """
