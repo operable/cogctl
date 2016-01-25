@@ -268,6 +268,18 @@ defmodule Cogctl.CogApi do
     post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{revoke: [permission_name]}})
   end
 
+  def rule_show(%__MODULE__{}=api, command) do
+    get(api, "rules?for-command=" <> URI.encode(command))
+  end
+
+  def rule_create(%__MODULE__{}=api, params) do
+    post(api, "rules", params)
+  end
+
+  def rule_delete(%__MODULE__{}=api, rule_id) do
+    delete(api, "rules" <> "/" <> URI.encode(rule_id))
+  end
+
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
                             version: version}, route, params \\ []) do
     route = if is_function(route) do

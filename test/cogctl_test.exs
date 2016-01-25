@@ -5,7 +5,7 @@ defmodule CogctlTest do
 
   test "cogctl" do
     assert run("cogctl") == """
-    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups info | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke | permissions | permissions create | permissions delete | permissions grant | permissions revoke]
+    Usage: cogctl [bootstrap | profiles | bundles | bundles info | bundle delete | users | users info | users create | users update | users delete | groups | groups info | groups create | groups update | groups delete | groups add | groups remove | roles | roles create | roles update | roles delete | roles grant | roles revoke | rules | rules create | rules delete | permissions | permissions create | permissions delete | permissions grant | permissions revoke]
 
            cogctl <action> --help will display action specific help information.
     """
@@ -20,10 +20,11 @@ defmodule CogctlTest do
     assert run("cogctl bundles info operable") =~ ~r"""
     ID         .*
     Name       operable                            
-    Installed  .*
-
+    Installed  .*                
+    
     Commands
     NAME         ID                                  
+    bundle       .*
     echo         .*
     filter       .*
     greet        .*
@@ -59,38 +60,38 @@ defmodule CogctlTest do
 
     output = run("""
     cogctl users create
-      --first-name=Kevin
-      --last-name=Smith
-      --email=kevin@operable.io
-      --username=kevsmith
+      --first-name=Jack
+      --last-name=Frost
+      --email=jfrost@operable.io
+      --username=jfrost
       --password=password
     """)
 
     assert output =~ ~r"""
-    Created kevsmith
-
+    Created jfrost
+    
     ID          .*
-    Username    kevsmith                            
-    First Name  Kevin                               
-    Last Name   Smith                               
-    Email       kevin@operable.io                   
+    Username    jfrost                              
+    First Name  Jack                                
+    Last Name   Frost                               
+    Email       jfrost@operable.io                  
     """
 
     assert run("""
-    cogctl users update kevsmith
+    cogctl users update jfrost
       --last-name=Smitherino
     """) =~ ~r"""
-    Updated kevsmith
+    Updated jfrost
 
     ID          .*
-    Username    kevsmith                            
-    First Name  Kevin                               
+    Username    jfrost                              
+    First Name  Jack                                
     Last Name   Smitherino                          
-    Email       kevin@operable.io                   
+    Email       jfrost@operable.io                  
     """
 
-    assert run("cogctl users delete kevsmith") =~ ~r"""
-    Deleted kevsmith
+    assert run("cogctl users delete jfrost") =~ ~r"""
+    Deleted jfrost
     """
   end
 
@@ -256,5 +257,34 @@ defmodule CogctlTest do
     assert run("cogctl groups delete ops") =~ ~r"""
     Deleted ops
     """
+  end
+
+  test "cogctl rules" do
+    assert run("cogctl rules operable:test") =~ ~r"""
+    Error: {:error, %{"errors" => "No rules for command found"}}
+    """
+
+    # Set up the permission
+    run("cogctl permissions create site:test")
+
+    assert run("cogctl rules create --rule_text='when command is operable:echo must have site:test'") =~ ~r"""
+    Added the rule 'when command is operable:echo must have site:test'
+    
+    ID                                    Rule                                             
+    .*  when command is operable:echo must have site:test
+    """
+
+    expected = ~r"""
+    ID                                    COMMAND        RULE TEXT                                        
+    (?<id>.*)  operable:echo  when command is operable:echo must have site:test
+    """
+    m = Regex.named_captures(expected, run("cogctl rules operable:echo"))
+
+    assert run("cogctl rules delete -r #{m["id"]}") =~ ~r"""
+    Deleted .*
+    """
+
+    # Clean up the permission after we are done
+    run("cogctl permission delete site:test")
   end
 end
