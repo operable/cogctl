@@ -3,6 +3,7 @@ defmodule Cogctl.Actions.Rules.Update do
   alias Cogctl.CogApi
   alias Cogctl.Table
 
+  # Whitelisted options passed as params to api client
   @params [:id]
 
   def option_spec do

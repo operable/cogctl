@@ -3,6 +3,7 @@ defmodule Cogctl.Actions.Permissions do
   alias Cogctl.CogApi
   alias Cogctl.Table
 
+  # Whitelisted options passed as params to api client
   @params [:user, :group]
 
   def option_spec do

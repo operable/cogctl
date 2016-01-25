@@ -3,8 +3,6 @@ defmodule Cogctl.Actions.Groups.Add do
   alias Cogctl.Actions.Groups
   alias Cogctl.CogApi
 
-  @params [:name]
-
   def option_spec do
     [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name'},
      {:user_to_add, :undefined, 'user', {:string, :undefined}, 'Username of user to add'},

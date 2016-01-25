@@ -2,8 +2,6 @@ defmodule Cogctl.Actions.Permissions.Grant do
   use Cogctl.Action, "permissions grant"
   alias Cogctl.CogApi
 
-  @params [:name]
-
   def option_spec do
     [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name'},
      {:user_to_grant, :undefined, 'user', {:string, :undefined}, 'Username of user to grant permission'},
