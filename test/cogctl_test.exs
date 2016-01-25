@@ -34,6 +34,7 @@ defmodule CogctlTest do
     permissions  .*
     role         .*
     rules        .*
+    sort         .*
     sum          .*
     table        .*
     thorn        .*
@@ -213,7 +214,6 @@ defmodule CogctlTest do
   test "cogctl permissions" do
     assert run("cogctl permissions") =~ ~r"""
     NAME                         ID                                  
-    operable:help                .*
     operable:manage_commands     .*
     operable:manage_groups       .*
     operable:manage_roles        .*
