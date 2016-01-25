@@ -21,14 +21,17 @@ defmodule Cogctl.Actions.Bundles do
     case CogApi.bundle_index(client) do
       {:ok, resp} ->
         bundles = for bundle <- resp["bundles"] do
-          [bundle["name"], bundle["inserted_at"]]
+          [bundle["name"], enabled_to_status(bundle["enabled"]), bundle["inserted_at"]]
         end
 
-        IO.puts(Table.format([["NAME", "INSTALLED"]] ++ bundles))
+        IO.puts(Table.format([["NAME", "STATUS", "INSTALLED"]] ++ bundles))
 
         :ok
       {:error, resp} ->
         {:error, resp}
     end
   end
+
+  def enabled_to_status(true), do: "enabled"
+  def enabled_to_status(false), do: "disabled"
 end

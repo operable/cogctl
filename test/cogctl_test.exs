@@ -13,13 +13,14 @@ defmodule CogctlTest do
 
   test "cogctl bundles" do
     assert run("cogctl bundles") =~ ~r"""
-    NAME      INSTALLED           
-    operable  .*
+    NAME      STATUS   INSTALLED           
+    operable  enabled  .*
     """
 
     assert run("cogctl bundles info operable") =~ ~r"""
     ID         .*
     Name       operable                            
+    Status     enabled                             
     Installed  .*                
     
     Commands
