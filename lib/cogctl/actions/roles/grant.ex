@@ -2,8 +2,6 @@ defmodule Cogctl.Actions.Roles.Grant do
   use Cogctl.Action, "roles grant"
   alias Cogctl.CogApi
 
-  @params [:name]
-
   def option_spec do
     [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name'},
      {:user_to_grant, :undefined, 'user', {:string, :undefined}, 'Username of user to grant role'},

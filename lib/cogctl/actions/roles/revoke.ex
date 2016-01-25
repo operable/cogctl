@@ -2,8 +2,6 @@ defmodule Cogctl.Actions.Roles.Revoke do
   use Cogctl.Action, "roles revoke"
   alias Cogctl.CogApi
 
-  @params [:name]
-
   def option_spec do
     [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name'},
      {:user_to_revoke, :undefined, 'user', {:string, :undefined}, 'Username of user to revoke role from'},

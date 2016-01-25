@@ -35,8 +35,8 @@ defmodule Cogctl.CogApi do
     {response_type(response), Poison.decode!(response.body)}
   end
 
-  def get(%__MODULE__{}=api, resource) do
-    response = HTTPotion.get(make_url(api, resource), headers: make_headers(api))
+  def get(%__MODULE__{}=api, resource, params \\ []) do
+    response = HTTPotion.get(make_url(api, resource, params), headers: make_headers(api))
     {response_type(response), Poison.decode!(response.body)}
   end
 
@@ -79,14 +79,22 @@ defmodule Cogctl.CogApi do
     delete(api, resource <> "/" <> URI.encode(id))
   end
 
-  def find_id_by(api, resource, [{param_key, param_value}]) do
+  def find_id_by(api, resource, find_fun)
+      when is_function(find_fun) do
     {:ok, %{^resource => items}} = get(api, resource)
 
-    %{"id" => id} = Enum.find(items, fn item ->
+    case Enum.find(items, find_fun) do
+      %{"id" => id} ->
+        id
+      nil ->
+        nil
+    end
+  end
+
+  def find_id_by(api, resource, [{param_key, param_value}]) do
+    find_id_by(api, resource, fn item ->
       item[to_string(param_key)] == param_value
     end)
-
-    id
   end
 
   def bootstrap(%__MODULE__{}=api) do
@@ -209,28 +217,31 @@ defmodule Cogctl.CogApi do
     post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
   end
 
-  def rule_show(%__MODULE__{}=api, command) do
-    get(api, "rules?for-command=" <> URI.encode(command))
+  def permission_index(api, params \\ [])
+
+  def permission_index(%__MODULE__{}=api, [user: user_username]) do
+    user_id = find_id_by(api, "users", username: user_username)
+    get(api, "users/#{user_id}/permissions")
   end
 
-  def rule_create(%__MODULE__{}=api, params) do
-    post(api, "rules", params)
+  def permission_index(%__MODULE__{}=api, [group: group_name]) do
+    group_id = find_id_by(api, "groups", name: group_name)
+    get(api, "groups/#{group_id}/permissions")
   end
 
-  def rule_delete(%__MODULE__{}=api, rule_id) do
-    delete(api, "rules" <> "/" <> URI.encode(rule_id))
-  end
-
-  def permission_index(%__MODULE__{}=api) do
-    get(api, "permissions")
+  def permission_index(%__MODULE__{}=api, params) do
+    get(api, "permissions", params)
   end
 
   def permission_create(%__MODULE__{}=api, params) do
     post(api, "permissions", params)
   end
 
-  def permission_delete(%__MODULE__{}=api, permission_name) do
-    delete_by(api, "permissions", name: permission_name)
+  def permission_delete(%__MODULE__{}=api, name) do
+    delete_by(api, "permissions", fn item ->
+      item["name"] == name &&
+        item["namespace"]["name"] == "site"
+    end)
   end
 
   def permission_grant(%__MODULE__{}=api, permission_name, type, item_to_grant)
@@ -255,6 +266,18 @@ defmodule Cogctl.CogApi do
     end
 
     post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{revoke: [permission_name]}})
+  end
+
+  def rule_show(%__MODULE__{}=api, command) do
+    get(api, "rules?for-command=" <> URI.encode(command))
+  end
+
+  def rule_create(%__MODULE__{}=api, params) do
+    post(api, "rules", params)
+  end
+
+  def rule_delete(%__MODULE__{}=api, rule_id) do
+    delete(api, "rules" <> "/" <> URI.encode(rule_id))
   end
 
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,

@@ -2,8 +2,6 @@ defmodule Cogctl.Actions.Permissions.Revoke do
   use Cogctl.Action, "permissions revoke"
   alias Cogctl.CogApi
 
-  @params [:name]
-
   def option_spec do
     [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name'},
      {:user_to_revoke, :undefined, 'user', {:string, :undefined}, 'Username of user to revoke permission from'},

@@ -24,6 +24,7 @@ defmodule CogctlTest do
     
     Commands
     NAME         ID                                  
+    bundle       .*
     echo         .*
     filter       .*
     greet        .*
@@ -213,28 +214,48 @@ defmodule CogctlTest do
 
   test "cogctl permissions" do
     assert run("cogctl permissions") =~ ~r"""
-    NAME                ID                                  
-    manage_commands     .*
-    manage_groups       .*
-    manage_roles        .*
-    manage_users        .*
-    manage_permissions  .*
+    NAME                         ID                                  
+    operable:manage_commands     .*
+    operable:manage_groups       .*
+    operable:manage_roles        .*
+    operable:manage_users        .*
+    operable:manage_permissions  .*
     """
 
-    assert run("cogctl permissions create --name=test_echo") =~ ~r"""
-    Created test_echo
+    assert run("cogctl permissions create site:echo") =~ ~r"""
+    Created site:echo
     """
 
-    assert run("cogctl permissions grant site:test_echo --user=admin") =~ ~r"""
-    Granted site:test_echo to admin
+    assert run("cogctl permissions grant site:echo --user=admin") =~ ~r"""
+    Granted site:echo to admin
     """
 
-    assert run("cogctl permissions revoke site:test_echo --user=admin") =~ ~r"""
-    Revoked site:test_echo from admin
+    assert run("cogctl groups create --name=ops") =~ ~r"""
+    Created ops
+
+    ID    .*
+    Name  ops                                 
     """
 
-    assert run("cogctl permissions delete test_echo") =~ ~r"""
-    Deleted test_echo
+    assert run("cogctl permissions grant site:echo --group=ops") =~ ~r"""
+    Granted site:echo to ops
+    """
+
+    assert run("cogctl permissions --group=ops") =~ ~r"""
+    NAME       ID                                  
+    site:echo  .*
+    """
+
+    assert run("cogctl permissions revoke site:echo --user=admin") =~ ~r"""
+    Revoked site:echo from admin
+    """
+
+    assert run("cogctl permissions delete site:echo") =~ ~r"""
+    Deleted site:echo
+    """
+
+    assert run("cogctl groups delete ops") =~ ~r"""
+    Deleted ops
     """
   end
 
@@ -244,7 +265,7 @@ defmodule CogctlTest do
     """
 
     # Set up the permission
-    run("cogctl permissions create --name=test")
+    run("cogctl permissions create site:test")
 
     assert run("cogctl rules create --rule_text='when command is operable:echo must have site:test'") =~ ~r"""
     Added the rule 'when command is operable:echo must have site:test'
@@ -264,6 +285,6 @@ defmodule CogctlTest do
     """
 
     # Clean up the permission after we are done
-    run("cogctl permission delete test")
+    run("cogctl permission delete site:test")
   end
 end

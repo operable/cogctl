@@ -2,8 +2,6 @@ defmodule Cogctl.Actions.Rules.Delete do
   use Cogctl.Action, "rules delete"
   alias Cogctl.CogApi
 
-  @params [:rule]
-
   def option_spec do
     [{:rule, ?r, 'rule', {:string, :undefined}, 'Rule id'}]
   end
