@@ -230,7 +230,6 @@ defmodule Cogctl.CogApi do
   end
 
   def permission_index(%__MODULE__{}=api, params) do
-    IO.inspect(params)
     get(api, "permissions", params)
   end
 
