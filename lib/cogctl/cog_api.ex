@@ -291,6 +291,22 @@ defmodule Cogctl.CogApi do
     delete(api, "rules" <> "/" <> URI.encode(rule_id))
   end
 
+  def chat_handle_index(%__MODULE__{}=api) do
+    get(api, "chat_handles")
+  end
+
+  def chat_handle_create(%__MODULE__{}=api, %{chat_handle: %{user: user}} = params) do
+    user_id = find_id_by(api, "users", username: user)
+    post(api, "users/#{user_id}/chat_handles", params)
+  end
+
+  def chat_handle_delete(%__MODULE__{}=api, %{chat_handle: %{user: user, chat_provider: chat_provider}}) do
+    delete_by(api, "chat_handles", fn item ->
+      item["user"]["username"] == user &&
+        item["chat_provider"]["name"] == chat_provider
+    end)
+  end
+
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
                             version: version}, route, params \\ []) do
     route = if is_function(route) do

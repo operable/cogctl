@@ -290,4 +290,23 @@ defmodule CogctlTest do
     # Clean up the permission after we are done
     run("cogctl permission delete site:test")
   end
+
+  test "cogctl chat-handles" do
+    assert run("cogctl chat-handles create --user=admin --chat-provider=Slack --handle=admininator") =~ ~r"""
+    Created admininator for Slack chat provider
+    """
+
+    assert run("cogctl chat-handles") =~ ~r"""
+    USER   CHAT PROVIDER  HANDLE
+    admin  Slack          admininator
+    """
+
+    assert run("cogctl chat-handles delete --user=admin --chat-provider=Slack") =~ ~r"""
+    Deleted chat handle owned by admin for Slack chat provider
+    """
+
+    assert run("cogctl chat-handles") =~ ~r"""
+    USER  CHAT PROVIDER  HANDLE
+    """
+  end
 end
