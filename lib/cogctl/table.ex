@@ -15,6 +15,7 @@ defmodule Cogctl.Table do
   defp format_rows(data) do
     data
     |> Enum.map(&Enum.join(&1, "  "))
+    |> Enum.map(&String.rstrip/1)
     |> Enum.join("\n")
   end
 

@@ -110,10 +110,21 @@ defmodule Cogctl.CogApi do
     get_by(api, "bundles", name: bundle_name)
   end
 
-  def bundle_delete(%__MODULE__{}=api, bundle_id) do
-    response = HTTPotion.delete(make_url(api, fn -> "bundles/" <> URI.encode(bundle_id) end),
-                                headers: make_headers(api))
-    response_type(response)
+  def bundle_delete(%__MODULE__{}=api, bundle_name) do
+    delete_by(api, "bundles", name: bundle_name)
+  end
+
+  def bundle_status(%__MODULE__{}=api, bundle_name, status) do
+    bundle_id = find_id_by(api, "bundles", name: bundle_name)
+    post(api, "bundles/#{bundle_id}/status", %{status: status})
+  end
+
+  def bundle_enable(%__MODULE__{}=api, bundle_name) do
+    bundle_status(api, bundle_name, "enabled")
+  end
+
+  def bundle_disable(%__MODULE__{}=api, bundle_name) do
+    bundle_status(api, bundle_name, "disabled")
   end
 
   def user_index(%__MODULE__{}=api) do

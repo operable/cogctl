@@ -1,5 +1,6 @@
 defmodule Cogctl.Actions.Bundles.Info do
   use Cogctl.Action, "bundles info"
+  alias Cogctl.Actions.Bundles
   alias Cogctl.CogApi
   alias Cogctl.Table
 
@@ -22,7 +23,10 @@ defmodule Cogctl.Actions.Bundles.Info do
       {:ok, resp} ->
         bundle = resp["bundle"]
 
-        bundle_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}, {"Installed", "inserted_at"}] do
+        status = Bundles.enabled_to_status(bundle["enabled"])
+        bundle = Map.merge(bundle, %{"status" => status})
+
+        bundle_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}, {"Status", "status"}, {"Installed", "inserted_at"}] do
           [title, bundle[attr]]
         end
 

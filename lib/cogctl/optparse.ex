@@ -4,7 +4,9 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Profiles,
                   Cogctl.Actions.Bundles,
                   Cogctl.Actions.Bundles.Info,
-                  Cogctl.Actions.BundleDelete,
+                  Cogctl.Actions.Bundles.Delete,
+                  Cogctl.Actions.Bundles.Enable,
+                  Cogctl.Actions.Bundles.Disable,
                   Cogctl.Actions.Users,
                   Cogctl.Actions.Users.Info,
                   Cogctl.Actions.Users.Create,
@@ -32,6 +34,12 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Permissions.Grant,
                   Cogctl.Actions.Permissions.Revoke]
 
+  def action_display_names() do
+    for handler <- @valid_actions do
+      handler.display_name()
+    end
+  end
+
   def parse([arg]) when arg in ["--help", "-?"] do
     parse(nil)
   end
@@ -54,8 +62,8 @@ defmodule Cogctl.Optparse do
     end
   end
   def parse(_) do
-    actions = Enum.join(display_valid_actions, " | ")
-    IO.puts "Usage: cogctl [#{actions}]"
+    actions = format_actions(action_display_names)
+    IO.puts "Usage: cogctl\t[#{actions}]"
     IO.puts "\n       cogctl <action> --help will display action specific help information."
     :done
   end
@@ -78,12 +86,6 @@ defmodule Cogctl.Optparse do
       %{handler: handler, pattern: handler.name()}
     end
     Enum.sort(handlers, &(length(&1.pattern) > length(&2.pattern)))
-  end
-
-  defp display_valid_actions() do
-    for handler <- @valid_actions do
-      handler.display_name()
-    end
   end
 
   defp opt_specs(handler) do
@@ -127,4 +129,18 @@ defmodule Cogctl.Optparse do
     false
   end
 
+  defp format_actions(names) do
+    format_actions(names, 0, [])
+  end
+
+  defp format_actions([], _, accum) do
+    [_|accum] = Enum.reverse(accum)
+    Enum.join(accum, "")
+  end
+  defp format_actions([name|t], 5, accum) do
+    format_actions(t, 0, [name, " |\n\t\t"|accum])
+  end
+  defp format_actions([name|t], n, accum) do
+    format_actions(t, n + 1, [name, " | "|accum])
+  end
 end
