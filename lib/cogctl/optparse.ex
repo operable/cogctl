@@ -56,8 +56,8 @@ defmodule Cogctl.Optparse do
     end
   end
   def parse(_) do
-    actions = Enum.join(display_valid_actions, " | ")
-    IO.puts "Usage: cogctl [#{actions}]"
+    actions = format_actions(display_valid_actions)
+    IO.puts "Usage: cogctl\t[#{actions}]"
     IO.puts "\n       cogctl <action> --help will display action specific help information."
     :done
   end
@@ -129,4 +129,18 @@ defmodule Cogctl.Optparse do
     false
   end
 
+  defp format_actions(names) do
+    format_actions(names, 0, [])
+  end
+
+  defp format_actions([], _, accum) do
+    [_|accum] = Enum.reverse(accum)
+    Enum.join(accum, "")
+  end
+  defp format_actions([name|t], 5, accum) do
+    format_actions(t, 0, [name, " |\n\t\t"|accum])
+  end
+  defp format_actions([name|t], n, accum) do
+    format_actions(t, n + 1, [name, " | "|accum])
+  end
 end
