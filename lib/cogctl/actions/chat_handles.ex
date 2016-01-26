@@ -22,10 +22,10 @@ defmodule Cogctl.Actions.ChatHandles do
       {:ok, resp} ->
         chat_handles = resp["chat_handles"]
         chat_handle_attrs = for chat_handle <- chat_handles do
-          [chat_handle["user"]["username"], chat_handle["adapter"], chat_handle["handle"]]
+          [chat_handle["user"]["username"], chat_handle["chat_provider"]["name"], chat_handle["handle"]]
         end
 
-        IO.puts(Table.format([["USER", "ADAPTER", "HANDLE"]] ++ chat_handle_attrs))
+        IO.puts(Table.format([["USER", "CHAT PROVIDER", "HANDLE"]] ++ chat_handle_attrs))
 
         :ok
       {:error, resp} ->

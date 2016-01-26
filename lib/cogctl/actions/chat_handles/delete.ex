@@ -3,11 +3,11 @@ defmodule Cogctl.Actions.ChatHandles.Delete do
   alias Cogctl.CogApi
 
   # Whitelisted options passed as params to api client
-  @params [:user, :adapter]
+  @params [:user, :chat_provider]
 
   def option_spec do
     [{:user, :undefined, 'user', {:string, :undefined}, 'Username user that owns the handle to delete'},
-     {:adapter, :undefined, 'adapter', {:string, :undefined}, 'Adapter name'}]
+     {:chat_provider, :undefined, 'chat-provider', {:string, :undefined}, 'Chat provider name'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -24,7 +24,7 @@ defmodule Cogctl.Actions.ChatHandles.Delete do
     params = make_chat_handle_params(options)
     case CogApi.chat_handle_delete(client, %{chat_handle: params}) do
       :ok ->
-        IO.puts("Deleted chat handle owned by #{params["chat_handle"]["user"]} for the #{params["chat_handle"]["adapter"]} adapter")
+        IO.puts("Deleted chat handle owned by #{params[:user]} for #{params[:chat_provider]} chat provider")
         :ok
       {:error, resp} ->
         {:error, resp}
