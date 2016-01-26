@@ -34,6 +34,12 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Permissions.Grant,
                   Cogctl.Actions.Permissions.Revoke]
 
+  def action_display_names() do
+    for handler <- @valid_actions do
+      handler.display_name()
+    end
+  end
+
   def parse([arg]) when arg in ["--help", "-?"] do
     parse(nil)
   end
@@ -56,7 +62,7 @@ defmodule Cogctl.Optparse do
     end
   end
   def parse(_) do
-    actions = format_actions(display_valid_actions)
+    actions = format_actions(action_display_names)
     IO.puts "Usage: cogctl\t[#{actions}]"
     IO.puts "\n       cogctl <action> --help will display action specific help information."
     :done
@@ -80,12 +86,6 @@ defmodule Cogctl.Optparse do
       %{handler: handler, pattern: handler.name()}
     end
     Enum.sort(handlers, &(length(&1.pattern) > length(&2.pattern)))
-  end
-
-  defp display_valid_actions() do
-    for handler <- @valid_actions do
-      handler.display_name()
-    end
   end
 
   defp opt_specs(handler) do

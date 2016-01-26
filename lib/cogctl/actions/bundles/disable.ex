@@ -7,6 +7,7 @@ defmodule Cogctl.Actions.Bundles.Disable do
   end
 
   def run(options, _args,  _config, profile) do
+    IO.puts "#{inspect options}"
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
