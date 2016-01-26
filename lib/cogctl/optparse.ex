@@ -32,7 +32,10 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Permissions.Create,
                   Cogctl.Actions.Permissions.Delete,
                   Cogctl.Actions.Permissions.Grant,
-                  Cogctl.Actions.Permissions.Revoke]
+                  Cogctl.Actions.Permissions.Revoke,
+                  Cogctl.Actions.ChatHandles,
+                  Cogctl.Actions.ChatHandles.Create,
+                  Cogctl.Actions.ChatHandles.Delete]
 
   def action_display_names() do
     for handler <- @valid_actions do

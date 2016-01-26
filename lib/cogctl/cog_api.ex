@@ -81,7 +81,8 @@ defmodule Cogctl.CogApi do
 
   def find_id_by(api, resource, find_fun)
       when is_function(find_fun) do
-    {:ok, %{^resource => items}} = get(api, resource)
+    underscore_resource = String.replace(resource, "-", "_")
+    {:ok, %{^underscore_resource => items}} = get(api, resource)
 
     case Enum.find(items, find_fun) do
       %{"id" => id} ->
@@ -289,6 +290,22 @@ defmodule Cogctl.CogApi do
 
   def rule_delete(%__MODULE__{}=api, rule_id) do
     delete(api, "rules" <> "/" <> URI.encode(rule_id))
+  end
+
+  def chat_handle_index(%__MODULE__{}=api) do
+    get(api, "chat-handles")
+  end
+
+  def chat_handle_create(%__MODULE__{}=api, %{chat_handle: %{user: user}} = params) do
+    user_id = find_id_by(api, "user", username: user)
+    post(api, "users/#{user_id}/chat-handles", params)
+  end
+
+  def chat_handle_delete(%__MODULE__{}=api, %{chat_handle: %{user: user, adapter: adapter}}) do
+    delete_by(api, "chat-handles", fn item ->
+      item["user"] == user &&
+        item["adapter"] == adapter
+    end)
   end
 
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
