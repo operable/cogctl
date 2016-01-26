@@ -3,21 +3,27 @@ defmodule Cogctl.Actions.Bundles.Delete do
   alias Cogctl.CogApi
 
   def option_spec do
-    [{:bundle, :undefined, :undefined, {:string, :undefined}, 'Bundle name'}]
+    []
   end
 
-  def run(options, _args,  _config, profile) do
+  def run(_options, args,  _config, profile) do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_delete(client, :proplists.get_value(:bundle, options))
+        do_delete(client, args)
       {:error, error} ->
         IO.puts "#{error["error"]}"
         :error
     end
   end
 
-  defp do_delete(bundle_name, client) do
+  defp do_delete(client, bundle_names) when is_list(bundle_names) do
+    for bundle_name <- bundle_names do
+      do_delete(client, bundle_name)
+    end
+  end
+
+  defp do_delete(client, bundle_name) do
     case CogApi.bundle_delete(client, bundle_name) do
       :ok ->
         IO.puts "Deleted #{bundle_name}"
@@ -27,5 +33,4 @@ defmodule Cogctl.Actions.Bundles.Delete do
         :error
     end
   end
-
 end
