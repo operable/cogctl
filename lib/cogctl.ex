@@ -15,6 +15,8 @@ defmodule Cogctl do
     case result do
       :ok ->
         :ok
+      :done ->
+        :ok
       :error ->
         exit({:shutdown, 1})
       error ->

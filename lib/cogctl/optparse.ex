@@ -67,7 +67,8 @@ defmodule Cogctl.Optparse do
   def parse(_) do
     actions = format_actions(action_display_names)
     IO.puts "Usage: cogctl\t[#{actions}]"
-    IO.puts "\n       cogctl <action> --help will display action specific help information."
+    IO.puts ""
+    IO.puts "       cogctl <action> --help will display action specific help information."
     :done
   end
 

@@ -20,11 +20,11 @@ defmodule Cogctl.Actions.Bootstrap do
   defp do_query(client) do
     {:ok, body} = CogApi.is_bootstrapped?(client)
     status = if get_in(body, ["bootstrap", "bootstrap_status"]) == true do
-      "bootstrapped"
+      "Bootstrapped"
     else
-      "not bootstrapped"
+      "Not bootstrapped"
     end
-    IO.puts status
+    IO.puts "Status: #{status}"
   end
 
   defp do_bootstrap(client, config) do
@@ -38,9 +38,9 @@ defmodule Cogctl.Actions.Bootstrap do
                                            "secure" => false})
          config = %{config | dirty: true, values: values}
          Cogctl.Config.save(config)
-         IO.puts "ok"
+         IO.puts "Bootstrapped"
       {:error, error} ->
-        IO.puts "#{get_in(error, ["bootstrap", "error"])}"
+        IO.puts "ERROR: #{get_in(error, ["bootstrap", "error"])}"
         :error
     end
   end

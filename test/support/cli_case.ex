@@ -14,15 +14,17 @@ defmodule Support.CliCase do
 
   def run("cogctl" <> args) do
     capture_io(fn ->
-      try do
-        args
-        |> String.split
-        |> smart_split([])
-        |> Cogctl.main
-      catch
-        _, _ ->
-          nil
-      end
+      capture_io(:stderr, fn ->
+        try do
+          args
+          |> String.split
+          |> smart_split([])
+          |> Cogctl.main
+        catch
+          _, _ ->
+            nil
+        end
+      end) |> IO.puts
     end)
   end
 
@@ -65,12 +67,12 @@ defmodule Support.CliCase do
 
   defp ensure_started do
     case run("cogctl bootstrap") do
-      "Already bootstrapped\n" ->
+      "ERROR: Already bootstrapped\n\n" ->
         :ok
-      "ok\n" ->
+      "Bootstrapped\n\n" ->
         :ok
       response ->
-        IO.inspect("Error when bootstrapping: #{inspect response}")
+        IO.puts("Error when bootstrapping: #{inspect response}")
         raise "An instance of cog must already be running."
     end
   end
