@@ -21,7 +21,7 @@ defmodule Cogctl.Actions.Users.Update do
       {:ok, client} ->
         do_update(client, :proplists.get_value(:user, options), options)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
@@ -36,13 +36,13 @@ defmodule Cogctl.Actions.Users.Update do
           [title, user[attr]]
         end
 
-        IO.puts("Updated #{username}")
-        IO.puts("")
-        IO.puts(Table.format(user_attrs))
+        display_output("""
+        Updated #{username}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(user_attrs)}
+        """)
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 

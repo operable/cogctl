@@ -24,7 +24,7 @@ defmodule Support.CliCase do
           _, _ ->
             nil
         end
-      end) |> String.rstrip |> IO.puts
+      end) |> IO.write
     end)
   end
 
