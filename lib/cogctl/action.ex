@@ -16,6 +16,20 @@ defmodule Cogctl.Action do
 
       def name(), do: unquote(pattern)
       def display_name, do: unquote(name)
+
+      def display_output(output) do
+        IO.puts(output)
+        :ok
+      end
+
+      def display_error(error) do
+        IO.puts(:stderr, "ERROR: #{error}")
+        :error
+      end
+
+      def display_arguments_error do
+        display_error("Missing required arguments")
+      end
     end
   end
 

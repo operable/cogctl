@@ -24,7 +24,8 @@ defmodule Cogctl.Actions.Bootstrap do
     else
       "Not bootstrapped"
     end
-    IO.puts "Status: #{status}"
+
+    display_output("Status: #{status}")
   end
 
   defp do_bootstrap(client, config) do
@@ -36,12 +37,11 @@ defmodule Cogctl.Actions.Bootstrap do
                                            "host" => client.host,
                                            "port" => client.port,
                                            "secure" => false})
-         config = %{config | dirty: true, values: values}
-         Cogctl.Config.save(config)
-         IO.puts "Bootstrapped"
+        config = %{config | dirty: true, values: values}
+        Cogctl.Config.save(config)
+        display_output("Bootstrapped")
       {:error, error} ->
-        IO.puts "ERROR: #{get_in(error, ["bootstrap", "error"])}"
-        :error
+        display_error(get_in(error, ["bootstrap", "error"]))
     end
   end
 

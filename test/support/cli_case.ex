@@ -24,7 +24,7 @@ defmodule Support.CliCase do
           _, _ ->
             nil
         end
-      end) |> IO.puts
+      end) |> String.rstrip |> IO.puts
     end)
   end
 
@@ -67,9 +67,9 @@ defmodule Support.CliCase do
 
   defp ensure_started do
     case run("cogctl bootstrap") do
-      "ERROR: Already bootstrapped\n\n" ->
+      "ERROR: Already bootstrapped\n" ->
         :ok
-      "Bootstrapped\n\n" ->
+      "Bootstrapped\n" ->
         :ok
       response ->
         IO.puts("Error when bootstrapping: #{inspect response}")

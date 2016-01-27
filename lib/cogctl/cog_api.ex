@@ -65,29 +65,32 @@ defmodule Cogctl.CogApi do
   # TODO: Replace the following with single parameterized get call once it
   # exists in the Cog API
   def get_by(%__MODULE__{}=api, resource, filter) do
-    id = find_id_by(api, resource, filter)
-    get(api, resource <> "/" <> URI.encode(id))
+    with {:ok, id} <- find_id_by(api, resource, filter) do
+      get(api, resource <> "/" <> URI.encode(id))
+    end
   end
 
   def patch_by(%__MODULE__{}=api, resource, filter, params) do
-    id = find_id_by(api, resource, filter)
-    patch(api, resource <> "/" <> URI.encode(id), params)
+    with {:ok, id} <- find_id_by(api, resource, filter) do
+      patch(api, resource <> "/" <> URI.encode(id), params)
+    end
   end
 
   def delete_by(%__MODULE__{}=api, resource, filter) do
-    id = find_id_by(api, resource, filter)
-    delete(api, resource <> "/" <> URI.encode(id))
+    with {:ok, id} <- find_id_by(api, resource, filter) do
+      delete(api, resource <> "/" <> URI.encode(id))
+    end
   end
 
   def find_id_by(api, resource, find_fun)
       when is_function(find_fun) do
-    {:ok, %{^resource => items}} = get(api, resource)
-
-    case Enum.find(items, find_fun) do
-      %{"id" => id} ->
-        id
-      nil ->
-        nil
+    with {:ok, %{^resource => items}} <- get(api, resource) do
+      case Enum.find(items, find_fun) do
+        %{"id" => id} ->
+          {:ok, id}
+        nil ->
+          {:error, %{"error" => "Resource not found"}}
+      end
     end
   end
 
@@ -115,8 +118,9 @@ defmodule Cogctl.CogApi do
   end
 
   def bundle_status(%__MODULE__{}=api, bundle_name, status) do
-    bundle_id = find_id_by(api, "bundles", name: bundle_name)
-    post(api, "bundles/#{bundle_id}/status", %{status: status})
+    with {:ok, bundle_id} <- find_id_by(api, "bundles", name: bundle_name) do
+      post(api, "bundles/#{bundle_id}/status", %{status: status})
+    end
   end
 
   def bundle_enable(%__MODULE__{}=api, bundle_name) do
