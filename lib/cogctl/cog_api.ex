@@ -283,7 +283,7 @@ defmodule Cogctl.CogApi do
     post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{revoke: [permission_name]}})
   end
 
-  def rule_show(%__MODULE__{}=api, command) do
+  def rule_index(%__MODULE__{}=api, command) do
     get(api, "rules?for-command=" <> URI.encode(command))
   end
 

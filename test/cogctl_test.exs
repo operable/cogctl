@@ -268,17 +268,17 @@ defmodule CogctlTest do
 
   test "cogctl rules" do
     assert run("cogctl rules operable:test") =~ ~r"""
-    Error: {:error, %{"errors" => "No rules for command found"}}
+    ERROR: No rules for command found
     """
 
     # Set up the permission
     run("cogctl permissions create site:test")
 
-    assert run("cogctl rules create --rule_text='when command is operable:echo must have site:test'") =~ ~r"""
-    Added the rule 'when command is operable:echo must have site:test'
+    assert run("cogctl rules create --rule-text='when command is operable:echo must have site:test'") =~ ~r"""
+    Created .*
 
-    ID                                    Rule
-    .*  when command is operable:echo must have site:test
+    ID         .*
+    Rule Text  when command is operable:echo must have site:test
     """
 
     expected = ~r"""
@@ -287,7 +287,7 @@ defmodule CogctlTest do
     """
     m = Regex.named_captures(expected, run("cogctl rules operable:echo"))
 
-    assert run("cogctl rules delete -r #{m["id"]}") =~ ~r"""
+    assert run("cogctl rules delete #{m["id"]}") =~ ~r"""
     Deleted .*
     """
 

@@ -3,44 +3,37 @@ defmodule Cogctl.Actions.Rules.Create do
   alias Cogctl.CogApi
   alias Cogctl.Table
 
-  # Whitelisted options passed as params to api client
-  @params [:rule_text]
-
   def option_spec do
-    [{:rule_text, ?r, 'rule_text', {:string, :undefined}, 'Text of the rule'}]
+    [{:rule_text, ?r, 'rule-text', {:string, :undefined}, 'Text of the rule (required)'}]
   end
 
   def run(options, _args, _config, profile) do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_create(client, options)
+        do_create(client, :proplists.get_value(:rule_text, options))
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
-  defp do_create(client, options) do
-    params = make_rule_params(options)
-    case CogApi.rule_create(client, %{rule: params.rule_text}) do
+  defp do_create(_client, :undefined) do
+    display_arguments_error
+  end
+
+  defp do_create(client, rule_text) do
+    case CogApi.rule_create(client, %{rule: rule_text}) do
       {:ok, resp} ->
         rule = resp["rule"]
+        rule_attrs = [{"ID", resp["id"]}, {"Rule Text", rule}]
 
-        rule_attrs = [{"ID", "Rule"}, {resp["id"], rule}]
-        IO.puts("Added the rule '#{rule}'")
-        IO.puts("")
-        IO.puts(Table.format(rule_attrs))
+        display_output("""
+        Created #{resp["id"]}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(rule_attrs)}
+        """)
+      {:error, error} ->
+        display_error(error["error"])
     end
-  end
-
-  defp make_rule_params(options) do
-    options
-    |> Keyword.take(@params)
-    |> Enum.reject(&match?({_, :undefined}, &1))
-    |> Enum.into(%{})
   end
 end
