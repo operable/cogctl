@@ -26,6 +26,10 @@ defmodule Cogctl.Actions.Groups.Add do
     display_arguments_error
   end
 
+  defp do_add(_client, _group_name, :undefined, :undefined) do
+    display_arguments_error
+  end
+
   defp do_add(client, group_name, user_to_add, :undefined) do
     case CogApi.group_add(client, group_name, :users, user_to_add) do
       {:ok, resp} ->

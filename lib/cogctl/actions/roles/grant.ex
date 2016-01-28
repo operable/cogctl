@@ -25,6 +25,10 @@ defmodule Cogctl.Actions.Roles.Grant do
     display_arguments_error
   end
 
+  defp do_grant(_client, _role, :undefined, :undefined) do
+    display_arguments_error
+  end
+
   defp do_grant(client, role, user_to_grant, :undefined) do
     case CogApi.role_grant(client, role, "users", user_to_grant) do
       {:ok, _resp} ->

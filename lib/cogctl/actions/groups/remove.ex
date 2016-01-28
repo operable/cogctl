@@ -26,6 +26,10 @@ defmodule Cogctl.Actions.Groups.Remove do
     display_arguments_error
   end
 
+  defp do_remove(_client, _group_name, :undefined, :undefined) do
+    display_arguments_error
+  end
+
   defp do_remove(client, group_name, user_to_remove, :undefined) do
     case CogApi.group_remove(client, group_name, :users, user_to_remove) do
       {:ok, resp} ->

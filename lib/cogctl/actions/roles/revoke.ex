@@ -25,6 +25,10 @@ defmodule Cogctl.Actions.Roles.Revoke do
     display_arguments_error
   end
 
+  defp do_revoke(_client, _role, :undefined, :undefined) do
+    display_arguments_error
+  end
+
   defp do_revoke(client, role, user_to_revoke, :undefined) do
     case CogApi.role_revoke(client, role, "users", user_to_revoke) do
       {:ok, _resp} ->
