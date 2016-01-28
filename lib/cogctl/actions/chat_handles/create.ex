@@ -7,9 +7,9 @@ defmodule Cogctl.Actions.ChatHandles.Create do
   @params [:user, :chat_provider, :handle]
 
   def option_spec do
-    [{:user, :undefined, 'user', {:string, :undefined}, 'Username of user to add handle to'},
-     {:chat_provider, :undefined, 'chat-provider', {:string, :undefined}, 'Chat provider name'},
-     {:handle, :undefined, 'handle', {:string, :undefined}, 'Handle'}]
+    [{:user, :undefined, 'user', {:string, :undefined}, 'Username of user to add handle to (required)'},
+     {:chat_provider, :undefined, 'chat-provider', {:string, :undefined}, 'Chat provider name (required)'},
+     {:handle, :undefined, 'handle', {:string, :undefined}, 'Handle (required)'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -18,12 +18,15 @@ defmodule Cogctl.Actions.ChatHandles.Create do
       {:ok, client} ->
         do_create(client, options)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
-  defp do_create(client, options) do
-    params = make_chat_handle_params(options)
+  defp do_create(_client, :error) do
+    display_arguments_error
+  end
+
+  defp do_create(client, {:ok, params}) do
     case CogApi.chat_handle_create(client, %{chat_handle: params}) do
       {:ok, resp} ->
         chat_handle = resp["chat_handle"]
@@ -36,20 +39,24 @@ defmodule Cogctl.Actions.ChatHandles.Create do
           [title, chat_handle[attr]]
         end
 
-        IO.puts("Created #{chat_handle["handle"]} for #{chat_provider} chat provider")
-        IO.puts("")
-        IO.puts(Table.format(chat_handle_attrs))
+        display_output("""
+        Created #{chat_handle["handle"]} for #{chat_provider} chat provider
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(chat_handle_attrs)}
+        """)
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 
   defp make_chat_handle_params(options) do
-    options
-    |> Keyword.take(@params)
-    |> Enum.reject(&match?({_, :undefined}, &1))
-    |> Enum.into(%{})
+    options = Keyword.take(options, @params)
+
+    case Enum.any?(options, &match?({_, :undefined}, &1)) do
+      false ->
+        {:ok, Enum.into(options, %{})}
+      true ->
+        :error
+    end
   end
 end
