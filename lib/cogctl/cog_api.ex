@@ -14,52 +14,61 @@ defmodule Cogctl.CogApi do
   end
 
   def authenticate(%__MODULE__{token: nil}=api) do
-    response = HTTPotion.post(make_url(api, "token", [username: api.username,
-                                                      password: api.password]),
-                              headers: make_headers(api, ["Accept": "application/json"]))
-    body = Poison.decode!(response.body)
-    case HTTPotion.Response.success?(response) do
-      true ->
-        token = get_in(body, ["token", "value"])
-        {:ok, %{api | token: token}}
-      false ->
-        {:error, body}
-    end
+    rescue_econnrefused(fn ->
+      response = HTTPotion.post(make_url(api, "token", [username: api.username,
+                                                        password: api.password]),
+                                headers: make_headers(api, ["Accept": "application/json"]))
+      body = Poison.decode!(response.body)
+      case HTTPotion.Response.success?(response) do
+        true ->
+          token = get_in(body, ["token", "value"])
+          {:ok, %{api | token: token}}
+        false ->
+          {:error, body}
+      end
+    end)
   end
   def authenticate(%__MODULE__{}=api) do
     {:ok, api}
   end
 
   def is_bootstrapped?(%__MODULE__{}=api) do
-    response = HTTPotion.get(make_url(api, "bootstrap"), headers: make_headers(api))
-    {response_type(response), Poison.decode!(response.body)}
+    get(api, "bootstrap")
   end
 
   def get(%__MODULE__{}=api, resource, params \\ []) do
-    response = HTTPotion.get(make_url(api, resource, params), headers: make_headers(api))
-    {response_type(response), Poison.decode!(response.body)}
+    rescue_econnrefused(fn ->
+      response = HTTPotion.get(make_url(api, resource, params), headers: make_headers(api))
+      {response_type(response), Poison.decode!(response.body)}
+    end)
   end
 
   def post(%__MODULE__{}=api, resource, params) do
-    body = Poison.encode!(params)
-    response = HTTPotion.post(make_url(api, resource), body: body, headers: make_headers(api, ["Content-Type": "application/json"]))
-    {response_type(response), Poison.decode!(response.body)}
+    rescue_econnrefused(fn ->
+      body = Poison.encode!(params)
+      response = HTTPotion.post(make_url(api, resource), body: body, headers: make_headers(api, ["Content-Type": "application/json"]))
+      {response_type(response), Poison.decode!(response.body)}
+    end)
   end
 
   def patch(%__MODULE__{}=api, resource, params) do
-    body = Poison.encode!(params)
-    response = HTTPotion.patch(make_url(api, resource), body: body, headers: make_headers(api, ["Content-Type": "application/json"]))
-    {response_type(response), Poison.decode!(response.body)}
+    rescue_econnrefused(fn ->
+      body = Poison.encode!(params)
+      response = HTTPotion.patch(make_url(api, resource), body: body, headers: make_headers(api, ["Content-Type": "application/json"]))
+      {response_type(response), Poison.decode!(response.body)}
+    end)
   end
 
   def delete(%__MODULE__{}=api, resource) do
-    response = HTTPotion.delete(make_url(api, resource), headers: make_headers(api))
-    case response_type(response) do
-      :ok ->
-        :ok
-      :error ->
-        {:error, Poison.decode!(response.body)}
-    end
+    rescue_econnrefused(fn ->
+      response = HTTPotion.delete(make_url(api, resource), headers: make_headers(api))
+      case response_type(response) do
+        :ok ->
+          :ok
+        :error ->
+          {:error, Poison.decode!(response.body)}
+      end
+    end)
   end
 
   # TODO: Replace the following with single parameterized get call once it
@@ -320,6 +329,15 @@ defmodule Cogctl.CogApi do
       item["user"]["username"] == user &&
         item["chat_provider"]["name"] == chat_provider
     end)
+  end
+
+  defp rescue_econnrefused(fun) do
+    try do
+      fun.()
+    rescue
+      HTTPotion.HTTPError ->
+        {:error, %{"error" => "An instance of cog must be running"}}
+    end
   end
 
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,

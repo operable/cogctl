@@ -73,7 +73,7 @@ defmodule Support.CliCase do
         :ok
       response ->
         IO.puts("Error when bootstrapping: #{inspect response}")
-        raise "An instance of cog must already be running."
+        raise "An instance of cog must be running."
     end
   end
 end
