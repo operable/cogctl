@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Permissions do
       {:ok, client} ->
         do_list(client, options)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
@@ -33,11 +33,9 @@ defmodule Cogctl.Actions.Permissions do
           ["#{namespace_name}:#{permission_name}", permission["id"]]
         end
 
-        IO.puts(Table.format([["NAME", "ID"]] ++ permission_attrs))
-
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        display_output(Table.format([["NAME", "ID"]] ++ permission_attrs))
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 
