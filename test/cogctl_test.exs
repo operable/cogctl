@@ -292,7 +292,9 @@ defmodule CogctlTest do
     """
 
     # Clean up the permission after we are done
-    run("cogctl permission delete site:test")
+    assert run("cogctl permissions delete site:test") =~ ~r"""
+    Deleted site:test
+    """
   end
 
   test "cogctl chat-handles" do
