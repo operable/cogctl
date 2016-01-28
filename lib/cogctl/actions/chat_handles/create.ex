@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.ChatHandles.Create do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_create(client, options)
+        do_create(client, make_chat_handle_params(options))
       {:error, error} ->
         display_error(error["error"])
     end

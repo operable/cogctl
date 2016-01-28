@@ -14,7 +14,7 @@ defmodule Cogctl.Actions.ChatHandles.Delete do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_delete(client, options)
+        do_delete(client, make_chat_handle_params(options))
       {:error, error} ->
         display_error(error["error"])
     end
