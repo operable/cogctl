@@ -210,38 +210,44 @@ defmodule Cogctl.CogApi do
 
   def role_grant(%__MODULE__{}=api, role_name, type, item_to_grant)
       when type in ["users", "groups"] do
-    id = case type do
+    result = case type do
       "users" ->
         find_id_by(api, type, username: item_to_grant)
       "groups" ->
         find_id_by(api, type, name: item_to_grant)
     end
 
-    post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{grant: [role_name]}})
+    with {:ok, id} <- result do
+      post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{grant: [role_name]}})
+    end
   end
 
   def role_revoke(%__MODULE__{}=api, role_name, type, item_to_revoke)
       when type in ["users", "groups"] do
-    id = case type do
+    result = case type do
       "users" ->
         find_id_by(api, type, username: item_to_revoke)
       "groups" ->
         find_id_by(api, type, name: item_to_revoke)
     end
 
-    post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
+    with {:ok, id} <- result do
+      post(api, "#{type}/#{URI.encode(id)}/roles", %{roles: %{revoke: [role_name]}})
+    end
   end
 
   def permission_index(api, params \\ [])
 
   def permission_index(%__MODULE__{}=api, [user: user_username]) do
-    user_id = find_id_by(api, "users", username: user_username)
-    get(api, "users/#{user_id}/permissions")
+    with {:ok, user_id} <- find_id_by(api, "users", username: user_username) do
+      get(api, "users/#{user_id}/permissions")
+    end
   end
 
   def permission_index(%__MODULE__{}=api, [group: group_name]) do
-    group_id = find_id_by(api, "groups", name: group_name)
-    get(api, "groups/#{group_id}/permissions")
+    with {:ok, group_id} <- find_id_by(api, "groups", name: group_name) do
+      get(api, "groups/#{group_id}/permissions")
+    end
   end
 
   def permission_index(%__MODULE__{}=api, params) do
@@ -261,26 +267,30 @@ defmodule Cogctl.CogApi do
 
   def permission_grant(%__MODULE__{}=api, permission_name, type, item_to_grant)
       when type in ["users", "roles", "groups"] do
-    id = case type do
+    result = case type do
       "users" ->
         find_id_by(api, type, username: item_to_grant)
       type when type in ["roles", "groups"] ->
         find_id_by(api, type, name: item_to_grant)
     end
 
-    post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{grant: [permission_name]}})
+    with {:ok, id} <- result do
+      post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{grant: [permission_name]}})
+    end
   end
 
   def permission_revoke(%__MODULE__{}=api, permission_name, type, item_to_revoke)
       when type in ["users", "roles", "groups"] do
-    id = case type do
+    result = case type do
       "users" ->
         find_id_by(api, type, username: item_to_revoke)
       type when type in ["roles", "groups"] ->
         find_id_by(api, type, name: item_to_revoke)
     end
 
-    post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{revoke: [permission_name]}})
+    with {:ok, id} <- result do
+      post(api, "#{type}/#{URI.encode(id)}/permissions", %{permissions: %{revoke: [permission_name]}})
+    end
   end
 
   def rule_index(%__MODULE__{}=api, command) do
@@ -300,8 +310,9 @@ defmodule Cogctl.CogApi do
   end
 
   def chat_handle_create(%__MODULE__{}=api, %{chat_handle: %{user: user}} = params) do
-    user_id = find_id_by(api, "users", username: user)
-    post(api, "users/#{user_id}/chat_handles", params)
+    with {:ok, user_id} <- find_id_by(api, "users", username: user) do
+      post(api, "users/#{user_id}/chat_handles", params)
+    end
   end
 
   def chat_handle_delete(%__MODULE__{}=api, %{chat_handle: %{user: user, chat_provider: chat_provider}}) do

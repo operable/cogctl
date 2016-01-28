@@ -7,7 +7,7 @@ defmodule Cogctl.Actions.Roles.Update do
   @params [:name]
 
   def option_spec do
-    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role id'},
+    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role id (required)'},
      {:name, :undefined, 'name', {:string, :undefined}, 'Name'}]
   end
 
@@ -17,8 +17,12 @@ defmodule Cogctl.Actions.Roles.Update do
       {:ok, client} ->
         do_update(client, :proplists.get_value(:role, options), options)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_update(_client, :undefined, _options) do
+    display_arguments_error
   end
 
   defp do_update(client, role_name, options) do
@@ -30,13 +34,13 @@ defmodule Cogctl.Actions.Roles.Update do
           [title, role[attr]]
         end
 
-        IO.puts("Updated #{role_name}")
-        IO.puts("")
-        IO.puts(Table.format(role_attrs))
+        display_output("""
+        Updated #{role_name}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(role_attrs)}
+        """)
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 
