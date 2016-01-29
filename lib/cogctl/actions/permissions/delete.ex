@@ -30,6 +30,6 @@ defmodule Cogctl.Actions.Permissions.Delete do
   end
 
   defp do_delete(_client, _name) do
-    {:error, "Only permissions under the site namespace can be deleted"}
+    {:error, "Only permissions under the site namespace can be deleted. e.g. site:deploy_blog"}
   end
 end

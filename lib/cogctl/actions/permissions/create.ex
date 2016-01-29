@@ -30,6 +30,6 @@ defmodule Cogctl.Actions.Permissions.Create do
   end
 
   defp do_create(_client, _name) do
-    display_error("Permissions must be created under the site namespace")
+    display_error("Permissions must be created under the site namespace. e.g. site:deploy_blog")
   end
 end
