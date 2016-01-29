@@ -15,16 +15,12 @@ defmodule Cogctl.CogApi do
 
   def authenticate(%__MODULE__{token: nil}=api) do
     rescue_econnrefused(fn ->
-      response = HTTPotion.post(make_url(api, "token", [username: api.username,
-                                                        password: api.password]),
-                                headers: make_headers(api, ["Accept": "application/json"]))
-      body = Poison.decode!(response.body)
-      case HTTPotion.Response.success?(response) do
-        true ->
-          token = get_in(body, ["token", "value"])
+      params = %{username: api.username, password: api.password}
+      case post(api, "token", params) do
+        {:ok, %{"token" => %{"value" => token}}} ->
           {:ok, %{api | token: token}}
-        false ->
-          {:error, body}
+        error ->
+          error
       end
     end)
   end
@@ -32,7 +28,7 @@ defmodule Cogctl.CogApi do
     {:ok, api}
   end
 
-  def get(%__MODULE__{}=api, resource, params \\ []) do
+  def get(%__MODULE__{}=api, resource, params \\ %{}) do
     rescue_econnrefused(fn ->
       response = HTTPotion.get(make_url(api, resource, params), headers: make_headers(api))
       {response_type(response), Poison.decode!(response.body)}
@@ -244,15 +240,15 @@ defmodule Cogctl.CogApi do
     end
   end
 
-  def permission_index(api, params \\ [])
+  def permission_index(api, params \\ %{})
 
-  def permission_index(%__MODULE__{}=api, [user: user_username]) do
+  def permission_index(%__MODULE__{}=api, %{user: user_username}) do
     with {:ok, user_id} <- find_id_by(api, "users", username: user_username) do
       get(api, "users/#{user_id}/permissions")
     end
   end
 
-  def permission_index(%__MODULE__{}=api, [group: group_name]) do
+  def permission_index(%__MODULE__{}=api, %{group: group_name}) do
     with {:ok, group_id} <- find_id_by(api, "groups", name: group_name) do
       get(api, "groups/#{group_id}/permissions")
     end
@@ -340,7 +336,7 @@ defmodule Cogctl.CogApi do
   end
 
   defp make_url(%__MODULE__{proto: proto, host: host, port: port,
-                            version: version}, route, params \\ []) do
+                            version: version}, route, params \\ %{}) do
     route = if is_function(route) do
       route.()
     else
@@ -352,7 +348,8 @@ defmodule Cogctl.CogApi do
     else
       "#{url}/#{route}"
     end
-    if length(params) == 0 do
+
+    if map_size(params) == 0 do
       url
     else
       URI.encode(url <> "?" <> URI.encode_query(params))

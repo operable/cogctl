@@ -18,7 +18,11 @@ defmodule Cogctl.Actions.Users.Create do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        params = make_user_params(options)
+        params = convert_to_params(options, [first_name: :required,
+                                             last_name: :required,
+                                             email_address: :required,
+                                             username: :required,
+                                             password: :required])
         do_create(client, params)
       {:error, error} ->
         display_error(error["error"])
@@ -43,20 +47,9 @@ defmodule Cogctl.Actions.Users.Create do
         Created #{username}
 
         #{Table.format(user_attrs)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
-    end
-  end
-
-  defp make_user_params(options) do
-    options = Keyword.take(options, @params)
-
-    case Enum.any?(options, &match?({_, :undefined}, &1)) do
-      false ->
-        {:ok, Enum.into(options, %{})}
-      true ->
-        :error
     end
   end
 end

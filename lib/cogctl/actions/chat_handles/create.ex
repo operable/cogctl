@@ -3,9 +3,6 @@ defmodule Cogctl.Actions.ChatHandles.Create do
   alias Cogctl.CogApi
   alias Cogctl.Table
 
-  # Whitelisted options passed as params to api client
-  @params [:user, :chat_provider, :handle]
-
   def option_spec do
     [{:user, :undefined, 'user', {:string, :undefined}, 'Username of user to add handle to (required)'},
      {:chat_provider, :undefined, 'chat-provider', {:string, :undefined}, 'Chat provider name (required)'},
@@ -16,7 +13,8 @@ defmodule Cogctl.Actions.ChatHandles.Create do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_create(client, make_chat_handle_params(options))
+        params = convert_to_params(options, [user: :required, chat_provider: :required, handle: :required])
+        do_create(client, params)
       {:error, error} ->
         display_error(error["error"])
     end
@@ -43,20 +41,9 @@ defmodule Cogctl.Actions.ChatHandles.Create do
         Created #{chat_handle["handle"]} for #{chat_provider} chat provider
 
         #{Table.format(chat_handle_attrs)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
-    end
-  end
-
-  defp make_chat_handle_params(options) do
-    options = Keyword.take(options, @params)
-
-    case Enum.any?(options, &match?({_, :undefined}, &1)) do
-      false ->
-        {:ok, Enum.into(options, %{})}
-      true ->
-        :error
     end
   end
 end
