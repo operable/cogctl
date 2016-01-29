@@ -39,7 +39,7 @@ defmodule Cogctl.Actions.Groups.Remove do
         Removed #{user_to_remove} from #{group_name}
 
         #{Groups.render_memberships(group)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
     end
@@ -54,7 +54,7 @@ defmodule Cogctl.Actions.Groups.Remove do
         Removed #{group_to_remove} from #{group_name}
 
         #{Groups.render_memberships(group)}
-        """)
+        """ |> String.rstrip)
       {:error, resp} ->
         {:error, resp}
     end

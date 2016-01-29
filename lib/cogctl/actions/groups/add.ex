@@ -39,7 +39,7 @@ defmodule Cogctl.Actions.Groups.Add do
         Added #{user_to_add} to #{group_name}
 
         #{Groups.render_memberships(group)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
     end
@@ -54,7 +54,7 @@ defmodule Cogctl.Actions.Groups.Add do
         Added #{group_to_add} to #{group_name}
 
         #{Groups.render_memberships(group)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
     end

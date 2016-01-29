@@ -35,7 +35,7 @@ defmodule Cogctl.Actions.Groups.Create do
         Created #{name}
 
         #{Table.format(group_attrs)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
     end

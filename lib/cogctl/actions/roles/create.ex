@@ -35,7 +35,7 @@ defmodule Cogctl.Actions.Roles.Create do
         Created #{name}
 
         #{Table.format(role_attrs)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
     end

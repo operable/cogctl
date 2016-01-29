@@ -43,7 +43,7 @@ defmodule Cogctl.Actions.Bundles.Info do
 
         Commands
         #{Table.format([["NAME", "ID"]|commands])}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
     end

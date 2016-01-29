@@ -31,7 +31,7 @@ defmodule Cogctl.Actions.Rules.Create do
         Created #{resp["id"]}
 
         #{Table.format(rule_attrs)}
-        """)
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
     end
