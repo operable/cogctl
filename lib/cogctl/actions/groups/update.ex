@@ -3,11 +3,8 @@ defmodule Cogctl.Actions.Groups.Update do
   alias Cogctl.CogApi
   alias Cogctl.Table
 
-  # Whitelisted options passed as params to api client
-  @params [:name]
-
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group id'},
+    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group id (required)'},
      {:name, :undefined, 'name', {:string, :undefined}, 'Name'}]
   end
 
@@ -15,14 +12,22 @@ defmodule Cogctl.Actions.Groups.Update do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_update(client, :proplists.get_value(:group, options), options)
+        params = convert_to_params(options, [name: :optional])
+        do_update(client, :proplists.get_value(:group, options), params)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
-  defp do_update(client, group_name, options) do
-    params = make_group_params(options)
+  defp do_update(_client, :undefined, _options) do
+    display_arguments_error
+  end
+
+  defp do_update(_client, _group_name, :error) do
+    display_arguments_error
+  end
+
+  defp do_update(client, group_name, {:ok, params}) do
     case CogApi.group_update(client, group_name, %{group: params}) do
       {:ok, resp} ->
         group = resp["group"]
@@ -30,20 +35,13 @@ defmodule Cogctl.Actions.Groups.Update do
           [title, group[attr]]
         end
 
-        IO.puts("Updated #{group_name}")
-        IO.puts("")
-        IO.puts(Table.format(group_attrs))
+        display_output("""
+        Updated #{group_name}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(group_attrs)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
-  end
-
-  defp make_group_params(options) do
-    options
-    |> Keyword.take(@params)
-    |> Enum.reject(&match?({_, :undefined}, &1))
-    |> Enum.into(%{})
   end
 end

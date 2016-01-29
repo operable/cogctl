@@ -13,7 +13,7 @@ defmodule Cogctl.Actions.Groups do
       {:ok, client} ->
         do_list(client)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
@@ -25,15 +25,13 @@ defmodule Cogctl.Actions.Groups do
           [group["name"], group["id"]]
         end
 
-        IO.puts(Table.format([["NAME", "ID"]] ++ group_attrs))
-
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        display_output(Table.format([["NAME", "ID"]] ++ group_attrs))
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 
-  def puts_memberships(%{"members" => %{"users" => users, "groups" => groups}}) do
+  def render_memberships(%{"members" => %{"users" => users, "groups" => groups}}) do
     user_attrs = for user <- users do
       [user["username"], user["id"]]
     end
@@ -42,10 +40,12 @@ defmodule Cogctl.Actions.Groups do
       [group["name"], group["id"]]
     end
 
-    IO.puts("User Memberships")
-    IO.puts(Table.format([["USERNAME", "ID"]] ++ user_attrs))
-    IO.puts("")
-    IO.puts("Group Memberships")
-    IO.puts(Table.format([["NAME", "ID"]] ++ group_attrs))
+    """
+    User Memberships
+    #{Table.format([["USERNAME", "ID"]] ++ user_attrs)}
+
+    Group Memberships
+    #{Table.format([["NAME", "ID"]] ++ group_attrs)}
+    """ |> String.rstrip
   end
 end

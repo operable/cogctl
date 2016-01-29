@@ -4,7 +4,7 @@ defmodule Cogctl.Actions.Users.Info do
   alias Cogctl.Table
 
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'User username'}]
+    [{:user, :undefined, :undefined, {:string, :undefined}, 'User username (required)'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -13,8 +13,12 @@ defmodule Cogctl.Actions.Users.Info do
       {:ok, client} ->
         do_info(client, :proplists.get_value(:user, options))
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_info(_client, :undefined) do
+    display_arguments_error
   end
 
   defp do_info(client, user_username) do
@@ -26,11 +30,9 @@ defmodule Cogctl.Actions.Users.Info do
           [title, user[attr]]
         end
 
-        IO.puts(Table.format(user))
-
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        display_output(Table.format(user))
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 end

@@ -7,25 +7,33 @@ defmodule Cogctl.Actions.Users.Create do
   @params [:first_name, :last_name, :email_address, :username, :password]
 
   def option_spec do
-    [{:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name'},
-     {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name'},
-     {:email_address, :undefined, 'email', {:string, :undefined}, 'Email address'},
-     {:username, :undefined, 'username', {:string, :undefined}, 'Username'},
-     {:password, :undefined, 'password', {:string, :undefined}, 'Password'}]
+    [{:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name (required)'},
+     {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name (required)'},
+     {:email_address, :undefined, 'email', {:string, :undefined}, 'Email address (required)'},
+     {:username, :undefined, 'username', {:string, :undefined}, 'Username (required)'},
+     {:password, :undefined, 'password', {:string, :undefined}, 'Password (required)'}]
   end
 
   def run(options, _args, _config, profile) do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_create(client, options)
+        params = convert_to_params(options, [first_name: :required,
+                                             last_name: :required,
+                                             email_address: :required,
+                                             username: :required,
+                                             password: :required])
+        do_create(client, params)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
-  defp do_create(client, options) do
-    params = make_user_params(options)
+  defp do_create(_client, :error) do
+    display_arguments_error
+  end
+
+  defp do_create(client, {:ok, params}) do
     case CogApi.user_create(client, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]
@@ -35,20 +43,13 @@ defmodule Cogctl.Actions.Users.Create do
           [title, user[attr]]
         end
 
-        IO.puts("Created #{username}")
-        IO.puts("")
-        IO.puts(Table.format(user_attrs))
+        display_output("""
+        Created #{username}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(user_attrs)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
-  end
-
-  defp make_user_params(options) do
-    options
-    |> Keyword.take(@params)
-    |> Enum.reject(&match?({_, :undefined}, &1))
-    |> Enum.into(%{})
   end
 end

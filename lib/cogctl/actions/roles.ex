@@ -13,7 +13,7 @@ defmodule Cogctl.Actions.Roles do
       {:ok, client} ->
         do_list(client)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
@@ -25,11 +25,9 @@ defmodule Cogctl.Actions.Roles do
           [role["name"], role["id"]]
         end
 
-        IO.puts(Table.format([["NAME", "ID"]] ++ role_attrs))
-
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        display_output(Table.format([["NAME", "ID"]] ++ role_attrs))
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 end

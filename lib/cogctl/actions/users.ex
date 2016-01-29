@@ -13,7 +13,7 @@ defmodule Cogctl.Actions.Users do
       {:ok, client} ->
         do_list(client)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
@@ -25,11 +25,9 @@ defmodule Cogctl.Actions.Users do
           [user["username"], user["first_name"] <> " " <> user["last_name"]]
         end
 
-        IO.puts(Table.format([["USERNAME", "FULL NAME"]] ++ user_attrs))
-
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        display_output(Table.format([["USERNAME", "FULL NAME"]] ++ user_attrs))
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 end

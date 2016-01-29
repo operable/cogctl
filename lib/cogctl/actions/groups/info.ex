@@ -5,7 +5,7 @@ defmodule Cogctl.Actions.Groups.Info do
   alias Cogctl.Table
 
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name'}]
+    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -14,8 +14,12 @@ defmodule Cogctl.Actions.Groups.Info do
       {:ok, client} ->
         do_info(client, :proplists.get_value(:group, options))
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_info(_client, :undefined) do
+    display_arguments_error
   end
 
   defp do_info(client, group_name) do
@@ -27,13 +31,13 @@ defmodule Cogctl.Actions.Groups.Info do
           [title, group[attr]]
         end
 
-        IO.puts(Table.format(group_attrs))
-        IO.puts("")
-        Groups.puts_memberships(group)
+        display_output("""
+        #{Table.format(group_attrs)}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Groups.render_memberships(group)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 end

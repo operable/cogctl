@@ -4,7 +4,7 @@ defmodule Cogctl.Actions.Groups.Remove do
   alias Cogctl.CogApi
 
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name'},
+    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'},
      {:user_to_remove, :undefined, 'user', {:string, :undefined}, 'Username of user to remove'},
      {:group_to_remove, :undefined, 'group', {:string, :undefined}, 'Name of group to remove'}]
   end
@@ -18,8 +18,16 @@ defmodule Cogctl.Actions.Groups.Remove do
         group_to_remove = :proplists.get_value(:group_to_remove, options)
         do_remove(client, group, user_to_remove, group_to_remove)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_remove(_client, :undefined, _user_to_add, _group_to_add) do
+    display_arguments_error
+  end
+
+  defp do_remove(_client, _group_name, :undefined, :undefined) do
+    display_arguments_error
   end
 
   defp do_remove(client, group_name, user_to_remove, :undefined) do
@@ -27,13 +35,13 @@ defmodule Cogctl.Actions.Groups.Remove do
       {:ok, resp} ->
         group = resp["group"]
 
-        IO.puts("Removed #{user_to_remove} from #{group_name}")
-        IO.puts("")
-        Groups.puts_memberships(group)
+        display_output("""
+        Removed #{user_to_remove} from #{group_name}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Groups.render_memberships(group)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 
@@ -42,13 +50,17 @@ defmodule Cogctl.Actions.Groups.Remove do
       {:ok, resp} ->
         group = resp["group"]
 
-        IO.puts("Removed #{group_to_remove} from #{group_name}")
-        IO.puts("")
-        Groups.puts_memberships(group)
+        display_output("""
+        Removed #{group_to_remove} from #{group_name}
 
-        :ok
+        #{Groups.render_memberships(group)}
+        """ |> String.rstrip)
       {:error, resp} ->
         {:error, resp}
     end
+  end
+
+  defp do_remove(_client, _group_name, _user_to_add, _group_to_add) do
+    display_arguments_error
   end
 end

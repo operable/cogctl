@@ -3,7 +3,7 @@ defmodule Cogctl.Actions.Permissions.Create do
   alias Cogctl.CogApi
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Permission name'}]
+    [{:name, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -12,21 +12,24 @@ defmodule Cogctl.Actions.Permissions.Create do
       {:ok, client} ->
         do_create(client, :proplists.get_value(:name, options))
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_create(_client, :undefined) do
+    display_arguments_error
   end
 
   defp do_create(client, "site:" <> name) do
     case CogApi.permission_create(client, %{permission: %{name: name}}) do
       {:ok, _resp} ->
-        IO.puts("Created site:#{name}")
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        display_output("Created site:#{name}")
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 
   defp do_create(_client, _name) do
-    {:error, "Permissions must be created under the site namespace"}
+    display_error("Permissions must be created under the site namespace. e.g. site:deploy_blog")
   end
 end

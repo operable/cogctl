@@ -12,17 +12,20 @@ defmodule Cogctl.Actions.Users.Delete do
       {:ok, client} ->
         do_delete(client, :proplists.get_value(:user, options))
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_delete(_client, :undefined) do
+    display_arguments_error
   end
 
   defp do_delete(client, user_username) do
     case CogApi.user_delete(client, user_username) do
       :ok ->
-        IO.puts("Deleted #{user_username}")
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        display_output("Deleted #{user_username}")
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 end

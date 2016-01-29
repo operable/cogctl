@@ -5,7 +5,7 @@ defmodule Cogctl.Actions.Bundles.Info do
   alias Cogctl.Table
 
   def option_spec do
-    [{:bundle, :undefined, :undefined, {:string, :undefined}, 'Bundle name'}]
+    [{:bundle, :undefined, :undefined, {:string, :undefined}, 'Bundle name (required)'}]
   end
 
   def run(options, _args, _config, profile) do
@@ -14,8 +14,12 @@ defmodule Cogctl.Actions.Bundles.Info do
       {:ok, client} ->
         do_info(client, :proplists.get_value(:bundle, options))
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_info(_client, :undefined) do
+    display_error("Missing required arguments")
   end
 
   defp do_info(client, bundle_name) do
@@ -30,19 +34,18 @@ defmodule Cogctl.Actions.Bundles.Info do
           [title, bundle[attr]]
         end
 
-        IO.puts(Table.format(bundle_attrs))
-        IO.puts("")
-
         commands = for command <- bundle["commands"] do
           [command["name"], command["id"]]
         end
 
-        IO.puts("Commands")
-        IO.puts(Table.format([["NAME", "ID"]|commands]))
+        display_output("""
+        #{Table.format(bundle_attrs)}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        Commands
+        #{Table.format([["NAME", "ID"]|commands])}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 end

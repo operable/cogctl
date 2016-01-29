@@ -3,11 +3,8 @@ defmodule Cogctl.Actions.Users.Update do
   alias Cogctl.CogApi
   alias Cogctl.Table
 
-  # Whitelisted options passed as params to api client
-  @params [:first_name, :last_name, :email_address, :username, :password]
-
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'Username'},
+    [{:user, :undefined, :undefined, {:string, :undefined}, 'Username (required)'},
      {:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name'},
      {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name'},
      {:email_address, :undefined, 'email', {:string, :undefined}, 'Email address'},
@@ -19,14 +16,22 @@ defmodule Cogctl.Actions.Users.Update do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_update(client, :proplists.get_value(:user, options), options)
+        params = convert_to_params(options, [first_name: :optional,
+                                             last_name: :optional,
+                                             email_address: :optional,
+                                             username: :optional,
+                                             password: :optional])
+        do_update(client, :proplists.get_value(:user, options), params)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
-  defp do_update(client, user_username, options) do
-    params = make_user_params(options)
+  defp do_update(_client, _user_username, :error) do
+    display_arguments_error
+  end
+
+  defp do_update(client, user_username, {:ok, params}) do
     case CogApi.user_update(client, user_username, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]
@@ -36,20 +41,13 @@ defmodule Cogctl.Actions.Users.Update do
           [title, user[attr]]
         end
 
-        IO.puts("Updated #{username}")
-        IO.puts("")
-        IO.puts(Table.format(user_attrs))
+        display_output("""
+        Updated #{username}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(user_attrs)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
-  end
-
-  defp make_user_params(options) do
-    options
-    |> Keyword.take(@params)
-    |> Enum.reject(&match?({_, :undefined}, &1))
-    |> Enum.into(%{})
   end
 end

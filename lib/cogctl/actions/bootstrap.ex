@@ -18,17 +18,23 @@ defmodule Cogctl.Actions.Bootstrap do
   end
 
   defp do_query(client) do
-    {:ok, body} = CogApi.is_bootstrapped?(client)
-    status = if get_in(body, ["bootstrap", "bootstrap_status"]) == true do
-      "bootstrapped"
-    else
-      "not bootstrapped"
+    case CogApi.bootstrap_show(client) do
+      {:ok, body} ->
+        status = case body do
+          %{"bootstrap" => %{"bootstrap_status" => true}} ->
+            "Bootstrapped"
+          _ ->
+            "Not bootstrapped"
+        end
+
+        display_output("Status: #{status}")
+      {:error, error} ->
+        display_error(error["error"])
     end
-    IO.puts status
   end
 
   defp do_bootstrap(client, config) do
-    case CogApi.bootstrap(client) do
+    case CogApi.bootstrap_create(client) do
       {:ok, admin} ->
         values = config.values
                  |> Map.put(client.host, %{"user" => get_in(admin, ["bootstrap", "username"]),
@@ -36,12 +42,11 @@ defmodule Cogctl.Actions.Bootstrap do
                                            "host" => client.host,
                                            "port" => client.port,
                                            "secure" => false})
-         config = %{config | dirty: true, values: values}
-         Cogctl.Config.save(config)
-         IO.puts "ok"
+        config = %{config | dirty: true, values: values}
+        Cogctl.Config.save(config)
+        display_output("Bootstrapped")
       {:error, error} ->
-        IO.puts "#{get_in(error, ["bootstrap", "error"])}"
-        :error
+        display_error(get_in(error, ["bootstrap", "error"]))
     end
   end
 

@@ -6,28 +6,19 @@ defmodule Cogctl do
 
   def main(args) do
     Application.start(:ibrowse)
-    case Cogctl.Optparse.parse(args) do
+
+    result = with {handler, options, remaining} <- Cogctl.Optparse.parse(args),
+      {:ok, config} <- Cogctl.Config.load,
+      {:ok, identity} <- configure_identity(options, config),
+      do: handler.run(options, remaining, config, identity)
+
+    case result do
+      :ok ->
+        :ok
       :done ->
         :ok
-      {handler, options, remaining} ->
-        case Cogctl.Config.load do
-          {:ok, config} ->
-            case configure_identity(options, config) do
-              {:ok, identity} ->
-                case handler.run(options, remaining, config, identity) do
-                  :ok ->
-                    :ok
-                  :error ->
-                    exit({:shutdown, 1})
-                  error ->
-                    display_error(error)
-                end
-              error ->
-                display_error(error)
-            end
-          error ->
-            display_error(error)
-        end
+      :error ->
+        exit({:shutdown, 1})
       error ->
         display_error(error)
     end

@@ -3,26 +3,26 @@ defmodule Cogctl.Actions.Roles.Create do
   alias Cogctl.CogApi
   alias Cogctl.Table
 
-  # Whitelisted options passed as params to api client
-  @params [:name]
-
   def option_spec do
-    [{:name, :undefined, 'name', {:string, :undefined}, 'Role name'}]
+    [{:name, :undefined, 'name', {:string, :undefined}, 'Role name (required)'}]
   end
 
   def run(options, _args, _config, profile) do
     client = CogApi.new_client(profile)
     case CogApi.authenticate(client) do
       {:ok, client} ->
-        do_create(client, options)
+        do_create(client, :proplists.get_value(:name, options))
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
   end
 
-  defp do_create(client, options) do
-    params = make_role_params(options)
-    case CogApi.role_create(client, %{role: params}) do
+  defp do_create(_client, :undefined) do
+    display_arguments_error
+  end
+
+  defp do_create(client, name) do
+    case CogApi.role_create(client, %{role: %{name: name}}) do
       {:ok, resp} ->
         role = resp["role"]
         name = role["name"]
@@ -31,20 +31,13 @@ defmodule Cogctl.Actions.Roles.Create do
           [title, role[attr]]
         end
 
-        IO.puts("Created #{name}")
-        IO.puts("")
-        IO.puts(Table.format(role_attrs))
+        display_output("""
+        Created #{name}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Table.format(role_attrs)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
-  end
-
-  defp make_role_params(options) do
-    options
-    |> Keyword.take(@params)
-    |> Enum.reject(&match?({_, :undefined}, &1))
-    |> Enum.into(%{})
   end
 end

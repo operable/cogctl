@@ -4,7 +4,7 @@ defmodule Cogctl.Actions.Groups.Add do
   alias Cogctl.CogApi
 
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name'},
+    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'},
      {:user_to_add, :undefined, 'user', {:string, :undefined}, 'Username of user to add'},
      {:group_to_add, :undefined, 'group', {:string, :undefined}, 'Name of group to add'}]
   end
@@ -18,8 +18,16 @@ defmodule Cogctl.Actions.Groups.Add do
         group_to_add = :proplists.get_value(:group_to_add, options)
         do_add(client, group, user_to_add, group_to_add)
       {:error, error} ->
-        IO.puts "#{error["error"]}"
+        display_error(error["error"])
     end
+  end
+
+  defp do_add(_client, :undefined, _user_to_add, _group_to_add) do
+    display_arguments_error
+  end
+
+  defp do_add(_client, _group_name, :undefined, :undefined) do
+    display_arguments_error
   end
 
   defp do_add(client, group_name, user_to_add, :undefined) do
@@ -27,13 +35,13 @@ defmodule Cogctl.Actions.Groups.Add do
       {:ok, resp} ->
         group = resp["group"]
 
-        IO.puts("Added #{user_to_add} to #{group_name}")
-        IO.puts("")
-        Groups.puts_memberships(group)
+        display_output("""
+        Added #{user_to_add} to #{group_name}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Groups.render_memberships(group)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
   end
 
@@ -42,13 +50,17 @@ defmodule Cogctl.Actions.Groups.Add do
       {:ok, resp} ->
         group = resp["group"]
 
-        IO.puts("Added #{group_to_add} to #{group_name}")
-        IO.puts("")
-        Groups.puts_memberships(group)
+        display_output("""
+        Added #{group_to_add} to #{group_name}
 
-        :ok
-      {:error, resp} ->
-        {:error, resp}
+        #{Groups.render_memberships(group)}
+        """ |> String.rstrip)
+      {:error, error} ->
+        display_error(error["error"])
     end
+  end
+
+  defp do_add(_client, _group_name, _user_to_add, _group_to_add) do
+    display_arguments_error
   end
 end

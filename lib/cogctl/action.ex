@@ -12,6 +12,8 @@ defmodule Cogctl.Action do
   defmacro __using__(name) when name != nil do
     pattern = String.split(name, " ")
     quote do
+      import Cogctl.ActionUtil
+
       @behaviour unquote(__MODULE__)
 
       def name(), do: unquote(pattern)
