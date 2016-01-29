@@ -110,7 +110,7 @@ defmodule Cogctl.CogApi do
   end
 
   def bootstrap_create(%__MODULE__{}=api) do
-    post(api, "bootstrap")
+    post(api, "bootstrap", [])
   end
 
   def bundle_index(%__MODULE__{}=api) do
