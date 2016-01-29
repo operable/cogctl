@@ -9,8 +9,8 @@ defmodule Cogctl do
 
     result = with {handler, options, remaining} <- Cogctl.Optparse.parse(args),
       {:ok, config} <- Cogctl.Config.load,
-      {:ok, indentity} <- configure_identity(options, config),
-      do: handler.run(options, remaining, config, indentity)
+      {:ok, identity} <- configure_identity(options, config),
+      do: handler.run(options, remaining, config, identity)
 
     case result do
       :ok ->
