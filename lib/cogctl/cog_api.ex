@@ -32,10 +32,6 @@ defmodule Cogctl.CogApi do
     {:ok, api}
   end
 
-  def is_bootstrapped?(%__MODULE__{}=api) do
-    get(api, "bootstrap")
-  end
-
   def get(%__MODULE__{}=api, resource, params \\ []) do
     rescue_econnrefused(fn ->
       response = HTTPotion.get(make_url(api, resource, params), headers: make_headers(api))
@@ -109,9 +105,12 @@ defmodule Cogctl.CogApi do
     end)
   end
 
-  def bootstrap(%__MODULE__{}=api) do
-    response = HTTPotion.post(make_url(api, "bootstrap"))
-    {response_type(response), Poison.decode!(response.body)}
+  def bootstrap_show(%__MODULE__{}=api) do
+    get(api, "bootstrap")
+  end
+
+  def bootstrap_create(%__MODULE__{}=api) do
+    post(api, "bootstrap")
   end
 
   def bundle_index(%__MODULE__{}=api) do
