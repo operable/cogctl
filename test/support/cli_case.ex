@@ -69,7 +69,7 @@ defmodule Support.CliCase do
     case run("cogctl bootstrap") do
       "ERROR: Already bootstrapped\n" ->
         :ok
-      "No host information specified and no profile found.\nUsing default host and port: localhost:4000\nBootstrapped\n" ->
+      "Bootstrapped\n" ->
         :ok
       response ->
         IO.puts(:stderr, "Error when bootstrapping: #{inspect response}")
