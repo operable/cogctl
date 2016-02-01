@@ -37,7 +37,7 @@ defmodule Cogctl do
       :undefined ->
         case try_profiles(options, config) do
           nil ->
-            IO.puts "No host information specified and no profile found. Using host and port: #{@default_host}:#{@default_port}"
+            IO.puts "No host information specified and no profile found.\nUsing default host and port: #{@default_host}:#{@default_port}"
             try_user_options(%Cogctl.Profile{host: @default_host, port: @default_port}, options)
           profile ->
             {:ok, profile}
