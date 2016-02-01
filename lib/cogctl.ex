@@ -1,5 +1,8 @@
 defmodule Cogctl do
 
+  @default_host "localhost"
+  @default_port 4000
+
   defmodule Profile do
     defstruct [:host, :port, :user, :password, :secure]
   end
@@ -30,18 +33,18 @@ defmodule Cogctl do
   end
 
   defp configure_identity(options, config) do
-    case try_profiles(options, config) do
-      nil ->
-        case :proplists.get_value(:host, options) do
-          :undefined ->
-            IO.puts "Must specify host name, profile name, or configure a default profile in $HOME/.cogctl"
-            exit({:shutdown, 1})
-          host ->
-            port = :proplists.get_value(:port, options, 4000)
-            try_user_options(%Cogctl.Profile{host: host, port: port}, options)
+    case :proplists.get_value(:host, options) do
+      :undefined ->
+        case try_profiles(options, config) do
+          nil ->
+            IO.puts "No host information specified and no profile found. Using host and port: #{@default_host}:#{@default_port}"
+            try_user_options(%Cogctl.Profile{host: @default_host, port: @default_port}, options)
+          profile ->
+            {:ok, profile}
         end
-      identity ->
-        {:ok, identity}
+      host ->
+        port = :proplists.get_value(:port, options, @default_port)
+        try_user_options(%Cogctl.Profile{host: host, port: port}, options)
     end
   end
 
