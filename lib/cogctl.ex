@@ -33,23 +33,30 @@ defmodule Cogctl do
   end
 
   defp configure_identity(options, config) do
-    case :proplists.get_value(:host, options) do
-      :undefined ->
-        case try_profiles(options, config) do
-          nil ->
-            try_user_options(%Cogctl.Profile{host: @default_host, port: @default_port}, options)
-          profile ->
-            {:ok, profile}
-        end
-      host ->
-        port = :proplists.get_value(:port, options, @default_port)
-        try_user_options(%Cogctl.Profile{host: host, port: port}, options)
-    end
+    profile =
+      case try_profiles(options, config) do
+        nil ->
+          default_profile
+        profile ->
+          profile
+      end
+
+    {:ok, apply_overrides(profile, options)}
   end
 
-  defp try_user_options(profile, options) do
-    {:ok, %{profile | user: undefined_to_nil(:proplists.get_value(:user, options)),
-                      password: undefined_to_nil(:proplists.get_value(:password, options))}}
+  defp apply_overrides(profile, options) do
+    for opt <- Map.keys(profile) do
+      if opt != :__struct__ do
+        case :proplists.get_value(opt, options) do
+          :undefined ->
+            :undefined
+          value ->
+            Map.put(profile, opt, value)
+        end
+      end
+    end
+
+    profile
   end
 
   defp try_profiles(options, config) do
@@ -74,6 +81,11 @@ defmodule Cogctl do
       profile ->
         build_profile(profile)
     end
+  end
+
+  defp default_profile do
+    %Cogctl.Profile{host: @default_host,
+                    port: @default_port}
   end
 
   defp build_profile(profile) do
