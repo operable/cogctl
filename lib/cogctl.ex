@@ -78,10 +78,10 @@ defmodule Cogctl do
 
   defp build_profile(profile) do
     %Cogctl.Profile{host: Map.get(profile, "host", "localhost"),
-                     port: Map.get(profile, "port", 4000),
-                     user: Map.get(profile, "user"),
-                     password: Map.get(profile, "password"),
-                     secure: Map.get(profile, "secure", false)}
+                    port: Map.get(profile, "port", 4000),
+                    user: Map.get(profile, "user"),
+                    password: Map.get(profile, "password"),
+                    secure: Map.get(profile, "secure", false)}
   end
 
   def undefined_to_nil(:undefined) do
