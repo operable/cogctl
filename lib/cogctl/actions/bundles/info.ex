@@ -34,7 +34,7 @@ defmodule Cogctl.Actions.Bundles.Info do
           [title, bundle[attr]]
         end
 
-        commands = for command <- bundle["commands"] do
+        commands = for command <- Enum.sort(bundle["commands"]) do
           [command["name"], command["id"]]
         end
 

@@ -20,7 +20,7 @@ defmodule Cogctl.Actions.Bundles do
   defp do_list(client) do
     case CogApi.bundle_index(client) do
       {:ok, resp} ->
-        bundles = for bundle <- resp["bundles"] do
+        bundles = for bundle <- Enum.sort(resp["bundles"]) do
           [bundle["name"], enabled_to_status(bundle["enabled"]), bundle["inserted_at"]]
         end
 

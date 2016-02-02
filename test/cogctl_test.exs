@@ -40,6 +40,7 @@ defmodule CogctlTest do
     max          .*
     min          .*
     permissions  .*
+    raw          .*
     role         .*
     rules        .*
     sort         .*
