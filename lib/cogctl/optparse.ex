@@ -100,8 +100,8 @@ defmodule Cogctl.Optparse do
 
   defp global_opts(opts) do
     opts ++ [{:help, ??, 'help', :undefined, 'Displays this brief help'},
-     {:host, ?h, 'host', {:string, 'localhost'}, 'Host name or network address of the target Cog instance'},
-     {:port, ?p, 'port', {:integer, 4000}, 'REST API port of the target Cog instances'},
+     {:host, ?h, 'host', {:string, :undefined}, 'Host name or network address of the target Cog instance'},
+     {:port, ?p, 'port', {:integer, :undefined}, 'REST API port of the target Cog instances'},
      {:user, ?u, 'user', :undefined, 'REST API user'},
      {:password, :undefined, 'pw', :undefined, 'REST API password'},
      {:profile, :undefined, 'profile', {:string, :undefined}, '$HOME/.cogctl profile to use'}]
