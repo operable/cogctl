@@ -34,15 +34,15 @@ defmodule Cogctl.Actions.Bundles.Info do
           [title, bundle[attr]]
         end
 
-        commands = for command <- Enum.sort_by(bundle["commands"], &Map.get(&1, "name")) do
+        commands = for command <- bundle["commands"] do
           [command["name"], command["id"]]
         end
 
         display_output("""
-        #{Table.format(bundle_attrs)}
+        #{Table.format(bundle_attrs, false)}
 
         Commands
-        #{Table.format([["NAME", "ID"]|commands])}
+        #{Table.format([["NAME", "ID"]|commands], true)}
         """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])

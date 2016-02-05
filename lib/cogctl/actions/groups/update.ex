@@ -38,7 +38,7 @@ defmodule Cogctl.Actions.Groups.Update do
         display_output("""
         Updated #{group_name}
 
-        #{Table.format(group_attrs)}
+        #{Table.format(group_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])

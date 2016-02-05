@@ -25,7 +25,7 @@ defmodule Cogctl.Actions.Groups do
           [group["name"], group["id"]]
         end
 
-        display_output(Table.format([["NAME", "ID"]] ++ group_attrs))
+        display_output(Table.format([["NAME", "ID"]] ++ group_attrs, true))
       {:error, error} ->
         display_error(error["error"])
     end
@@ -42,10 +42,10 @@ defmodule Cogctl.Actions.Groups do
 
     """
     User Memberships
-    #{Table.format([["USERNAME", "ID"]] ++ user_attrs)}
+    #{Table.format([["USERNAME", "ID"]] ++ user_attrs, true)}
 
     Group Memberships
-    #{Table.format([["NAME", "ID"]] ++ group_attrs)}
+    #{Table.format([["NAME", "ID"]] ++ group_attrs, true)}
     """ |> String.rstrip
   end
 end

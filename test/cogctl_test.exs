@@ -43,6 +43,7 @@ defmodule CogctlTest do
     raw          .*
     role         .*
     rules        .*
+    seed         .*
     sort         .*
     sum          .*
     table        .*
@@ -225,9 +226,9 @@ defmodule CogctlTest do
     NAME                         ID
     operable:manage_commands     .*
     operable:manage_groups       .*
+    operable:manage_permissions  .*
     operable:manage_roles        .*
     operable:manage_users        .*
-    operable:manage_permissions  .*
     """
 
     assert run("cogctl permissions create site:echo") =~ ~r"""

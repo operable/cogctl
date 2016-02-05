@@ -40,7 +40,7 @@ defmodule Cogctl.Actions.ChatHandles.Create do
         display_output("""
         Created #{chat_handle["handle"]} for #{chat_provider} chat provider
 
-        #{Table.format(chat_handle_attrs)}
+        #{Table.format(chat_handle_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])

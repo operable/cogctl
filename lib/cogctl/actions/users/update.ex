@@ -44,7 +44,7 @@ defmodule Cogctl.Actions.Users.Update do
         display_output("""
         Updated #{username}
 
-        #{Table.format(user_attrs)}
+        #{Table.format(user_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])

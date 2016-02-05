@@ -25,7 +25,7 @@ defmodule Cogctl.Actions.Users do
           [user["username"], user["first_name"] <> " " <> user["last_name"]]
         end
 
-        display_output(Table.format([["USERNAME", "FULL NAME"]] ++ user_attrs))
+        display_output(Table.format([["USERNAME", "FULL NAME"]] ++ user_attrs, true))
       {:error, error} ->
         display_error(error["error"])
     end

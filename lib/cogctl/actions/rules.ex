@@ -30,7 +30,7 @@ defmodule Cogctl.Actions.Rules do
           [rule["id"], rule["command"], rule["rule"]]
         end
 
-        display_output(Table.format([["ID", "COMMAND", "RULE TEXT"]] ++ rule_attrs))
+        display_output(Table.format([["ID", "COMMAND", "RULE TEXT"]] ++ rule_attrs, true))
       {:error, error} ->
         display_error(error["errors"])
     end

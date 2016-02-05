@@ -46,7 +46,7 @@ defmodule Cogctl.Actions.Users.Create do
         display_output("""
         Created #{username}
 
-        #{Table.format(user_attrs)}
+        #{Table.format(user_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])
