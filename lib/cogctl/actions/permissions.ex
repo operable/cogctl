@@ -34,7 +34,7 @@ defmodule Cogctl.Actions.Permissions do
           ["#{namespace_name}:#{permission_name}", permission["id"]]
         end
 
-        display_output(Table.format([["NAME", "ID"]] ++ permission_attrs))
+        display_output(Table.format([["NAME", "ID"]] ++ permission_attrs, true))
       {:error, error} ->
         display_error(error["error"])
     end

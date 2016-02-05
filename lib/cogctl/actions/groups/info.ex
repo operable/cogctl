@@ -32,7 +32,7 @@ defmodule Cogctl.Actions.Groups.Info do
         end
 
         display_output("""
-        #{Table.format(group_attrs)}
+        #{Table.format(group_attrs, false)}
 
         #{Groups.render_memberships(group)}
         """ |> String.rstrip)

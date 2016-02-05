@@ -38,7 +38,7 @@ defmodule Cogctl.Actions.Roles.Update do
         display_output("""
         Updated #{role_name}
 
-        #{Table.format(role_attrs)}
+        #{Table.format(role_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
         display_error(error["error"])

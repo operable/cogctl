@@ -1,8 +1,20 @@
 defmodule Cogctl.Table do
-  def format(data) do
+  def format(data, sort \\ false)
+
+  def format(data, true) do
+    data
+    |> sort
+    |> format(false)
+  end
+
+  def format(data, false) do
     data
     |> format_columns
     |> format_rows
+  end
+
+  defp sort([headers|data]) do
+    [headers|Enum.sort(data)]
   end
 
   defp format_columns(data) do

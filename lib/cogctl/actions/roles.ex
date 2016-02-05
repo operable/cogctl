@@ -25,7 +25,7 @@ defmodule Cogctl.Actions.Roles do
           [role["name"], role["id"]]
         end
 
-        display_output(Table.format([["NAME", "ID"]] ++ role_attrs))
+        display_output(Table.format([["NAME", "ID"]] ++ role_attrs, true))
       {:error, error} ->
         display_error(error["error"])
     end

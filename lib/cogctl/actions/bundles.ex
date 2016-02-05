@@ -20,11 +20,11 @@ defmodule Cogctl.Actions.Bundles do
   defp do_list(client) do
     case CogApi.bundle_index(client) do
       {:ok, resp} ->
-        bundles = for bundle <- Enum.sort_by(resp["bundles"], &Map.get(&1, "name")) do
+        bundles = for bundle <- resp["bundles"] do
           [bundle["name"], enabled_to_status(bundle["enabled"]), bundle["inserted_at"]]
         end
 
-        display_output(Table.format([["NAME", "STATUS", "INSTALLED"]] ++ bundles))
+        display_output(Table.format([["NAME", "STATUS", "INSTALLED"]] ++ bundles, true))
       {:error, error} ->
         display_error(error["error"])
     end

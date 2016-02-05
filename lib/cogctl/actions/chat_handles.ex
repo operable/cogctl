@@ -25,7 +25,7 @@ defmodule Cogctl.Actions.ChatHandles do
           [chat_handle["user"]["username"], chat_handle["chat_provider"]["name"], chat_handle["handle"]]
         end
 
-        display_output(Table.format([["USER", "CHAT PROVIDER", "HANDLE"]] ++ chat_handle_attrs))
+        display_output(Table.format([["USER", "CHAT PROVIDER", "HANDLE"]] ++ chat_handle_attrs, true))
       {:error, error} ->
         display_error(error["error"])
     end

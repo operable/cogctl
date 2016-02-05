@@ -30,7 +30,7 @@ defmodule Cogctl.Actions.Users.Info do
           [title, user[attr]]
         end
 
-        display_output(Table.format(user))
+        display_output(Table.format(user, false))
       {:error, error} ->
         display_error(error["error"])
     end
