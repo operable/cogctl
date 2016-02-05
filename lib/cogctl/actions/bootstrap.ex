@@ -45,8 +45,10 @@ defmodule Cogctl.Actions.Bootstrap do
         config = %{config | dirty: true, values: values}
         Cogctl.Config.save(config)
         display_output("Bootstrapped")
-      {:error, error} ->
-        display_error(get_in(error, ["bootstrap", "error"]))
+      {:error, %{"bootstrap" => %{"error" => error}}} ->
+        display_error(error)
+      {:error, %{"error" => error}} ->
+        display_error(error)
     end
   end
 
