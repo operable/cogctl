@@ -21,10 +21,10 @@ defmodule Cogctl.Actions.Bundles.Delete do
   end
 
   defp do_delete(client, bundle_names) when is_list(bundle_names) do
-    Enum.reduce_while(bundle_names, [], fn bundle_name, acc ->
+    Enum.reduce_while(bundle_names, :ok, fn bundle_name, _acc ->
       case do_delete(client, bundle_name) do
         :ok ->
-          {:cont, acc}
+          {:cont, :ok}
         :error ->
           {:halt, :error}
       end
