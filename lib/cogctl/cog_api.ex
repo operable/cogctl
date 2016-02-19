@@ -254,6 +254,12 @@ defmodule Cogctl.CogApi do
     end
   end
 
+  def permission_index(%__MODULE__{}=api, %{role: role_name}) do
+    with {:ok, role_id} <- find_id_by(api, "roles", name: role_name) do
+      get(api, "roles/#{role_id}/permissions")
+    end
+  end
+
   def permission_index(%__MODULE__{}=api, params) do
     get(api, "permissions", params)
   end

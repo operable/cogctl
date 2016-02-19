@@ -256,8 +256,32 @@ defmodule CogctlTest do
     site:echo  .*
     """
 
+    assert run("cogctl roles create --name=developer") =~ ~r"""
+    Created developer
+
+    ID    .*
+    Name  developer
+    """
+
+    assert run("cogctl permissions grant site:echo --role=developer") =~ ~r"""
+    Granted site:echo to developer
+    """
+
+    assert run("cogctl permissions --role=developer") =~ ~r"""
+    NAME       ID
+    site:echo  .*
+    """
+
     assert run("cogctl permissions revoke site:echo --user=admin") =~ ~r"""
     Revoked site:echo from admin
+    """
+
+    assert run("cogctl permissions revoke site:echo --group=ops") =~ ~r"""
+    Revoked site:echo from ops
+    """
+
+    assert run("cogctl permissions revoke site:echo --role=developer") =~ ~r"""
+    Revoked site:echo from developer
     """
 
     assert run("cogctl permissions delete site:echo") =~ ~r"""
@@ -266,6 +290,10 @@ defmodule CogctlTest do
 
     assert run("cogctl groups delete ops") =~ ~r"""
     Deleted ops
+    """
+
+    assert run("cogctl roles delete developer") =~ ~r"""
+    Deleted developer
     """
   end
 
