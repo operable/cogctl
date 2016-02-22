@@ -1,6 +1,6 @@
 # cogctl
 
-CLI admin interface for Cog.
+CLI admin interface for [Cog](https://github.com/operable/cog).
 
 ## Compiling
 
@@ -11,7 +11,13 @@ CLI admin interface for Cog.
         > cogctl bootstrap -s
         bootstrapped
         > cogctl --help
-        Usage: cogctl [bootstrap | profiles]
+        Usage: cogctl	[bootstrap | profiles | bundles | bundles info | bundles delete |
+                         bundles enable | bundles disable | users | users info | users create | users update |
+                         users delete | groups | groups info | groups create | groups update | groups delete |
+                         groups add | groups remove | roles | roles create | roles update | roles delete |
+                         roles grant | roles revoke | rules | rules create | rules delete | permissions |
+                         permissions create | permissions delete | permissions grant | permissions revoke |
+                         chat-handles | chat-handles create | chat-handles delete]
 
         cogctl <action> --help will display action specific help information.
         > cogctl bootstrap --help
