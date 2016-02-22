@@ -5,8 +5,8 @@ defmodule Cogctl.Actions.Permissions.Revoke do
   def option_spec do
     [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'},
      {:user_to_revoke, :undefined, 'user', {:string, :undefined}, 'Username of user to revoke permission from'},
-     {:group_to_revoke, :undefined, 'group', {:string, :undefined}, 'Name of group to revoke permission form'},
-     {:role_to_revoke, :undefined, 'role', {:string, :undefined}, 'Role to revoke permission form'}]
+     {:group_to_revoke, :undefined, 'group', {:string, :undefined}, 'Name of group to revoke permission from'},
+     {:role_to_revoke, :undefined, 'role', {:string, :undefined}, 'Role to revoke permission from'}]
   end
 
   def run(options, _args, _config, profile) do

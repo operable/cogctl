@@ -6,7 +6,7 @@ defmodule Cogctl.Actions.Permissions.Grant do
     [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'},
      {:user_to_grant, :undefined, 'user', {:string, :undefined}, 'Username of user to grant permission'},
      {:group_to_grant, :undefined, 'group', {:string, :undefined}, 'Name of group to grant permission'},
-     {:role_to_grant, :undeinfed, 'role', {:string, :undefined}, 'Role to grant permission'}]
+     {:role_to_grant, :undefined, 'role', {:string, :undefined}, 'Role to grant permission'}]
   end
 
   def run(options, _args, _config, profile) do
