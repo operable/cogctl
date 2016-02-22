@@ -38,5 +38,8 @@ CLI admin interface for [Cog](https://github.com/operable/cog).
         User: admin
         Password: ***
         URL: https://localhost:4000
-
         >
+
+## Filing Issues
+
+cogctl issues are tracked centrally in [Cog's](https://github.com/operable/cog/issues) issue tracker.
