@@ -1,6 +1,5 @@
 defmodule Cogctl.Actions.Users.Create do
   use Cogctl.Action, "users create"
-  alias Cogctl.CogApi
   alias Cogctl.Table
 
   # Whitelisted options passed as params to api client
@@ -14,8 +13,7 @@ defmodule Cogctl.Actions.Users.Create do
      {:password, :undefined, 'password', {:string, :undefined}, 'Password (required)'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         params = convert_to_params(options, [first_name: :required,

@@ -1,14 +1,12 @@
 defmodule Cogctl.Actions.Groups.Create do
   use Cogctl.Action, "groups create"
-  alias Cogctl.CogApi
   alias Cogctl.Table
 
   def option_spec do
     [{:name, :undefined, 'name', {:string, :undefined}, 'Group name (required)'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         do_create(client, :proplists.get_value(:name, options))

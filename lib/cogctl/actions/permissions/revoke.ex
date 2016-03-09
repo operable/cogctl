@@ -1,6 +1,5 @@
 defmodule Cogctl.Actions.Permissions.Revoke do
   use Cogctl.Action, "permissions revoke"
-  alias Cogctl.CogApi
 
   def option_spec do
     [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'},
@@ -9,8 +8,7 @@ defmodule Cogctl.Actions.Permissions.Revoke do
      {:role_to_revoke, :undefined, 'role', {:string, :undefined}, 'Role to revoke permission from'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         permission = :proplists.get_value(:permission, options)

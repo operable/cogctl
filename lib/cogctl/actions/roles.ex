@@ -1,14 +1,12 @@
 defmodule Cogctl.Actions.Roles do
   use Cogctl.Action, "roles"
-  alias Cogctl.CogApi
   alias Cogctl.Table
 
   def option_spec do
     []
   end
 
-  def run(_options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(_options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         do_list(client)

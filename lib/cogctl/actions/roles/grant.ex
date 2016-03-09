@@ -1,6 +1,5 @@
 defmodule Cogctl.Actions.Roles.Grant do
   use Cogctl.Action, "roles grant"
-  alias Cogctl.CogApi
 
   def option_spec do
     [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name (required)'},
@@ -8,8 +7,7 @@ defmodule Cogctl.Actions.Roles.Grant do
      {:group_to_grant, :undefined, 'group', {:string, :undefined}, 'Name of group to grant role'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         role = :proplists.get_value(:role, options)

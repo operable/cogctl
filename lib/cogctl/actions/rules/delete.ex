@@ -1,13 +1,11 @@
 defmodule Cogctl.Actions.Rules.Delete do
   use Cogctl.Action, "rules delete"
-  alias Cogctl.CogApi
 
   def option_spec do
     [{:rule, :undefined, :undefined, {:string, :undefined}, 'Rule id'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         do_delete(client, :proplists.get_value(:rule, options))
