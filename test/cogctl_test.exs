@@ -100,8 +100,29 @@ defmodule CogctlTest do
     Email       jfrost@operable.io
     """
 
+    output = run("""
+    cogctl users create
+      --email=rrobin@operable.io
+      --username=rrobin
+      --password=password
+    """)
+
+    assert output =~ ~r"""
+    Created rrobin
+
+    ID          .*
+    Username    rrobin
+    First Name
+    Last Name
+    Email       rrobin@operable.io
+    """
+
     assert run("cogctl users delete jfrost") =~ ~r"""
     Deleted jfrost
+    """
+
+    assert run("cogctl users delete rrobin") =~ ~r"""
+    Deleted rrobin
     """
   end
 

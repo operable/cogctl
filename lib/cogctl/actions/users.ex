@@ -9,12 +9,17 @@ defmodule Cogctl.Actions.Users do
   def run(_options, _args, _config, endpoint),
     do: with_authentication(endpoint, &do_list/1)
 
+  defp generate_table_row(username, nil, nil), do: [username, ""]
+  defp generate_table_row(username, first, nil), do: [username, first]
+  defp generate_table_row(username, nil, last), do: [username, last]
+  defp generate_table_row(username, first, last), do: [username, first <> " " <> last]
+
   defp do_list(endpoint) do
     case CogApi.HTTP.Old.user_index(endpoint) do
       {:ok, resp} ->
         users = resp["users"]
         user_attrs = for user <- users do
-          [user["username"], user["first_name"] <> " " <> user["last_name"]]
+          generate_table_row(user["username"], user["first_name"], user["last_name"])
         end
 
         display_output(Table.format([["USERNAME", "FULL NAME"]] ++ user_attrs, true))
