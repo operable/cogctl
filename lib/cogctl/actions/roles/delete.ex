@@ -1,13 +1,11 @@
 defmodule Cogctl.Actions.Roles.Delete do
   use Cogctl.Action, "roles delete"
-  alias Cogctl.CogApi
 
   def option_spec do
     [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name (required)'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         do_delete(client, :proplists.get_value(:role, options))

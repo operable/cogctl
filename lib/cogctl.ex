@@ -33,16 +33,28 @@ defmodule Cogctl do
   end
 
   defp configure_identity(options, config) do
-    profile =
-      case try_profiles(options, config) do
-        nil ->
-          default_profile
-        profile ->
-          profile
-      end
+    profile = case try_profiles(options, config) do
+                nil -> default_profile
+                profile -> profile
+              end
+    profile = apply_overrides(profile, options)
+    client = new_client(profile)
 
-    {:ok, apply_overrides(profile, options)}
+    {:ok, client}
   end
+
+  defp new_client(profile=%Cogctl.Profile{}) do
+    %CogApi{
+      proto: protocol(profile),
+      host: profile.host,
+      port: profile.port,
+      username: profile.user,
+      password: profile.password
+    }
+  end
+
+  defp protocol(%{secure: "true"}), do: "https"
+  defp protocol(%{secure: "false"}), do: "http"
 
   defp apply_overrides(profile, options) do
     for opt <- Map.keys(profile) do

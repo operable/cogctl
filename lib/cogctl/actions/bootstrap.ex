@@ -1,14 +1,12 @@
 defmodule Cogctl.Actions.Bootstrap do
 
   use Cogctl.Action, "bootstrap"
-  alias Cogctl.CogApi
 
   def option_spec() do
     [{:status, ?s, 'status', :undefined, 'Queries Cog\'s current bootstrap status'}]
   end
 
-  def run(options, _args, config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, config, client) do
     case :proplists.get_value(:status, options) do
       :undefined ->
         do_bootstrap(client, config)

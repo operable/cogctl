@@ -1,6 +1,5 @@
 defmodule Cogctl.Actions.Permissions.Grant do
   use Cogctl.Action, "permissions grant"
-  alias Cogctl.CogApi
 
   def option_spec do
     [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'},
@@ -9,8 +8,7 @@ defmodule Cogctl.Actions.Permissions.Grant do
      {:role_to_grant, :undefined, 'role', {:string, :undefined}, 'Role to grant permission'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         permission = :proplists.get_value(:permission, options)

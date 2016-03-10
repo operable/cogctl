@@ -1,6 +1,5 @@
 defmodule Cogctl.Actions.Groups.Update do
   use Cogctl.Action, "groups update"
-  alias Cogctl.CogApi
   alias Cogctl.Table
 
   def option_spec do
@@ -8,8 +7,7 @@ defmodule Cogctl.Actions.Groups.Update do
      {:name, :undefined, 'name', {:string, :undefined}, 'Name'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         params = convert_to_params(options, [name: :optional])

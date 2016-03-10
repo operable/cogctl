@@ -1,6 +1,5 @@
 defmodule Cogctl.Actions.Permissions do
   use Cogctl.Action, "permissions"
-  alias Cogctl.CogApi
   alias Cogctl.Table
 
   def option_spec do
@@ -9,8 +8,7 @@ defmodule Cogctl.Actions.Permissions do
      {:role, :undefined, 'role', {:string, :undefined}, 'Name of role to filter permissions by'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         params = convert_to_params(options, [user: :optional, group: :optional, role: :optional])

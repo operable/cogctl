@@ -1,7 +1,6 @@
 defmodule Cogctl.Actions.Groups.Remove do
   use Cogctl.Action, "groups remove"
   alias Cogctl.Actions.Groups
-  alias Cogctl.CogApi
 
   def option_spec do
     [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'},
@@ -9,8 +8,7 @@ defmodule Cogctl.Actions.Groups.Remove do
      {:group_to_remove, :undefined, 'group', {:string, :undefined}, 'Name of group to remove'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         group = :proplists.get_value(:group, options)

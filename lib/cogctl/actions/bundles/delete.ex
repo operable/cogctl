@@ -1,13 +1,11 @@
 defmodule Cogctl.Actions.Bundles.Delete do
   use Cogctl.Action, "bundles delete"
-  alias Cogctl.CogApi
 
   def option_spec do
     []
   end
 
-  def run(_options, args,  _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(_options, args,  _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         do_delete(client, args)

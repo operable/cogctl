@@ -1,6 +1,5 @@
 defmodule Cogctl.Actions.Users.Update do
   use Cogctl.Action, "users update"
-  alias Cogctl.CogApi
   alias Cogctl.Table
 
   def option_spec do
@@ -12,8 +11,7 @@ defmodule Cogctl.Actions.Users.Update do
      {:password, :undefined, 'password', {:string, :undefined}, 'Password'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         params = convert_to_params(options, [first_name: :optional,

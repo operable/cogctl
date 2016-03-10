@@ -1,14 +1,12 @@
 defmodule Cogctl.Actions.ChatHandles.Delete do
   use Cogctl.Action, "chat-handles delete"
-  alias Cogctl.CogApi
 
   def option_spec do
     [{:user, :undefined, 'user', {:string, :undefined}, 'Username user that owns the handle to delete (required)'},
      {:chat_provider, :undefined, 'chat-provider', {:string, :undefined}, 'Chat provider name (required)'}]
   end
 
-  def run(options, _args, _config, profile) do
-    client = CogApi.new_client(profile)
+  def run(options, _args, _config, client) do
     case CogApi.authenticate(client) do
       {:ok, client} ->
         params = convert_to_params(options, [user: :required, chat_provider: :required])

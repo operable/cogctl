@@ -19,11 +19,14 @@ defmodule Cogctl.Mixfile do
   end
 
   defp deps do
-    [{:getopt, github: "jcomellas/getopt", tag: "v0.8.2"},
-     {:ibrowse, "~> 4.2.2"},
-     {:poison, "~> 1.5.0"},
-     {:httpotion, "~> 2.1.0"},
-     {:configparser_ex, "~> 0.2.0"}]
+    [
+      {:getopt, github: "jcomellas/getopt", tag: "v0.8.2"},
+      {:ibrowse, "~> 4.2.2"},
+      {:poison, "~> 1.5.0"},
+      {:httpotion, "~> 2.1.0"},
+      {:configparser_ex, "~> 0.2.0"},
+      {:cog_api, github: "operable/cog-api-client", ref: "056d00e"},
+    ]
   end
 
   defp escript do
