@@ -3,6 +3,12 @@ defmodule Cogctl do
   @default_host "localhost"
   @default_port 4000
 
+  @overrides [{:rest_user, :user},
+              {:rest_password, :password},
+              {:host, :host},
+              {:port, :port},
+              {:secure, :secure}]
+
   defmodule Profile do
     defstruct [:host, :port, :user, :password, :secure]
   end
@@ -57,18 +63,16 @@ defmodule Cogctl do
   defp protocol(_), do: "http"
 
   defp apply_overrides(profile, options) do
-    for opt <- Map.keys(profile) do
-      if opt != :__struct__ do
-        case :proplists.get_value(opt, options) do
-          :undefined ->
-            :undefined
-          value ->
-            Map.put(profile, opt, value)
-        end
-      end
-    end
+    Enum.reduce(@overrides, profile, fn(mapping, acc) -> maybe_override(mapping, options, acc) end)
+  end
 
-    profile
+  def maybe_override({opt, profile_key}, options, profile) do
+    case :proplists.get_value(opt, options) do
+      :undefined ->
+        profile
+      value ->
+        Map.put(profile, profile_key, value)
+    end
   end
 
   defp try_profiles(options, config) do
