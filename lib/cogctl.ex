@@ -54,7 +54,7 @@ defmodule Cogctl do
   end
 
   defp protocol(%{secure: "true"}), do: "https"
-  defp protocol(%{secure: "false"}), do: "http"
+  defp protocol(_), do: "http"
 
   defp apply_overrides(profile, options) do
     for opt <- Map.keys(profile) do
