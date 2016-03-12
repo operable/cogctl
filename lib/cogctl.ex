@@ -60,6 +60,7 @@ defmodule Cogctl do
   end
 
   defp protocol(%{secure: "true"}), do: "https"
+  defp protocol(%{secure: true}),   do: "https"
   defp protocol(_), do: "http"
 
   defp apply_overrides(profile, options) do
