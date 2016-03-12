@@ -102,8 +102,9 @@ defmodule Cogctl.Optparse do
     opts ++ [{:help, ??, 'help', :undefined, 'Displays this brief help'},
      {:host, ?h, 'host', {:string, :undefined}, 'Host name or network address of the target Cog instance'},
      {:port, ?p, 'port', {:integer, :undefined}, 'REST API port of the target Cog instances'},
-     {:user, ?u, 'user', :undefined, 'REST API user'},
-     {:password, :undefined, 'pw', :undefined, 'REST API password'},
+     {:secure, ?s, 'secure', :undefined, 'Use HTTPS to connect to Cog'},
+     {:rest_user, ?U, 'rest-user', {:string, :undefined}, 'REST API user'},
+     {:rest_password, ?P, 'rest-password', {:string, :undefined}, 'REST API password'},
      {:profile, :undefined, 'profile', {:string, :undefined}, '$HOME/.cogctl profile to use'}]
   end
   defp ensure_elixir_strings(items) do
