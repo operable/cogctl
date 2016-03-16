@@ -12,4 +12,4 @@ WORKDIR /home/operable/cogctl
 # Compile
 RUN mix escript
 
-ENTRYPOINT ./cogctl
+ENTRYPOINT ["./cogctl"]
