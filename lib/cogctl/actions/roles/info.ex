@@ -16,31 +16,19 @@ defmodule Cogctl.Actions.Roles.Info do
   end
 
   defp do_info(endpoint, role_name) do
-    # TODO: This will change once the latest versions of of CogApi have completed
-    #  testing and CogApi.role_show has been added to the CogApi. This will be
-    #  completed in a separate PR.
-    case CogApi.HTTP.Roles.role_index(endpoint) do
-      {:ok, resp} ->
-        roles = resp["roles"]
-        filtered_roles = Enum.filter(roles, fn(role) -> role["name"] == role_name end)
+    case CogApi.HTTP.Roles.role_show(endpoint, role_name) do
+      {:ok, role} ->
+        role_attrs = [[Map.fetch!(role, :name), Map.fetch!(role, :id)]]
 
-        for role <- filtered_roles do
-          role_attrs = [[role["name"], role["id"]]]
+        permission_attrs = Enum.map(role.permissions, fn(permission) ->
+                               [permission["namespace"], permission["name"], permission["id"]]
+                           end)
+        display_output("""
+                       #{Table.format([["NAME", "ID"]] ++ role_attrs, false)}
 
-          permissions = role["permissions"]
-          permission_attrs = Enum.reduce(Map.keys(permissions), [], fn(ns, acc) ->
-              acc ++ Enum.map(permissions[ns], fn(perm) ->
-                [ns, perm["name"], perm["id"]]
-            end)
-          end)
-
-          display_output("""
-                         #{Table.format([["NAME", "ID"]] ++ role_attrs, false)}
-
-                         Permissions
-                         #{Table.format([["NAMESPACE", "NAME", "ID"]] ++ permission_attrs, true)}
-                         """ |> String.rstrip)
-        end
+                       Permissions
+                       #{Table.format([["NAMESPACE", "NAME", "ID"]] ++ permission_attrs, true)}
+                       """ |> String.rstrip)
 
       {:error, error} ->
         display_error(error["errors"])

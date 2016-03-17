@@ -22,15 +22,11 @@ defmodule Cogctl.Actions.Permissions do
     case CogApi.HTTP.Old.permission_index(endpoint, params) do
       {:ok, resp} ->
         permissions = resp["permissions"]
+        permission_attrs = Enum.map(permissions, fn(permission) ->
+                               [permission["namespace"], permission["name"], permission["id"]]
+                           end)
 
-        permission_attrs = for permission <- permissions do
-          namespace_name = permission["namespace"]["name"]
-          permission_name = permission["name"]
-
-          ["#{namespace_name}:#{permission_name}", permission["id"]]
-        end
-
-        display_output(Table.format([["NAME", "ID"]] ++ permission_attrs, true))
+        display_output(Table.format([["NAMESPACE", "NAME", "ID"]] ++ permission_attrs, true))
       {:error, error} ->
         display_error(error["errors"])
     end
