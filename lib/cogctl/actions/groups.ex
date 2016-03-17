@@ -6,11 +6,11 @@ defmodule Cogctl.Actions.Groups do
     []
   end
 
-  def run(_options, _args, _config, client),
-    do: with_authentication(client, &do_list/1)
+  def run(_options, _args, _config, endpoint),
+    do: with_authentication(endpoint, &do_list/1)
 
-  defp do_list(client) do
-    case CogApi.group_index(client) do
+  defp do_list(endpoint) do
+    case CogApi.HTTP.Old.group_index(endpoint) do
       {:ok, resp} ->
         groups = resp["groups"]
         group_attrs = for group <- groups do
@@ -19,7 +19,7 @@ defmodule Cogctl.Actions.Groups do
 
         display_output(Table.format([["NAME", "ID"]] ++ group_attrs, true))
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 

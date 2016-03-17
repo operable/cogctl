@@ -7,17 +7,17 @@ defmodule Cogctl.Actions.Groups.Info do
     [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'}]
   end
 
-  def run(options, _args, _config, client) do
-    with_authentication(client,
+  def run(options, _args, _config, endpoint) do
+    with_authentication(endpoint,
                         &do_info(&1, :proplists.get_value(:group, options)))
   end
 
-  defp do_info(_client, :undefined) do
+  defp do_info(_endpoint, :undefined) do
     display_arguments_error
   end
 
-  defp do_info(client, group_name) do
-    case CogApi.group_show(client, group_name) do
+  defp do_info(endpoint, group_name) do
+    case CogApi.HTTP.Old.group_show(endpoint, group_name) do
       {:ok, resp} ->
         group = resp["group"]
 
@@ -31,7 +31,7 @@ defmodule Cogctl.Actions.Groups.Info do
         #{Groups.render_memberships(group)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

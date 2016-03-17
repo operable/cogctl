@@ -6,20 +6,20 @@ defmodule Cogctl.Actions.Roles do
     []
   end
 
-  def run(_options, _args, _config, client),
-    do: with_authentication(client, &do_list/1)
+  def run(_options, _args, _config, endpoint),
+    do: with_authentication(endpoint, &do_list/1)
 
-  defp do_list(client) do
-    case CogApi.role_index(client) do
-      {:ok, resp} ->
-        roles = resp["roles"]
+  defp do_list(endpoint) do
+    case CogApi.HTTP.Roles.role_index(endpoint) do
+      {:ok, roles} ->
+
         role_attrs = for role <- roles do
-          [role["name"], role["id"]]
+          [Map.fetch!(role, :name), Map.fetch!(role, :id)]
         end
 
         display_output(Table.format([["NAME", "ID"]] ++ role_attrs, true))
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error)
     end
   end
 end

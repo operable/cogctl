@@ -7,7 +7,7 @@ defmodule Cogctl.Action do
 
   @callback option_spec() :: [:optparse.option_spec()]
 
-  @callback run(parsed_options(), remaining_args(), %Cogctl.Config{}, %Cogctl.Profile{}) :: :ok | {:error, term()} | :error
+  @callback run(parsed_options(), remaining_args(), %Cogctl.Config{}, %Cogctl.Profile{}) :: :ok | {:errors, term()} | :error
 
   defmacro __using__(name) when name != nil do
     pattern = String.split(name, " ")

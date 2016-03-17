@@ -5,17 +5,17 @@ defmodule Cogctl.Actions.Bundles.Disable do
     [{:bundle, :undefined, :undefined, {:string, :undefined}, 'Bundle name'}]
   end
 
-  def run(options, _args,  _config, client) do
-    with_authentication(client,
+  def run(options, _args,  _config, endpoint) do
+    with_authentication(endpoint,
                         &do_disable(&1, :proplists.get_value(:bundle, options)))
   end
 
-  defp do_disable(client, bundle_name) do
-    case CogApi.bundle_disable(client, bundle_name) do
+  defp do_disable(endpoint, bundle_name) do
+    case CogApi.HTTP.Old.bundle_disable(endpoint, bundle_name) do
       {:ok, _} ->
         display_output("Disabled #{bundle_name}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

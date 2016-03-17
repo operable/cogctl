@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Users.Create do
   use Cogctl.Action, "users create"
   alias Cogctl.Table
 
-  # Whitelisted options passed as params to api client
+  # Whitelisted options passed as params to api endpoint
   @params [:first_name, :last_name, :email_address, :username, :password]
 
   def option_spec do
@@ -13,22 +13,22 @@ defmodule Cogctl.Actions.Users.Create do
      {:password, :undefined, 'password', {:string, :undefined}, 'Password (required)'}]
   end
 
-  def run(options, _args, _config, client) do
+  def run(options, _args, _config, endpoint) do
     params = convert_to_params(options, [first_name: :required,
                                          last_name: :required,
                                          email_address: :required,
                                          username: :required,
                                          password: :required])
 
-    with_authentication(client, &do_create(&1, params))
+    with_authentication(endpoint, &do_create(&1, params))
   end
 
-  defp do_create(_client, :error) do
+  defp do_create(_endpoint, :error) do
     display_arguments_error
   end
 
-  defp do_create(client, {:ok, params}) do
-    case CogApi.user_create(client, %{user: params}) do
+  defp do_create(endpoint, {:ok, params}) do
+    case CogApi.HTTP.Old.user_create(endpoint, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]
         username = user["username"]
@@ -43,7 +43,7 @@ defmodule Cogctl.Actions.Users.Create do
         #{Table.format(user_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

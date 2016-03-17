@@ -5,17 +5,17 @@ defmodule Cogctl.Actions.Bundles.Enable do
     [{:bundle, :undefined, :undefined, {:string, :undefined}, 'Bundle name (required)'}]
   end
 
-  def run(options, _args,  _config, client) do
-    with_authentication(client,
+  def run(options, _args,  _config, endpoint) do
+    with_authentication(endpoint,
                         &do_enable(&1, :proplists.get_value(:bundle, options)))
   end
 
-  defp do_enable(client, bundle_name) do
-    case CogApi.bundle_enable(client, bundle_name) do
+  defp do_enable(endpoint, bundle_name) do
+    case CogApi.HTTP.Old.bundle_enable(endpoint, bundle_name) do
       {:ok, _} ->
         display_output("Enabled #{bundle_name}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

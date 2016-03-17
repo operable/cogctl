@@ -6,17 +6,17 @@ defmodule Cogctl.Actions.Groups.Create do
     [{:name, :undefined, 'name', {:string, :undefined}, 'Group name (required)'}]
   end
 
-  def run(options, _args, _config, client) do
-    with_authentication(client,
+  def run(options, _args, _config, endpoint) do
+    with_authentication(endpoint,
                         &do_create(&1, :proplists.get_value(:name, options)))
   end
 
-  defp do_create(_client, :undefined) do
+  defp do_create(_endpoint, :undefined) do
     display_arguments_error
   end
 
-  defp do_create(client, name) do
-    case CogApi.group_create(client, %{group: %{name: name}}) do
+  defp do_create(endpoint, name) do
+    case CogApi.HTTP.Old.group_create(endpoint, %{group: %{name: name}}) do
       {:ok, resp} ->
         group = resp["group"]
         name = group["name"]
@@ -31,7 +31,7 @@ defmodule Cogctl.Actions.Groups.Create do
         #{Table.format(group_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

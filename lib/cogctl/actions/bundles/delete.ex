@@ -5,16 +5,16 @@ defmodule Cogctl.Actions.Bundles.Delete do
     []
   end
 
-  def run(_options, args,  _config, client),
-    do: with_authentication(client, &do_delete(&1, args))
+  def run(_options, args,  _config, endpoint),
+    do: with_authentication(endpoint, &do_delete(&1, args))
 
-  defp do_delete(_client, []) do
+  defp do_delete(_endpoint, []) do
     display_arguments_error
   end
 
-  defp do_delete(client, bundle_names) when is_list(bundle_names) do
+  defp do_delete(endpoint, bundle_names) when is_list(bundle_names) do
     Enum.reduce_while(bundle_names, :ok, fn bundle_name, _acc ->
-      case do_delete(client, bundle_name) do
+      case do_delete(endpoint, bundle_name) do
         :ok ->
           {:cont, :ok}
         :error ->
@@ -23,12 +23,12 @@ defmodule Cogctl.Actions.Bundles.Delete do
     end)
   end
 
-  defp do_delete(client, bundle_name) do
-    case CogApi.bundle_delete(client, bundle_name) do
+  defp do_delete(endpoint, bundle_name) do
+    case CogApi.HTTP.Old.bundle_delete(endpoint, bundle_name) do
       :ok ->
         display_output("Deleted #{bundle_name}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

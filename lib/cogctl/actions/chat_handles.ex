@@ -6,11 +6,11 @@ defmodule Cogctl.Actions.ChatHandles do
     []
   end
 
-  def run(_options, _args, _config, client),
-    do: with_authentication(client, &do_list/1)
+  def run(_options, _args, _config, endpoint),
+    do: with_authentication(endpoint, &do_list/1)
 
-  defp do_list(client) do
-    case CogApi.chat_handle_index(client) do
+  defp do_list(endpoint) do
+    case CogApi.HTTP.Old.chat_handle_index(endpoint) do
       {:ok, resp} ->
         chat_handles = resp["chat_handles"]
         chat_handle_attrs = for chat_handle <- chat_handles do
@@ -19,7 +19,7 @@ defmodule Cogctl.Actions.ChatHandles do
 
         display_output(Table.format([["USER", "CHAT PROVIDER", "HANDLE"]] ++ chat_handle_attrs, true))
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

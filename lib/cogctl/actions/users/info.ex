@@ -6,17 +6,17 @@ defmodule Cogctl.Actions.Users.Info do
     [{:user, :undefined, :undefined, {:string, :undefined}, 'User username (required)'}]
   end
 
-  def run(options, _args, _config, client) do
-    with_authentication(client,
+  def run(options, _args, _config, endpoint) do
+    with_authentication(endpoint,
                         &do_info(&1, :proplists.get_value(:user, options)))
   end
 
-  defp do_info(_client, :undefined) do
+  defp do_info(_endpoint, :undefined) do
     display_arguments_error
   end
 
-  defp do_info(client, user_username) do
-    case CogApi.user_show(client, user_username) do
+  defp do_info(endpoint, user_username) do
+    case CogApi.HTTP.Old.user_show(endpoint, user_username) do
       {:ok, resp} ->
         user = resp["user"]
 
@@ -26,7 +26,7 @@ defmodule Cogctl.Actions.Users.Info do
 
         display_output(Table.format(user, false))
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

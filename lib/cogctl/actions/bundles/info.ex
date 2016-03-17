@@ -7,17 +7,17 @@ defmodule Cogctl.Actions.Bundles.Info do
     [{:bundle, :undefined, :undefined, {:string, :undefined}, 'Bundle name (required)'}]
   end
 
-  def run(options, _args, _config, client) do
-    with_authentication(client,
+  def run(options, _args, _config, endpoint) do
+    with_authentication(endpoint,
                         &do_info(&1, :proplists.get_value(:bundle, options)))
   end
 
-  defp do_info(_client, :undefined) do
+  defp do_info(_endpoint, :undefined) do
     display_error("Missing required arguments")
   end
 
-  defp do_info(client, bundle_name) do
-    case CogApi.bundle_show(client, bundle_name) do
+  defp do_info(endpoint, bundle_name) do
+    case CogApi.HTTP.Old.bundle_show(endpoint, bundle_name) do
       {:ok, resp} ->
         bundle = resp["bundle"]
 
@@ -39,7 +39,7 @@ defmodule Cogctl.Actions.Bundles.Info do
         #{Table.format([["NAME", "ID"]|commands], true)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

@@ -6,17 +6,17 @@ defmodule Cogctl.Actions.Bootstrap do
     [{:status, ?s, 'status', :undefined, 'Queries Cog\'s current bootstrap status'}]
   end
 
-  def run(options, _args, config, client) do
+  def run(options, _args, config, endpoint) do
     case :proplists.get_value(:status, options) do
       :undefined ->
-        do_bootstrap(client, config)
+        do_bootstrap(endpoint, config)
       _ ->
-        do_query(client)
+        do_query(endpoint)
     end
   end
 
-  defp do_query(client) do
-    case CogApi.bootstrap_show(client) do
+  defp do_query(endpoint) do
+    case CogApi.HTTP.Old.bootstrap_show(endpoint) do
       {:ok, body} ->
         status = case body do
           %{"bootstrap" => %{"bootstrap_status" => true}} ->
@@ -27,25 +27,25 @@ defmodule Cogctl.Actions.Bootstrap do
 
         display_output("Status: #{status}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 
-  defp do_bootstrap(client, config) do
-    case CogApi.bootstrap_create(client) do
+  defp do_bootstrap(endpoint, config) do
+    case CogApi.HTTP.Old.bootstrap_create(endpoint) do
       {:ok, admin} ->
         values = config.values
-                 |> Map.put(client.host, %{"user" => get_in(admin, ["bootstrap", "username"]),
+                 |> Map.put(endpoint.host, %{"user" => get_in(admin, ["bootstrap", "username"]),
                                            "password" => get_in(admin, ["bootstrap", "password"]),
-                                           "host" => client.host,
-                                           "port" => client.port,
+                                           "host" => endpoint.host,
+                                           "port" => endpoint.port,
                                            "secure" => false})
         config = %{config | dirty: true, values: values}
         Cogctl.Config.save(config)
         display_output("Bootstrapped")
-      {:error, %{"bootstrap" => %{"error" => error}}} ->
+      {:error, %{"errors" => %{"bootstrap" => error}}} ->
         display_error(error)
-      {:error, %{"error" => error}} ->
+      {:error, %{"errors" => error}} ->
         display_error(error)
     end
   end
