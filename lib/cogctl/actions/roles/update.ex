@@ -8,13 +8,9 @@ defmodule Cogctl.Actions.Roles.Update do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        params = convert_to_params(options, [name: :optional])
-        do_update(client, :proplists.get_value(:role, options), params)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    params = convert_to_params(options, [name: :optional])
+    with_authentication(client,
+                        &do_update(&1, :proplists.get_value(:role, options), params))
   end
 
   defp do_update(_client, :undefined, _params) do

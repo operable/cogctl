@@ -9,15 +9,12 @@ defmodule Cogctl.Actions.Groups.Remove do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        group = :proplists.get_value(:group, options)
-        user_to_remove = :proplists.get_value(:user_to_remove, options)
-        group_to_remove = :proplists.get_value(:group_to_remove, options)
-        do_remove(client, group, user_to_remove, group_to_remove)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    group = :proplists.get_value(:group, options)
+    user_to_remove = :proplists.get_value(:user_to_remove, options)
+    group_to_remove = :proplists.get_value(:group_to_remove, options)
+
+    with_authentication(client,
+                        &do_remove(&1, group, user_to_remove, group_to_remove))
   end
 
   defp do_remove(_client, :undefined, _user_to_add, _group_to_add) do

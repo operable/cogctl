@@ -8,15 +8,12 @@ defmodule Cogctl.Actions.Roles.Revoke do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        role = :proplists.get_value(:role, options)
-        user_to_revoke = :proplists.get_value(:user_to_revoke, options)
-        group_to_revoke = :proplists.get_value(:group_to_revoke, options)
-        do_revoke(client, role, user_to_revoke, group_to_revoke)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    role = :proplists.get_value(:role, options)
+    user_to_revoke = :proplists.get_value(:user_to_revoke, options)
+    group_to_revoke = :proplists.get_value(:group_to_revoke, options)
+
+    with_authentication(client,
+                        &do_revoke(&1, role, user_to_revoke, group_to_revoke))
   end
 
   defp do_revoke(_client, :undefined, _user_to_revoke, _group_to_revoke) do

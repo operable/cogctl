@@ -5,14 +5,8 @@ defmodule Cogctl.Actions.Bundles.Delete do
     []
   end
 
-  def run(_options, args,  _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        do_delete(client, args)
-      {:error, error} ->
-        display_error(error["error"])
-    end
-  end
+  def run(_options, args,  _config, client),
+    do: with_authentication(client, &do_delete(&1, args))
 
   defp do_delete(_client, []) do
     display_arguments_error

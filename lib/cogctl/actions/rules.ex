@@ -7,12 +7,8 @@ defmodule Cogctl.Actions.Rules do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        do_list(client, :proplists.get_value(:command, options))
-      {:error, error} ->
-        display_error(error["errors"])
-    end
+    with_authentication(client,
+                        &do_list(&1, :proplists.get_value(:command, options)))
   end
 
   defp do_list(_client, :undefined) do

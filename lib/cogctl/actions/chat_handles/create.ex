@@ -9,13 +9,8 @@ defmodule Cogctl.Actions.ChatHandles.Create do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        params = convert_to_params(options, [user: :required, chat_provider: :required, handle: :required])
-        do_create(client, params)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    params = convert_to_params(options, [user: :required, chat_provider: :required, handle: :required])
+    with_authentication(client, &do_create(&1, params))
   end
 
   defp do_create(_client, :error) do
