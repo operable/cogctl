@@ -8,12 +8,8 @@ defmodule Cogctl.Actions.Groups.Info do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        do_info(client, :proplists.get_value(:group, options))
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    with_authentication(client,
+                        &do_info(&1, :proplists.get_value(:group, options)))
   end
 
   defp do_info(_client, :undefined) do

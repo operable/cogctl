@@ -14,17 +14,13 @@ defmodule Cogctl.Actions.Users.Create do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        params = convert_to_params(options, [first_name: :required,
-                                             last_name: :required,
-                                             email_address: :required,
-                                             username: :required,
-                                             password: :required])
-        do_create(client, params)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    params = convert_to_params(options, [first_name: :required,
+                                         last_name: :required,
+                                         email_address: :required,
+                                         username: :required,
+                                         password: :required])
+
+    with_authentication(client, &do_create(&1, params))
   end
 
   defp do_create(_client, :error) do

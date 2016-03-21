@@ -6,12 +6,8 @@ defmodule Cogctl.Actions.Bundles.Enable do
   end
 
   def run(options, _args,  _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        do_enable(client, :proplists.get_value(:bundle, options))
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    with_authentication(client,
+                        &do_enable(&1, :proplists.get_value(:bundle, options)))
   end
 
   defp do_enable(client, bundle_name) do

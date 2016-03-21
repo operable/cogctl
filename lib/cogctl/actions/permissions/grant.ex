@@ -9,16 +9,13 @@ defmodule Cogctl.Actions.Permissions.Grant do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        permission = :proplists.get_value(:permission, options)
-        user_to_grant = :proplists.get_value(:user_to_grant, options)
-        group_to_grant = :proplists.get_value(:group_to_grant, options)
-        role_to_grant = :proplists.get_value(:role_to_grant, options)
-        do_grant(client, permission, user_to_grant, group_to_grant, role_to_grant)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    permission = :proplists.get_value(:permission, options)
+    user_to_grant = :proplists.get_value(:user_to_grant, options)
+    group_to_grant = :proplists.get_value(:group_to_grant, options)
+    role_to_grant = :proplists.get_value(:role_to_grant, options)
+
+    with_authentication(client,
+                        &do_grant(&1, permission, user_to_grant, group_to_grant, role_to_grant))
   end
 
   defp do_grant(_client, :undefined, _user_to_grant, _group_to_grant, _role_to_grant) do

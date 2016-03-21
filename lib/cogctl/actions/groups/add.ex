@@ -9,15 +9,12 @@ defmodule Cogctl.Actions.Groups.Add do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        group = :proplists.get_value(:group, options)
-        user_to_add = :proplists.get_value(:user_to_add, options)
-        group_to_add = :proplists.get_value(:group_to_add, options)
-        do_add(client, group, user_to_add, group_to_add)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    group = :proplists.get_value(:group, options)
+    user_to_add = :proplists.get_value(:user_to_add, options)
+    group_to_add = :proplists.get_value(:group_to_add, options)
+
+    with_authentication(client,
+                        &do_add(&1, group, user_to_add, group_to_add))
   end
 
   defp do_add(_client, :undefined, _user_to_add, _group_to_add) do

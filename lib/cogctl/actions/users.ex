@@ -6,14 +6,8 @@ defmodule Cogctl.Actions.Users do
     []
   end
 
-  def run(_options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        do_list(client)
-      {:error, error} ->
-        display_error(error["error"])
-    end
-  end
+  def run(_options, _args, _config, client),
+    do: with_authentication(client, &do_list/1)
 
   defp do_list(client) do
     case CogApi.user_index(client) do

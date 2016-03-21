@@ -7,13 +7,8 @@ defmodule Cogctl.Actions.ChatHandles.Delete do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        params = convert_to_params(options, [user: :required, chat_provider: :required])
-        do_delete(client, params)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    params = convert_to_params(options, [user: :required, chat_provider: :required])
+    with_authentication(client, &do_delete(&1, params))
   end
 
   defp do_delete(_client, :error) do

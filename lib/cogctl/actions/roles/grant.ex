@@ -8,15 +8,12 @@ defmodule Cogctl.Actions.Roles.Grant do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        role = :proplists.get_value(:role, options)
-        user_to_grant = :proplists.get_value(:user_to_grant, options)
-        group_to_grant = :proplists.get_value(:group_to_grant, options)
-        do_grant(client, role, user_to_grant, group_to_grant)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    role = :proplists.get_value(:role, options)
+    user_to_grant = :proplists.get_value(:user_to_grant, options)
+    group_to_grant = :proplists.get_value(:group_to_grant, options)
+
+    with_authentication(client,
+                        &do_grant(&1, role, user_to_grant, group_to_grant))
   end
 
   defp do_grant(_client, :undefined, _user_to_grant, _group_to_grant) do

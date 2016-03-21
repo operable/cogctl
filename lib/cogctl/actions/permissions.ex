@@ -9,13 +9,9 @@ defmodule Cogctl.Actions.Permissions do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        params = convert_to_params(options, [user: :optional, group: :optional, role: :optional])
-        do_list(client, params)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    params = convert_to_params(options, [user: :optional, group: :optional, role: :optional])
+    with_authentication(client,
+                        &do_list(&1, params))
   end
 
   defp do_list(_client, :error) do

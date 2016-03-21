@@ -12,17 +12,14 @@ defmodule Cogctl.Actions.Users.Update do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        params = convert_to_params(options, [first_name: :optional,
-                                             last_name: :optional,
-                                             email_address: :optional,
-                                             username: :optional,
-                                             password: :optional])
-        do_update(client, :proplists.get_value(:user, options), params)
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    params = convert_to_params(options, [first_name: :optional,
+                                         last_name: :optional,
+                                         email_address: :optional,
+                                         username: :optional,
+                                         password: :optional])
+
+    with_authentication(client,
+                        &do_update(&1, :proplists.get_value(:user, options), params))
   end
 
   defp do_update(_client, _user_username, :error) do

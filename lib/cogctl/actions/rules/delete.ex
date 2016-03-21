@@ -6,12 +6,8 @@ defmodule Cogctl.Actions.Rules.Delete do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        do_delete(client, :proplists.get_value(:rule, options))
-      {:error, error} ->
-        display_error(error["errors"])
-    end
+    with_authentication(client,
+                        &do_delete(&1, :proplists.get_value(:rule, options)))
   end
 
   defp do_delete(_client, :undefined) do

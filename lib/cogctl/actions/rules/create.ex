@@ -7,12 +7,8 @@ defmodule Cogctl.Actions.Rules.Create do
   end
 
   def run(options, _args, _config, client) do
-    case CogApi.authenticate(client) do
-      {:ok, client} ->
-        do_create(client, :proplists.get_value(:rule_text, options))
-      {:error, error} ->
-        display_error(error["error"])
-    end
+    with_authentication(client,
+                        &do_create(&1, :proplists.get_value(:rule_text, options)))
   end
 
   defp do_create(_client, :undefined) do
