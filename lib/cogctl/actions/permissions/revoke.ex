@@ -8,52 +8,52 @@ defmodule Cogctl.Actions.Permissions.Revoke do
      {:role_to_revoke, :undefined, 'role', {:string, :undefined}, 'Role to revoke permission from'}]
   end
 
-  def run(options, _args, _config, client) do
+  def run(options, _args, _config, endpoint) do
     permission = :proplists.get_value(:permission, options)
     user_to_revoke = :proplists.get_value(:user_to_revoke, options)
     group_to_revoke = :proplists.get_value(:group_to_revoke, options)
     role_to_revoke = :proplists.get_value(:role_to_revoke, options)
 
-    with_authentication(client,
+    with_authentication(endpoint,
                         &do_revoke(&1, permission, user_to_revoke, group_to_revoke, role_to_revoke))
   end
 
-  defp do_revoke(_client, :undefined, _user_to_revoke, _group_to_revoke, _role_to_revoke) do
+  defp do_revoke(_endpoint, :undefined, _user_to_revoke, _group_to_revoke, _role_to_revoke) do
     display_arguments_error
   end
 
-  defp do_revoke(_client, _permission, :undefined, :undefined, :undefined) do
+  defp do_revoke(_endpoint, _permission, :undefined, :undefined, :undefined) do
     display_arguments_error
   end
 
-  defp do_revoke(client, permission, user_to_revoke, :undefined, :undefined) do
-    case CogApi.permission_revoke(client, permission, "users", user_to_revoke) do
+  defp do_revoke(endpoint, permission, user_to_revoke, :undefined, :undefined) do
+    case CogApi.HTTP.Old.permission_revoke(endpoint, permission, "users", user_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{permission} from #{user_to_revoke}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 
-  defp do_revoke(client, permission, :undefined, group_to_revoke, :undefined) do
-    case CogApi.permission_revoke(client, permission, "groups", group_to_revoke) do
+  defp do_revoke(endpoint, permission, :undefined, group_to_revoke, :undefined) do
+    case CogApi.HTTP.Old.permission_revoke(endpoint, permission, "groups", group_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{permission} from #{group_to_revoke}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 
-  defp do_revoke(client, permission, :undefined, :undefined, role_to_revoke) do
-    case CogApi.permission_revoke(client, permission, "roles", role_to_revoke) do
+  defp do_revoke(endpoint, permission, :undefined, :undefined, role_to_revoke) do
+    case CogApi.HTTP.Old.permission_revoke(endpoint, permission, "roles", role_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{permission} from #{role_to_revoke}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 
-  defp do_revoke(_client, _permission, _user_to_revoke, _group_to_revoke, _role_to_revoke) do
+  defp do_revoke(_endpoint, _permission, _user_to_revoke, _group_to_revoke, _role_to_revoke) do
     display_arguments_error
   end
 end

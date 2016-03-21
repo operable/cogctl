@@ -44,13 +44,13 @@ defmodule Cogctl do
                 profile -> profile
               end
     profile = apply_overrides(profile, options)
-    client = new_client(profile)
+    endpoint = new_endpoint(profile)
 
-    {:ok, client}
+    {:ok, endpoint}
   end
 
-  defp new_client(profile=%Cogctl.Profile{}) do
-    %CogApi{
+  defp new_endpoint(profile=%Cogctl.Profile{}) do
+    %CogApi.Endpoint{
       proto: protocol(profile),
       host: profile.host,
       port: profile.port,

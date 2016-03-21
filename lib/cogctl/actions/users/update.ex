@@ -11,23 +11,23 @@ defmodule Cogctl.Actions.Users.Update do
      {:password, :undefined, 'password', {:string, :undefined}, 'Password'}]
   end
 
-  def run(options, _args, _config, client) do
+  def run(options, _args, _config, endpoint) do
     params = convert_to_params(options, [first_name: :optional,
                                          last_name: :optional,
                                          email_address: :optional,
                                          username: :optional,
                                          password: :optional])
 
-    with_authentication(client,
+    with_authentication(endpoint,
                         &do_update(&1, :proplists.get_value(:user, options), params))
   end
 
-  defp do_update(_client, _user_username, :error) do
+  defp do_update(_endpoint, _user_username, :error) do
     display_arguments_error
   end
 
-  defp do_update(client, user_username, {:ok, params}) do
-    case CogApi.user_update(client, user_username, %{user: params}) do
+  defp do_update(endpoint, user_username, {:ok, params}) do
+    case CogApi.HTTP.Old.user_update(endpoint, user_username, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]
         username = user["username"]
@@ -42,7 +42,7 @@ defmodule Cogctl.Actions.Users.Update do
         #{Table.format(user_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

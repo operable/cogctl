@@ -20,7 +20,7 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl bundles info") =~ ~r"""
-    ERROR: Missing required arguments
+    ERROR: "Missing required arguments"
     """
 
     assert run("cogctl bundles info operable") =~ ~r"""
@@ -299,7 +299,7 @@ defmodule CogctlTest do
 
   test "cogctl rules" do
     assert run("cogctl rules operable:test") =~ ~r"""
-    ERROR: No rules for command found
+    ERROR: "No rules for command found"
     """
 
     # Set up the permission

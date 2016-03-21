@@ -8,20 +8,21 @@ defmodule Cogctl.Actions.Permissions do
      {:role, :undefined, 'role', {:string, :undefined}, 'Name of role to filter permissions by'}]
   end
 
-  def run(options, _args, _config, client) do
+  def run(options, _args, _config, endpoint) do
     params = convert_to_params(options, [user: :optional, group: :optional, role: :optional])
-    with_authentication(client,
+    with_authentication(endpoint,
                         &do_list(&1, params))
   end
 
-  defp do_list(_client, :error) do
+  defp do_list(_endpoint, :error) do
     display_arguments_error
   end
 
-  defp do_list(client, {:ok, params}) do
-    case CogApi.permission_index(client, params) do
+  defp do_list(endpoint, {:ok, params}) do
+    case CogApi.HTTP.Old.permission_index(endpoint, params) do
       {:ok, resp} ->
         permissions = resp["permissions"]
+
         permission_attrs = for permission <- permissions do
           namespace_name = permission["namespace"]["name"]
           permission_name = permission["name"]
@@ -31,7 +32,7 @@ defmodule Cogctl.Actions.Permissions do
 
         display_output(Table.format([["NAME", "ID"]] ++ permission_attrs, true))
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

@@ -6,17 +6,17 @@ defmodule Cogctl.Actions.Rules do
     [{:command, :undefined, :undefined, {:string, :undefined}, 'Full command name including bundle name (required), Ex.: "operable:echo"'}]
   end
 
-  def run(options, _args, _config, client) do
-    with_authentication(client,
+  def run(options, _args, _config, endpoint) do
+    with_authentication(endpoint,
                         &do_list(&1, :proplists.get_value(:command, options)))
   end
 
-  defp do_list(_client, :undefined) do
+  defp do_list(_endpoint, :undefined) do
     display_arguments_error
   end
 
-  defp do_list(client, command) do
-    case CogApi.rule_index(client, command) do
+  defp do_list(endpoint, command) do
+    case CogApi.HTTP.Old.rule_index(endpoint, command) do
       {:ok, resp} ->
         rules = resp["rules"]
         rule_attrs = for rule <- rules do

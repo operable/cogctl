@@ -22,10 +22,9 @@ defmodule Cogctl.Mixfile do
     [
       {:getopt, github: "jcomellas/getopt", tag: "v0.8.2"},
       {:ibrowse, "~> 4.2.2"},
-      {:poison, "~> 1.5.0"},
       {:httpotion, "~> 2.1.0"},
       {:configparser_ex, "~> 0.2.0"},
-      {:cog_api, github: "operable/cog-api-client", ref: "056d00e"},
+      {:cog_api, github: "operable/cog-api-client", ref: "b4c1e5a862c01e576c32145a1393e312feb8af5f"},
     ]
   end
 

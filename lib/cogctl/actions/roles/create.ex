@@ -6,23 +6,22 @@ defmodule Cogctl.Actions.Roles.Create do
     [{:name, :undefined, 'name', {:string, :undefined}, 'Role name (required)'}]
   end
 
-  def run(options, _args, _config, client) do
-    with_authentication(client,
+  def run(options, _args, _config, endpoint) do
+    with_authentication(endpoint,
                         &do_create(&1, :proplists.get_value(:name, options)))
   end
 
-  defp do_create(_client, :undefined) do
+  defp do_create(_endpoint, :undefined) do
     display_arguments_error
   end
 
-  defp do_create(client, name) do
-    case CogApi.role_create(client, %{role: %{name: name}}) do
-      {:ok, resp} ->
-        role = resp["role"]
-        name = role["name"]
+  defp do_create(endpoint, name) do
+    case CogApi.HTTP.Roles.role_create(endpoint, %{name: name}) do
+      {:ok, role} ->
+        name = role.name
 
-        role_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}] do
-          [title, role[attr]]
+        role_attrs = for {title, attr} <- [{"ID", :id}, {"Name", :name}] do
+          [title, Map.fetch!(role, attr)]
         end
 
         display_output("""
@@ -31,7 +30,7 @@ defmodule Cogctl.Actions.Roles.Create do
         #{Table.format(role_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error)
     end
   end
 end

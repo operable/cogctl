@@ -8,17 +8,17 @@ defmodule Cogctl.Actions.ChatHandles.Create do
      {:handle, :undefined, 'handle', {:string, :undefined}, 'Handle (required)'}]
   end
 
-  def run(options, _args, _config, client) do
+  def run(options, _args, _config, endpoint) do
     params = convert_to_params(options, [user: :required, chat_provider: :required, handle: :required])
-    with_authentication(client, &do_create(&1, params))
+    with_authentication(endpoint, &do_create(&1, params))
   end
 
-  defp do_create(_client, :error) do
+  defp do_create(_endpoint, :error) do
     display_arguments_error
   end
 
-  defp do_create(client, {:ok, params}) do
-    case CogApi.chat_handle_create(client, %{chat_handle: params}) do
+  defp do_create(endpoint, {:ok, params}) do
+    case CogApi.HTTP.Old.chat_handle_create(endpoint, %{chat_handle: params}) do
       {:ok, resp} ->
         chat_handle = resp["chat_handle"]
         user = chat_handle["user"]["username"]
@@ -36,7 +36,7 @@ defmodule Cogctl.Actions.ChatHandles.Create do
         #{Table.format(chat_handle_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end

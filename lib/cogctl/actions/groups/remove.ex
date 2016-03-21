@@ -8,25 +8,25 @@ defmodule Cogctl.Actions.Groups.Remove do
      {:group_to_remove, :undefined, 'group', {:string, :undefined}, 'Name of group to remove'}]
   end
 
-  def run(options, _args, _config, client) do
+  def run(options, _args, _config, endpoint) do
     group = :proplists.get_value(:group, options)
     user_to_remove = :proplists.get_value(:user_to_remove, options)
     group_to_remove = :proplists.get_value(:group_to_remove, options)
 
-    with_authentication(client,
+    with_authentication(endpoint,
                         &do_remove(&1, group, user_to_remove, group_to_remove))
   end
 
-  defp do_remove(_client, :undefined, _user_to_add, _group_to_add) do
+  defp do_remove(_endpoint, :undefined, _user_to_add, _group_to_add) do
     display_arguments_error
   end
 
-  defp do_remove(_client, _group_name, :undefined, :undefined) do
+  defp do_remove(_endpoint, _group_name, :undefined, :undefined) do
     display_arguments_error
   end
 
-  defp do_remove(client, group_name, user_to_remove, :undefined) do
-    case CogApi.group_remove(client, group_name, :users, user_to_remove) do
+  defp do_remove(endpoint, group_name, user_to_remove, :undefined) do
+    case CogApi.HTTP.Old.group_remove(endpoint, group_name, :users, user_to_remove) do
       {:ok, resp} ->
         group = resp["group"]
 
@@ -36,12 +36,12 @@ defmodule Cogctl.Actions.Groups.Remove do
         #{Groups.render_memberships(group)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 
-  defp do_remove(client, group_name, :undefined, group_to_remove) do
-    case CogApi.group_remove(client, group_name, :groups, group_to_remove) do
+  defp do_remove(endpoint, group_name, :undefined, group_to_remove) do
+    case CogApi.HTTP.Old.group_remove(endpoint, group_name, :groups, group_to_remove) do
       {:ok, resp} ->
         group = resp["group"]
 
@@ -55,7 +55,7 @@ defmodule Cogctl.Actions.Groups.Remove do
     end
   end
 
-  defp do_remove(_client, _group_name, _user_to_add, _group_to_add) do
+  defp do_remove(_endpoint, _group_name, _user_to_add, _group_to_add) do
     display_arguments_error
   end
 end

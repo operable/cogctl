@@ -7,42 +7,42 @@ defmodule Cogctl.Actions.Roles.Revoke do
      {:group_to_revoke, :undefined, 'group', {:string, :undefined}, 'Name of group to revoke role from'}]
   end
 
-  def run(options, _args, _config, client) do
+  def run(options, _args, _config, endpoint) do
     role = :proplists.get_value(:role, options)
     user_to_revoke = :proplists.get_value(:user_to_revoke, options)
     group_to_revoke = :proplists.get_value(:group_to_revoke, options)
 
-    with_authentication(client,
+    with_authentication(endpoint,
                         &do_revoke(&1, role, user_to_revoke, group_to_revoke))
   end
 
-  defp do_revoke(_client, :undefined, _user_to_revoke, _group_to_revoke) do
+  defp do_revoke(_endpoint, :undefined, _user_to_revoke, _group_to_revoke) do
     display_arguments_error
   end
 
-  defp do_revoke(_client, _role, :undefined, :undefined) do
+  defp do_revoke(_endpoint, _role, :undefined, :undefined) do
     display_arguments_error
   end
 
-  defp do_revoke(client, role, user_to_revoke, :undefined) do
-    case CogApi.role_revoke(client, role, "users", user_to_revoke) do
+  defp do_revoke(endpoint, role, user_to_revoke, :undefined) do
+    case CogApi.HTTP.Old.role_revoke(endpoint, role, "users", user_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{role} from #{user_to_revoke}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 
-  defp do_revoke(client, role, :undefined, group_to_revoke) do
-    case CogApi.role_revoke(client, role, "groups", group_to_revoke) do
+  defp do_revoke(endpoint, role, :undefined, group_to_revoke) do
+    case CogApi.HTTP.Old.role_revoke(endpoint, role, "groups", group_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{role} from #{group_to_revoke}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 
-  defp do_revoke(_client, _role, _user_to_revoke, _group_to_revoke) do
+  defp do_revoke(_endpoint, _role, _user_to_revoke, _group_to_revoke) do
     display_arguments_error
   end
 end

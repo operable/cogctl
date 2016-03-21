@@ -6,11 +6,11 @@ defmodule Cogctl.Actions.Bundles do
     []
   end
 
-  def run(_options, _args, _config, client),
-    do: with_authentication(client, &do_list/1)
+  def run(_options, _args, _config, endpoint),
+    do: with_authentication(endpoint, &do_list/1)
 
-  defp do_list(client) do
-    case CogApi.bundle_index(client) do
+  defp do_list(endpoint) do
+    case CogApi.HTTP.Old.bundle_index(endpoint) do
       {:ok, resp} ->
         bundles = for bundle <- resp["bundles"] do
           [bundle["name"], enabled_to_status(bundle["enabled"]), bundle["inserted_at"]]
@@ -18,7 +18,7 @@ defmodule Cogctl.Actions.Bundles do
 
         display_output(Table.format([["NAME", "STATUS", "INSTALLED"]] ++ bundles, true))
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 

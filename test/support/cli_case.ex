@@ -67,7 +67,7 @@ defmodule Support.CliCase do
 
   defp ensure_started do
     case run("cogctl bootstrap") do
-      "ERROR: Already bootstrapped\n" ->
+      "ERROR: \"Already bootstrapped\"\n" ->
         :ok
       "Bootstrapped\n" ->
         :ok

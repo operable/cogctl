@@ -5,21 +5,21 @@ defmodule Cogctl.Actions.Users.Delete do
     [{:user, :undefined, :undefined, {:string, :undefined}, 'Username'}]
   end
 
-  def run(options, _args, _config, client) do
-    with_authentication(client,
+  def run(options, _args, _config, endpoint) do
+    with_authentication(endpoint,
                         &do_delete(&1, :proplists.get_value(:user, options)))
   end
 
-  defp do_delete(_client, :undefined) do
+  defp do_delete(_endpoint, :undefined) do
     display_arguments_error
   end
 
-  defp do_delete(client, user_username) do
-    case CogApi.user_delete(client, user_username) do
+  defp do_delete(endpoint, user_username) do
+    case CogApi.HTTP.Old.user_delete(endpoint, user_username) do
       :ok ->
         display_output("Deleted #{user_username}")
       {:error, error} ->
-        display_error(error["error"])
+        display_error(error["errors"])
     end
   end
 end
