@@ -24,7 +24,8 @@ defmodule Cogctl.Mixfile do
       {:ibrowse, "~> 4.2.2"},
       {:httpotion, "~> 2.1.0"},
       {:configparser_ex, "~> 0.2.0"},
-      {:cog_api, github: "operable/cog-api-client", ref: "b4c1e5a862c01e576c32145a1393e312feb8af5f"},
+      #{:cog_api, github: "operable/cog-api-client", ref: "87c16814dc8c5a0ca594dc80ffbc849451eb9f7b"},
+      {:cog_api, github: "operable/cog-api-client", ref: "d849cfe6d7dfec943ea1abdca59047d9934f85f0"},
     ]
   end
 
