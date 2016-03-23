@@ -6,16 +6,16 @@ defmodule Cogctl.Actions.Users.Create do
   @params [:first_name, :last_name, :email_address, :username, :password]
 
   def option_spec do
-    [{:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name (required)'},
-     {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name (required)'},
+    [{:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name'},
+     {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name'},
      {:email_address, :undefined, 'email', {:string, :undefined}, 'Email address (required)'},
      {:username, :undefined, 'username', {:string, :undefined}, 'Username (required)'},
      {:password, :undefined, 'password', {:string, :undefined}, 'Password (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [first_name: :required,
-                                         last_name: :required,
+    params = convert_to_params(options, [first_name: :optional,
+                                         last_name: :optional,
                                          email_address: :required,
                                          username: :required,
                                          password: :required])
@@ -34,7 +34,7 @@ defmodule Cogctl.Actions.Users.Create do
         username = user["username"]
 
         user_attrs = for {title, attr} <- [{"ID", "id"}, {"Username", "username"}, {"First Name", "first_name"}, {"Last Name", "last_name"}, {"Email", "email_address"}] do
-          [title, user[attr]]
+          generate_table_row(title, user[attr])
         end
 
         display_output("""
@@ -46,4 +46,7 @@ defmodule Cogctl.Actions.Users.Create do
         display_error(error["errors"])
     end
   end
+
+  defp generate_table_row(title, nil), do: [title, ""]
+  defp generate_table_row(title, attr), do: [title, attr]
 end
