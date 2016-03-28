@@ -66,6 +66,9 @@ defmodule CogctlTest do
     First Name  Cog
     Last Name   Administrator
     Email       cog@localhost
+
+    Groups
+    NAME  ID
     """
 
     output = run("""
