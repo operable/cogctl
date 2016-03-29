@@ -281,6 +281,7 @@ defmodule CogctlTest do
     operable   manage_commands     .*
     operable   manage_groups       .*
     operable   manage_permissions  .*
+    operable   manage_relays       .*
     operable   manage_roles        .*
     operable   manage_users        .*
     """

@@ -1,4 +1,4 @@
-%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "32bbae6485afd2c3a3d95d02f2398985f08fc92b", [ref: "32bbae6485afd2c3a3d95d02f2398985f08fc92b"]},
+%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "2badfd6b3d9de2c62d242b81112857a6e85bc982", [ref: "2badfd6b3d9de2c62d242b81112857a6e85bc982"]},
   "configparser_ex": {:hex, :configparser_ex, "0.2.0"},
   "dialyxir": {:hex, :dialyxir, "0.3.3"},
   "getopt": {:git, "https://github.com/jcomellas/getopt.git", "388dc95caa7fb97ec7db8cfc39246a36aba61bd8", [tag: "v0.8.2"]},
