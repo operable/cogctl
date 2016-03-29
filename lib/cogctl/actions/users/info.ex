@@ -24,7 +24,7 @@ defmodule Cogctl.Actions.Users.Info do
           [title, user[attr]]
         end
 
-        groups = Enum.map(user["group_memberships"], fn(membership) ->
+        groups = Enum.map(user["groups"], fn(membership) ->
                    [membership["name"], membership["id"]]
                  end)
 
