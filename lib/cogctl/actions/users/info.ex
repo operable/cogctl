@@ -20,11 +20,20 @@ defmodule Cogctl.Actions.Users.Info do
       {:ok, resp} ->
         user = resp["user"]
 
-        user = for {title, attr} <- [{"ID", "id"}, {"Username", "username"}, {"First Name", "first_name"}, {"Last Name", "last_name"}, {"Email", "email_address"}] do
+        user_attr = for {title, attr} <- [{"ID", "id"}, {"Username", "username"}, {"First Name", "first_name"}, {"Last Name", "last_name"}, {"Email", "email_address"}] do
           [title, user[attr]]
         end
 
-        display_output(Table.format(user, false))
+        groups = Enum.map(user["groups"], fn(membership) ->
+                   [membership["name"], membership["id"]]
+                 end)
+
+        display_output("""
+                       #{Table.format(user_attr, false)}
+
+                       Groups
+                       #{Table.format([["NAME", "ID"]] ++ groups, true)}
+                       """ |> String.rstrip)
       {:error, error} ->
         display_error(error["errors"])
     end
