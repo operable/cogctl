@@ -27,7 +27,7 @@ defmodule Cogctl.Actions.Permissions.Grant do
   end
 
   defp do_grant(endpoint, permission, user_to_grant, :undefined, :undefined) do
-    case CogApi.HTTP.Old.permission_grant(endpoint, permission, "users", user_to_grant) do
+    case CogApi.HTTP.Internal.permission_grant(endpoint, permission, "users", user_to_grant) do
       {:ok, _resp} ->
         display_output("Granted #{permission} to #{user_to_grant}")
       {:error, error} ->
@@ -36,7 +36,7 @@ defmodule Cogctl.Actions.Permissions.Grant do
   end
 
   defp do_grant(endpoint, permission, :undefined, group_to_grant, :undefined) do
-    case CogApi.HTTP.Old.permission_grant(endpoint, permission, "groups", group_to_grant) do
+    case CogApi.HTTP.Internal.permission_grant(endpoint, permission, "groups", group_to_grant) do
       {:ok, _resp} ->
         display_output("Granted #{permission} to #{group_to_grant}")
       {:error, error} ->
@@ -45,7 +45,7 @@ defmodule Cogctl.Actions.Permissions.Grant do
   end
 
   defp do_grant(endpoint, permission, :undefined, :undefined, role_to_grant) do
-    case CogApi.HTTP.Old.permission_grant(endpoint, permission, "roles", role_to_grant) do
+    case CogApi.HTTP.Internal.permission_grant(endpoint, permission, "roles", role_to_grant) do
       {:ok, _resp} ->
         display_output("Granted #{permission} to #{role_to_grant}")
       {:error, error} ->

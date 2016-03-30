@@ -27,7 +27,7 @@ defmodule Cogctl.Actions.Users.Update do
   end
 
   defp do_update(endpoint, user_username, {:ok, params}) do
-    case CogApi.HTTP.Old.user_update(endpoint, user_username, %{user: params}) do
+    case CogApi.HTTP.Internal.user_update(endpoint, user_username, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]
         username = user["username"]

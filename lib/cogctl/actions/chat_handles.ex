@@ -10,7 +10,7 @@ defmodule Cogctl.Actions.ChatHandles do
     do: with_authentication(endpoint, &do_list/1)
 
   defp do_list(endpoint) do
-    case CogApi.HTTP.Old.chat_handle_index(endpoint) do
+    case CogApi.HTTP.Internal.chat_handle_index(endpoint) do
       {:ok, resp} ->
         chat_handles = resp["chat_handles"]
         chat_handle_attrs = for chat_handle <- chat_handles do

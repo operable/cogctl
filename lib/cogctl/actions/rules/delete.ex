@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.Rules.Delete do
   end
 
   defp do_delete(endpoint, rule_id) do
-    case CogApi.HTTP.Old.rule_delete(endpoint, rule_id) do
+    case CogApi.HTTP.Internal.rule_delete(endpoint, rule_id) do
       :ok ->
         display_output("Deleted #{rule_id}")
       {:error, error} ->

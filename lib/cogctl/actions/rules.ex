@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Rules do
   end
 
   defp do_list(endpoint, command) do
-    case CogApi.HTTP.Old.rule_index(endpoint, command) do
+    case CogApi.HTTP.Internal.rule_index(endpoint, command) do
       {:ok, resp} ->
         rules = resp["rules"]
         rule_attrs = for rule <- rules do

@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Users.Info do
   end
 
   defp do_info(endpoint, user_username) do
-    case CogApi.HTTP.Old.user_show(endpoint, user_username) do
+    case CogApi.HTTP.Internal.user_show(endpoint, user_username) do
       {:ok, resp} ->
         user = resp["user"]
 

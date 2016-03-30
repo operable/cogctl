@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Bundles.Info do
   end
 
   defp do_info(endpoint, bundle_name) do
-    case CogApi.HTTP.Old.bundle_show(endpoint, bundle_name) do
+    case CogApi.HTTP.Internal.bundle_show(endpoint, bundle_name) do
       {:ok, resp} ->
         bundle = resp["bundle"]
 

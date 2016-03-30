@@ -10,11 +10,10 @@ defmodule Cogctl.Actions.Groups do
     do: with_authentication(endpoint, &do_list/1)
 
   defp do_list(endpoint) do
-    case CogApi.HTTP.Old.group_index(endpoint) do
-      {:ok, resp} ->
-        groups = resp["groups"]
+    case CogApi.HTTP.Groups.index(endpoint) do
+      {:ok, groups} ->
         group_attrs = for group <- groups do
-          [group["name"], group["id"]]
+          [group.name, group.id]
         end
 
         display_output(Table.format([["NAME", "ID"]] ++ group_attrs, true))

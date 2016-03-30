@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.Permissions.Delete do
   end
 
   defp do_delete(endpoint, "site:" <> name) do
-    case CogApi.HTTP.Old.permission_delete(endpoint, name) do
+    case CogApi.HTTP.Internal.permission_delete(endpoint, name) do
       :ok ->
         display_output("Deleted site:#{name}")
       {:error, error} ->

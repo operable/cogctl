@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.Permissions.Create do
   end
 
   defp do_create(endpoint, "site:" <> name) do
-    case CogApi.HTTP.Old.permission_create(endpoint, %{permission: %{name: name}}) do
+    case CogApi.HTTP.Permissions.create(endpoint, name) do
       {:ok, _resp} ->
         display_output("Created site:#{name}")
       {:error, error} ->

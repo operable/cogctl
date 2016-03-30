@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Rules.Create do
   end
 
   defp do_create(endpoint, rule_text) do
-    case CogApi.HTTP.Old.rule_create(endpoint, %{rule: rule_text}) do
+    case CogApi.HTTP.Internal.rule_create(endpoint, %{rule: rule_text}) do
       {:ok, resp} ->
         rule = resp["rule"]
         rule_attrs = [{"ID", resp["id"]}, {"Rule Text", rule}]

@@ -18,7 +18,7 @@ defmodule Cogctl.Actions.ChatHandles.Create do
   end
 
   defp do_create(endpoint, {:ok, params}) do
-    case CogApi.HTTP.Old.chat_handle_create(endpoint, %{chat_handle: params}) do
+    case CogApi.HTTP.Internal.chat_handle_create(endpoint, %{chat_handle: params}) do
       {:ok, resp} ->
         chat_handle = resp["chat_handle"]
         user = chat_handle["user"]["username"]

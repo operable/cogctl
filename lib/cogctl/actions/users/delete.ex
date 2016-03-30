@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.Users.Delete do
   end
 
   defp do_delete(endpoint, user_username) do
-    case CogApi.HTTP.Old.user_delete(endpoint, user_username) do
+    case CogApi.HTTP.Internal.user_delete(endpoint, user_username) do
       :ok ->
         display_output("Deleted #{user_username}")
       {:error, error} ->

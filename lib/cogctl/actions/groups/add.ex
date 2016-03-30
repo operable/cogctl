@@ -26,7 +26,7 @@ defmodule Cogctl.Actions.Groups.Add do
   end
 
   defp do_add(endpoint, group_name, user_to_add, :undefined) do
-    case CogApi.HTTP.Old.group_add(endpoint, group_name, :users, user_to_add) do
+    case CogApi.HTTP.Internal.group_add(endpoint, group_name, :users, user_to_add) do
       {:ok, resp} ->
         group = resp["group"]
 
@@ -41,7 +41,7 @@ defmodule Cogctl.Actions.Groups.Add do
   end
 
   defp do_add(endpoint, group_name, :undefined, group_to_add) do
-    case CogApi.HTTP.Old.group_add(endpoint, group_name, :groups, group_to_add) do
+    case CogApi.HTTP.Internal.group_add(endpoint, group_name, :groups, group_to_add) do
       {:ok, resp} ->
         group = resp["group"]
 

@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.ChatHandles.Delete do
   end
 
   defp do_delete(endpoint, {:ok, params}) do
-    case CogApi.HTTP.Old.chat_handle_delete(endpoint, %{chat_handle: params}) do
+    case CogApi.HTTP.Internal.chat_handle_delete(endpoint, %{chat_handle: params}) do
       :ok ->
         display_output("Deleted chat handle owned by #{params[:user]} for #{params[:chat_provider]} chat provider")
       {:error, error} ->

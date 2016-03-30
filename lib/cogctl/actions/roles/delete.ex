@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.Roles.Delete do
   end
 
   defp do_delete(endpoint, role_name) do
-    case CogApi.HTTP.Old.role_delete(endpoint, role_name) do
+    case CogApi.HTTP.Internal.role_delete(endpoint, role_name) do
       :ok ->
         display_output("Deleted #{role_name}")
       {:error, error} ->

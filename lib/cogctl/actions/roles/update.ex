@@ -22,7 +22,7 @@ defmodule Cogctl.Actions.Roles.Update do
   end
 
   defp do_update(endpoint, role_name, {:ok, params}) do
-    case CogApi.HTTP.Old.role_update(endpoint, role_name, %{role: params}) do
+    case CogApi.HTTP.Internal.role_update(endpoint, role_name, %{role: params}) do
       {:ok, resp} ->
         role = resp["role"]
         role_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}] do

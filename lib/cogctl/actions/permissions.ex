@@ -19,7 +19,7 @@ defmodule Cogctl.Actions.Permissions do
   end
 
   defp do_list(endpoint, {:ok, params}) do
-    case CogApi.HTTP.Old.permission_index(endpoint, params) do
+    case CogApi.HTTP.Internal.permission_index(endpoint, params) do
       {:ok, resp} ->
         permissions = resp["permissions"]
         permission_attrs = Enum.map(permissions, fn(permission) ->

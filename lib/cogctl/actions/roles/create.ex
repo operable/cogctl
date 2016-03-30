@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Roles.Create do
   end
 
   defp do_create(endpoint, name) do
-    case CogApi.HTTP.Roles.role_create(endpoint, %{name: name}) do
+    case CogApi.HTTP.Roles.create(endpoint, %{name: name}) do
       {:ok, role} ->
         name = role.name
 
