@@ -23,7 +23,7 @@ defmodule Cogctl.Actions.Groups do
     end
   end
 
-  def render_memberships(%{"members" => %{"users" => users, "groups" => groups}}) do
+  def render_memberships(%{"members" => %{"users" => users, "groups" => groups, "roles" => roles}}) do
     user_attrs = for user <- users do
       [user["username"], user["id"]]
     end
@@ -32,12 +32,19 @@ defmodule Cogctl.Actions.Groups do
       [group["name"], group["id"]]
     end
 
+    role_attrs = for role <- roles do
+      [role["name"], role["id"]]
+    end
+
     """
     User Memberships
     #{Table.format([["USERNAME", "ID"]] ++ user_attrs, true)}
 
     Group Memberships
     #{Table.format([["NAME", "ID"]] ++ group_attrs, true)}
+
+    Role Memberships
+    #{Table.format([["NAME", "ID"]] ++ role_attrs, true)}
     """ |> String.rstrip
   end
 end

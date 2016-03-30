@@ -166,6 +166,9 @@ defmodule CogctlTest do
 
     Group Memberships
     NAME  ID
+
+    Role Memberships
+    NAME  ID
     """
 
     assert run("cogctl groups add admin --group=devops") =~ ~r"""
@@ -178,6 +181,20 @@ defmodule CogctlTest do
     Group Memberships
     NAME    ID
     devops  .*
+
+    Role Memberships
+    NAME  ID
+    """
+
+    assert run("cogctl roles create --name=tester") =~ ~r"""
+    Created tester
+
+    ID    .*
+    Name  tester
+    """
+
+    assert run("cogctl roles grant --group=admin tester") =~ ~r"""
+    Granted tester to admin
     """
 
     assert run("cogctl groups info admin") =~ ~r"""
@@ -191,6 +208,10 @@ defmodule CogctlTest do
     Group Memberships
     NAME    ID
     devops  .*
+
+    Role Memberships
+    NAME    ID
+    tester  .*
     """
 
     assert run("cogctl groups remove admin --user=admin") =~ ~r"""
@@ -202,6 +223,14 @@ defmodule CogctlTest do
     Group Memberships
     NAME    ID
     devops  .*
+
+    Role Memberships
+    NAME    ID
+    tester  .*
+    """
+
+    assert run("cogctl roles revoke --group=admin tester") =~ ~r"""
+    Revoked tester from admin
     """
 
     assert run("cogctl groups delete devops") =~ ~r"""
@@ -252,6 +281,7 @@ defmodule CogctlTest do
     operable   manage_commands     .*
     operable   manage_groups       .*
     operable   manage_permissions  .*
+    operable   manage_relays       .*
     operable   manage_roles        .*
     operable   manage_users        .*
     """
