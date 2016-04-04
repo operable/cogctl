@@ -25,7 +25,7 @@ defmodule Cogctl.Actions.Roles.Grant do
   end
 
   defp do_grant(endpoint, role, user_to_grant, :undefined) do
-    case CogApi.HTTP.Old.role_grant(endpoint, role, "users", user_to_grant) do
+    case CogApi.HTTP.Internal.role_grant(endpoint, role, "users", user_to_grant) do
       {:ok, _resp} ->
         display_output("Granted #{role} to #{user_to_grant}")
       {:error, error} ->
@@ -34,7 +34,13 @@ defmodule Cogctl.Actions.Roles.Grant do
   end
 
   defp do_grant(endpoint, role, :undefined, group_to_grant) do
-    case CogApi.HTTP.Old.role_grant(endpoint, role, "groups", group_to_grant) do
+    group = with {:ok, groups} = CogApi.HTTP.Groups.index(endpoint), 
+      do: Enum.find(groups, fn(group) -> group.name == group_to_grant end)
+
+    grant_role = with {:ok, roles} = CogApi.HTTP.Roles.index(endpoint),
+      do: Enum.find(roles, fn(r) -> r.name == role end)
+
+    case CogApi.HTTP.Roles.grant(endpoint, grant_role, group) do
       {:ok, _resp} ->
         display_output("Granted #{role} to #{group_to_grant}")
       {:error, error} ->

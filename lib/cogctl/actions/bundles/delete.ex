@@ -24,7 +24,7 @@ defmodule Cogctl.Actions.Bundles.Delete do
   end
 
   defp do_delete(endpoint, bundle_name) do
-    case CogApi.HTTP.Old.bundle_delete(endpoint, bundle_name) do
+    case CogApi.HTTP.Internal.bundle_delete(endpoint, bundle_name) do
       :ok ->
         display_output("Deleted #{bundle_name}")
       {:error, error} ->

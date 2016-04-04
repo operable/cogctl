@@ -10,13 +10,14 @@ defmodule Cogctl.Actions.Bundles do
     do: with_authentication(endpoint, &do_list/1)
 
   defp do_list(endpoint) do
-    case CogApi.HTTP.Old.bundle_index(endpoint) do
-      {:ok, resp} ->
-        bundles = for bundle <- resp["bundles"] do
-          [bundle["name"], enabled_to_status(bundle["enabled"]), bundle["inserted_at"]]
+    case CogApi.HTTP.Bundles.index(endpoint) do
+      {:ok, bundles} ->
+
+        bundle_details = for bundle <- bundles do
+          [bundle.name, enabled_to_status(bundle.enabled), bundle.inserted_at]
         end
 
-        display_output(Table.format([["NAME", "STATUS", "INSTALLED"]] ++ bundles, true))
+        display_output(Table.format([["NAME", "STATUS", "INSTALLED"]] ++ bundle_details, true))
       {:error, error} ->
         display_error(error["errors"])
     end

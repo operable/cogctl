@@ -22,7 +22,7 @@ defmodule Cogctl.Actions.Groups.Update do
   end
 
   defp do_update(endpoint, group_name, {:ok, params}) do
-    case CogApi.HTTP.Old.group_update(endpoint, group_name, %{group: params}) do
+    case CogApi.HTTP.Internal.group_update(endpoint, group_name, %{group: params}) do
       {:ok, resp} ->
         group = resp["group"]
         group_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}] do

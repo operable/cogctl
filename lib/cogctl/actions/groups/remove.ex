@@ -26,7 +26,7 @@ defmodule Cogctl.Actions.Groups.Remove do
   end
 
   defp do_remove(endpoint, group_name, user_to_remove, :undefined) do
-    case CogApi.HTTP.Old.group_remove(endpoint, group_name, :users, user_to_remove) do
+    case CogApi.HTTP.Internal.group_remove(endpoint, group_name, :users, user_to_remove) do
       {:ok, resp} ->
         group = resp["group"]
 
@@ -41,7 +41,7 @@ defmodule Cogctl.Actions.Groups.Remove do
   end
 
   defp do_remove(endpoint, group_name, :undefined, group_to_remove) do
-    case CogApi.HTTP.Old.group_remove(endpoint, group_name, :groups, group_to_remove) do
+    case CogApi.HTTP.Internal.group_remove(endpoint, group_name, :groups, group_to_remove) do
       {:ok, resp} ->
         group = resp["group"]
 

@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.Groups.Info do
   end
 
   defp do_info(endpoint, group_name) do
-    case CogApi.HTTP.Old.group_show(endpoint, group_name) do
+    case CogApi.HTTP.Internal.group_show(endpoint, group_name) do
       {:ok, resp} ->
         group = resp["group"]
 

@@ -10,7 +10,7 @@ defmodule Cogctl.Actions.Roles do
     do: with_authentication(endpoint, &do_list/1)
 
   defp do_list(endpoint) do
-    case CogApi.HTTP.Roles.role_index(endpoint) do
+    case CogApi.HTTP.Roles.index(endpoint) do
       {:ok, roles} ->
 
         role_attrs = for role <- roles do

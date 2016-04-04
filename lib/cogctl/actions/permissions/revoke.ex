@@ -27,7 +27,7 @@ defmodule Cogctl.Actions.Permissions.Revoke do
   end
 
   defp do_revoke(endpoint, permission, user_to_revoke, :undefined, :undefined) do
-    case CogApi.HTTP.Old.permission_revoke(endpoint, permission, "users", user_to_revoke) do
+    case CogApi.HTTP.Internal.permission_revoke(endpoint, permission, "users", user_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{permission} from #{user_to_revoke}")
       {:error, error} ->
@@ -36,7 +36,7 @@ defmodule Cogctl.Actions.Permissions.Revoke do
   end
 
   defp do_revoke(endpoint, permission, :undefined, group_to_revoke, :undefined) do
-    case CogApi.HTTP.Old.permission_revoke(endpoint, permission, "groups", group_to_revoke) do
+    case CogApi.HTTP.Internal.permission_revoke(endpoint, permission, "groups", group_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{permission} from #{group_to_revoke}")
       {:error, error} ->
@@ -45,7 +45,7 @@ defmodule Cogctl.Actions.Permissions.Revoke do
   end
 
   defp do_revoke(endpoint, permission, :undefined, :undefined, role_to_revoke) do
-    case CogApi.HTTP.Old.permission_revoke(endpoint, permission, "roles", role_to_revoke) do
+    case CogApi.HTTP.Internal.permission_revoke(endpoint, permission, "roles", role_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{permission} from #{role_to_revoke}")
       {:error, error} ->

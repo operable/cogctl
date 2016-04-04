@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.Groups.Delete do
   end
 
   defp do_delete(endpoint, group_name) do
-    case CogApi.HTTP.Old.group_delete(endpoint, group_name) do
+    case CogApi.HTTP.Internal.group_delete(endpoint, group_name) do
       :ok ->
         display_output("Deleted #{group_name}")
       {:error, error} ->

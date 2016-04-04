@@ -15,14 +15,13 @@ defmodule Cogctl.Actions.Groups.Create do
     display_arguments_error
   end
 
-  defp do_create(endpoint, name) do
-    case CogApi.HTTP.Old.group_create(endpoint, %{group: %{name: name}}) do
-      {:ok, resp} ->
-        group = resp["group"]
-        name = group["name"]
+  defp do_create(endpoint, group_name) do
+    case CogApi.HTTP.Groups.create(endpoint, %{name: group_name}) do
+      {:ok, group} ->
+        name = group.name
 
-        group_attrs = for {title, attr} <- [{"ID", "id"}, {"Name", "name"}] do
-          [title, group[attr]]
+        group_attrs = for {title, attr} <- [{"ID", :id}, {"Name", :name}] do
+          [title, Map.fetch!(group, attr)]
         end
 
         display_output("""

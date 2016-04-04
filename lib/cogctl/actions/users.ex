@@ -15,11 +15,10 @@ defmodule Cogctl.Actions.Users do
   defp generate_table_row(username, first, last), do: [username, first <> " " <> last]
 
   defp do_list(endpoint) do
-    case CogApi.HTTP.Old.user_index(endpoint) do
-      {:ok, resp} ->
-        users = resp["users"]
+    case CogApi.HTTP.Users.index(endpoint) do
+      {:ok, users} ->
         user_attrs = for user <- users do
-          generate_table_row(user["username"], user["first_name"], user["last_name"])
+          generate_table_row(user.username, user.first_name, user.last_name)
         end
 
         display_output(Table.format([["USERNAME", "FULL NAME"]] ++ user_attrs, true))

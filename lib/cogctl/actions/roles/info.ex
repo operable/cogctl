@@ -16,12 +16,12 @@ defmodule Cogctl.Actions.Roles.Info do
   end
 
   defp do_info(endpoint, role_name) do
-    case CogApi.HTTP.Roles.role_show(endpoint, role_name) do
+    case CogApi.HTTP.Roles.show(endpoint, %{name: role_name}) do
       {:ok, role} ->
         role_attrs = [[Map.fetch!(role, :name), Map.fetch!(role, :id)]]
 
         permission_attrs = Enum.map(role.permissions, fn(permission) ->
-                               [permission["namespace"], permission["name"], permission["id"]]
+                               [permission.namespace, permission.name, permission.id]
                            end)
         display_output("""
                        #{Table.format([["NAME", "ID"]] ++ role_attrs, false)}

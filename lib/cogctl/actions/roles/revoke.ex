@@ -25,7 +25,7 @@ defmodule Cogctl.Actions.Roles.Revoke do
   end
 
   defp do_revoke(endpoint, role, user_to_revoke, :undefined) do
-    case CogApi.HTTP.Old.role_revoke(endpoint, role, "users", user_to_revoke) do
+    case CogApi.HTTP.Internal.role_revoke(endpoint, role, "users", user_to_revoke) do
       {:ok, _resp} ->
         display_output("Revoked #{role} from #{user_to_revoke}")
       {:error, error} ->
@@ -34,7 +34,13 @@ defmodule Cogctl.Actions.Roles.Revoke do
   end
 
   defp do_revoke(endpoint, role, :undefined, group_to_revoke) do
-    case CogApi.HTTP.Old.role_revoke(endpoint, role, "groups", group_to_revoke) do
+    group = with {:ok, groups} = CogApi.HTTP.Groups.index(endpoint), 
+      do: Enum.find(groups, fn(group) -> group.name == group_to_revoke end)
+
+    revoke_role = with {:ok, roles} = CogApi.HTTP.Roles.index(endpoint),
+      do: Enum.find(roles, fn(r) -> r.name == role end)
+
+    case CogApi.HTTP.Roles.revoke(endpoint, revoke_role, group) do
       {:ok, _resp} ->
         display_output("Revoked #{role} from #{group_to_revoke}")
       {:error, error} ->
