@@ -11,7 +11,7 @@ defmodule Cogctl.Actions.Bundles.Enable do
   end
 
   defp do_enable(endpoint, bundle_name) do
-    case CogApi.HTTP.Bundles.update(endpoint, %{name: bundle_name}, %{enabled: false}) do
+    case CogApi.HTTP.Bundles.update(endpoint, %{name: bundle_name}, %{enabled: true}) do
       {:ok, _} ->
         display_output("Enabled #{bundle_name}")
       {:error, error} ->
