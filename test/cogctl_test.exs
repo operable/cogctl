@@ -130,18 +130,22 @@ defmodule CogctlTest do
   end
 
   test "cogctl groups" do
-    assert run("cogctl groups create --name=admin") =~ ~r"""
-    Created admin
+    assert run("cogctl groups create admin") =~ ~r"""
+    Created group admin
 
-    ID    .*
-    Name  admin
+    ID     .*
+    Name   admin
+    Users
+    Roles
     """
 
-    assert run("cogctl groups create --name=ops") =~ ~r"""
-    Created ops
+    assert run("cogctl groups create ops") =~ ~r"""
+    Created group ops
 
-    ID    .*
-    Name  ops
+    ID     .*
+    Name   ops
+    Users
+    Roles
     """
 
     assert run("cogctl groups") =~ ~r"""
@@ -150,83 +154,49 @@ defmodule CogctlTest do
     ops    .*
     """
 
-    assert run("cogctl groups update ops --name=devops") =~ ~r"""
-    Updated ops
+    assert run("cogctl groups rename ops devops") =~ ~r"""
+    Renamed group ops to devops
 
-    ID    .*
-    Name  devops
+    ID     .*
+    Name   devops
+    Users
+    Roles
     """
 
-    assert run("cogctl groups add admin --user=admin") =~ ~r"""
-    Added admin to admin
+    assert run("cogctl groups add admin --email=cog@localhost") =~ ~r"""
+    Added cog@localhost to admin
 
-    User Memberships
-    USERNAME  ID
-    admin     .*
-
-    Group Memberships
-    NAME  ID
-
-    Role Memberships
-    NAME  ID
+    ID     .*
+    Name   admin
+    Users  cog@localhost
+    Roles
     """
 
-    assert run("cogctl groups add admin --group=devops") =~ ~r"""
-    Added devops to admin
-
-    User Memberships
-    USERNAME  ID
-    admin     .*
-
-    Group Memberships
-    NAME    ID
-    devops  .*
-
-    Role Memberships
-    NAME  ID
-    """
-
-    assert run("cogctl roles create --name=tester") =~ ~r"""
+    assert run("cogctl roles create tester") =~ ~r"""
     Created tester
 
     ID    .*
     Name  tester
     """
 
-    assert run("cogctl roles grant --group=admin tester") =~ ~r"""
+    assert run("cogctl roles grant tester --group=admin") =~ ~r"""
     Granted tester to admin
     """
 
     assert run("cogctl groups info admin") =~ ~r"""
-    ID    .*
-    Name  admin
-
-    User Memberships
-    USERNAME  ID
-    admin     .*
-
-    Group Memberships
-    NAME    ID
-    devops  .*
-
-    Role Memberships
-    NAME    ID
-    tester  .*
+    ID     .*
+    Name   admin
+    Users  cog@localhost
+    Roles  tester
     """
 
-    assert run("cogctl groups remove admin --user=admin") =~ ~r"""
-    Removed admin from admin
+    assert run("cogctl groups remove admin --email=cog@localhost") =~ ~r"""
+    Removed cog@localhost from admin
 
-    User Memberships
-    USERNAME  ID
-
-    Group Memberships
-    NAME    ID
-    devops  .*
-
-    Role Memberships
-    NAME    ID
-    tester  .*
+    ID     .*
+    Name   admin
+    Users
+    Roles  tester
     """
 
     assert run("cogctl roles revoke --group=admin tester") =~ ~r"""
@@ -240,10 +210,14 @@ defmodule CogctlTest do
     assert run("cogctl groups delete admin") =~ ~r"""
     Deleted admin
     """
+
+    assert run("cogctl roles delete tester") =~ ~r"""
+    Deleted tester
+    """
   end
 
   test "cogctl roles" do
-    assert run("cogctl roles create --name=developer") =~ ~r"""
+    assert run("cogctl roles create developer") =~ ~r"""
     Created developer
 
     ID    .*
@@ -255,19 +229,32 @@ defmodule CogctlTest do
     developer  .*
     """
 
-    assert run("cogctl roles update developer --name=support") =~ ~r"""
-    Updated developer
+    assert run("cogctl roles rename developer support") =~ ~r"""
+    Renamed developer to support
 
     ID    .*
     Name  support
     """
 
-    assert run("cogctl roles grant support --user=admin") =~ ~r"""
-    Granted support to admin
+    assert run("cogctl groups create helpdesk") =~ ~r"""
+    Created group helpdesk
+
+    ID     .*
+    Name   helpdesk
+    Users
+    Roles
     """
 
-    assert run("cogctl roles revoke support --user=admin") =~ ~r"""
-    Revoked support from admin
+    assert run("cogctl roles grant support --group=helpdesk") =~ ~r"""
+    Granted support to helpdesk
+    """
+
+    assert run("cogctl roles revoke support --group=helpdesk") =~ ~r"""
+    Revoked support from helpdesk
+    """
+
+    assert run("cogctl groups delete helpdesk") =~ ~r"""
+    Deleted helpdesk
     """
 
     assert run("cogctl roles delete support") =~ ~r"""
@@ -290,27 +277,7 @@ defmodule CogctlTest do
     Created site:echo
     """
 
-    assert run("cogctl permissions grant site:echo --user=admin") =~ ~r"""
-    Granted site:echo to admin
-    """
-
-    assert run("cogctl groups create --name=ops") =~ ~r"""
-    Created ops
-
-    ID    .*
-    Name  ops
-    """
-
-    assert run("cogctl permissions grant site:echo --group=ops") =~ ~r"""
-    Granted site:echo to ops
-    """
-
-    assert run("cogctl permissions --group=ops") =~ ~r"""
-    NAMESPACE  NAME  ID
-    site       echo  .*
-    """
-
-    assert run("cogctl roles create --name=developer") =~ ~r"""
+    assert run("cogctl roles create developer") =~ ~r"""
     Created developer
 
     ID    .*
@@ -335,24 +302,12 @@ defmodule CogctlTest do
     site       echo  .*
     """
 
-    assert run("cogctl permissions revoke site:echo --user=admin") =~ ~r"""
-    Revoked site:echo from admin
-    """
-
-    assert run("cogctl permissions revoke site:echo --group=ops") =~ ~r"""
-    Revoked site:echo from ops
-    """
-
     assert run("cogctl permissions revoke site:echo --role=developer") =~ ~r"""
     Revoked site:echo from developer
     """
 
     assert run("cogctl permissions delete site:echo") =~ ~r"""
     Deleted site:echo
-    """
-
-    assert run("cogctl groups delete ops") =~ ~r"""
-    Deleted ops
     """
 
     assert run("cogctl roles delete developer") =~ ~r"""

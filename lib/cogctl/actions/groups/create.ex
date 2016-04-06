@@ -1,36 +1,28 @@
 defmodule Cogctl.Actions.Groups.Create do
   use Cogctl.Action, "groups create"
-  alias Cogctl.Table
+
+  alias Cogctl.Actions.Groups
+  alias CogApi.HTTP.Client
 
   def option_spec do
-    [{:name, :undefined, 'name', {:string, :undefined}, 'Group name (required)'}]
+    [{:name, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'}]
+  end
+
+  def run(options, _args, _config, %{token: nil}=endpoint) do
+    with_authentication(endpoint, &run(options, nil, nil, &1))
   end
 
   def run(options, _args, _config, endpoint) do
-    with_authentication(endpoint,
-                        &do_create(&1, :proplists.get_value(:name, options)))
+    do_create(endpoint, :proplists.get_value(:name, options))
   end
 
-  defp do_create(_endpoint, :undefined) do
-    display_arguments_error
-  end
-
+  defp do_create(_endpoint, :undefined), do: display_arguments_error
   defp do_create(endpoint, group_name) do
-    case CogApi.HTTP.Groups.create(endpoint, %{name: group_name}) do
+    case Client.group_create(endpoint, %{name: group_name}) do
       {:ok, group} ->
-        name = group.name
-
-        group_attrs = for {title, attr} <- [{"ID", :id}, {"Name", :name}] do
-          [title, Map.fetch!(group, attr)]
-        end
-
-        display_output("""
-        Created #{name}
-
-        #{Table.format(group_attrs, false)}
-        """ |> String.rstrip)
-      {:error, error} ->
-        display_error(error["errors"])
+        Groups.render(group, "Created group #{group_name}")
+      {:error, message} ->
+        display_error(message)
     end
   end
 end
