@@ -1,6 +1,8 @@
 defmodule Cogctl.Actions.Groups do
   use Cogctl.Action, "groups"
+
   alias Cogctl.Table
+  alias CogApi.HTTP.Client
 
   def option_spec do
     []
@@ -10,7 +12,7 @@ defmodule Cogctl.Actions.Groups do
   do: with_authentication(endpoint, &do_list/1)
 
   defp do_list(endpoint) do
-    case CogApi.HTTP.Groups.index(endpoint) do
+    case Client.group_index(endpoint) do
       {:ok, groups} ->
         group_rows = Enum.map(groups, fn(group) -> [group.name, group.id] end)
         display_output(Table.format([["NAME", "ID"]] ++ group_rows, true))
@@ -36,6 +38,15 @@ defmodule Cogctl.Actions.Groups do
     ]
 
     Table.format(group_rows, false)
+  end
+
+  def find_by_name(endpoint, name) do
+    case Client.group_find(endpoint, name: name) do
+      {:ok, group} ->
+        group
+      _ ->
+        :undefined
+    end
   end
 
 end

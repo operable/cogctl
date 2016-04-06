@@ -73,21 +73,15 @@ defmodule Cogctl.ActionUtil do
       {:ok, endpoint_with_token} ->
         fun.(endpoint_with_token)
       {:error, error} ->
-        error = case error do
-                  error when is_list(error) ->
-                    Enum.join(error, "\n")
-                  error ->
-                    inspect(error)
-                end
-
         IO.puts(:stderr, """
         Unable to authenticate with Cog API:
-        #{error}
+        #{format_error(error)}
 
         You can specify appropriate credentials on the command line via
         the `--rest-user` and `--rest-passwordw` flags, or set them in
         your `$HOME/.cogctl` file.
         """)
+
         :error
     end
   end
@@ -105,4 +99,8 @@ defmodule Cogctl.ActionUtil do
   def display_arguments_error do
     display_error("Missing required arguments")
   end
+
+  defp format_error(error) when is_list(error), do: Enum.join(error, "\n")
+  defp format_error(error), do: inspect(error)
+
 end

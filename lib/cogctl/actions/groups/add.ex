@@ -10,8 +10,8 @@ defmodule Cogctl.Actions.Groups.Add do
      {:email, :undefined, 'email', {:string, :undefined}, 'User email address (required)'}]
   end
 
-  def run(options, _args, _config, %{token: nil}=endpoint) do
-    with_authentication(endpoint, &run(options, nil, nil, &1))
+  def run(options, args, config, %{token: nil}=endpoint) do
+    with_authentication(endpoint, &run(options, args, config, &1))
   end
 
   def run(options, _args, _config, endpoint) do
