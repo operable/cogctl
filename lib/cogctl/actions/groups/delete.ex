@@ -1,6 +1,7 @@
 defmodule Cogctl.Actions.Groups.Delete do
   use Cogctl.Action, "groups delete"
 
+  alias Cogctl.Actions.Groups
   alias CogApi.HTTP.Client
 
   def option_spec do
@@ -12,15 +13,11 @@ defmodule Cogctl.Actions.Groups.Delete do
   end
 
   def run(options, _args, _config, endpoint) do
-    group_name = :proplists.get_value(:group, options)
-    case Client.group_find(endpoint, name: group_name) do
-      {:ok, group} ->
-        do_delete(endpoint, group)
-      _ ->
-        display_error("Unable to find group named #{group_name}")
-    end
+    group = Groups.find_by_name(endpoint, :proplists.get_value(:group, options))
+    do_delete(endpoint, group)
   end
 
+  defp do_delete(_endpoint, :undefined), do: display_arguments_error
   defp do_delete(endpoint, group) do
     case Client.group_delete(endpoint, group.id) do
       :ok ->

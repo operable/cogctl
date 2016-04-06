@@ -15,18 +15,18 @@ defmodule Cogctl.Actions.Groups.Add do
   end
 
   def run(options, _args, _config, endpoint) do
-    group_name = :proplists.get_value(:group, options)
-    case Client.group_find(endpoint, name: group_name) do
-      {:ok, group} ->
-        user = option_to_struct(options, :email, %User{}, :email_address)
-        do_add(endpoint, group, user)
-      _ ->
-        display_error("Unable to find group named #{group_name}")
-    end
+    group = Groups.find_by_name(endpoint, :proplists.get_value(:group, options))
+    user = option_to_struct(options, :email, %User{}, :email_address)
+    do_add(endpoint, group, user)
   end
 
-  defp do_add(_endpoint, :undefined, _), do: display_arguments_error
-  defp do_add(_endpoint, _, :undefined), do: display_arguments_error
+  defp do_add(_endpoint, :undefined, _) do
+    display_error("Unable to find group")
+  end
+
+  defp do_add(_endpoint, _, :undefined) do
+    display_error("Email address is required")
+  end
 
   defp do_add(endpoint, group, user) do
     case Client.group_add_user(endpoint, group, user) do

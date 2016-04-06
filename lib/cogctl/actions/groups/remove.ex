@@ -15,14 +15,9 @@ defmodule Cogctl.Actions.Groups.Remove do
   end
 
   def run(options, _args, _config, endpoint) do
-    group_name = :proplists.get_value(:group, options)
-    case Client.group_find(endpoint, name: group_name) do
-      {:ok, group} ->
-        user = option_to_struct(options, :email, %User{}, :email_address)
-        do_remove(endpoint, group, user)
-      _ ->
-        display_error("Unable to find group named #{group_name}")
-    end
+    group = Groups.find_by_name(endpoint, :proplists.get_value(:group, options))
+    user = option_to_struct(options, :email, %User{}, :email_address)
+    do_remove(endpoint, group, user)
   end
 
   defp do_remove(_endpoint, :undefined, _), do: display_arguments_error

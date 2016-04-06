@@ -2,7 +2,6 @@ defmodule Cogctl.Actions.Groups.Info do
   use Cogctl.Action, "groups info"
 
   alias Cogctl.Actions.Groups
-  alias CogApi.HTTP.Client
 
   def option_spec do
     [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'}]
@@ -13,17 +12,8 @@ defmodule Cogctl.Actions.Groups.Info do
   end
 
   def run(options, _args, _config, endpoint) do
-    do_info(endpoint, :proplists.get_value(:group, options))
-  end
-
-  defp do_info(_endpoint, :undefined), do: display_arguments_error
-  defp do_info(endpoint, group_name) do
-    case Client.group_find(endpoint, name: group_name) do
-      {:ok, group} ->
-        Groups.render(group)
-      {:error, error} ->
-        display_error(error["errors"])
-    end
+    group = Groups.find_by_name(endpoint, :proplists.get_value(:group, options))
+    Groups.render(group)
   end
 
 end

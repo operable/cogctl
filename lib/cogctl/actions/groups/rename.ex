@@ -14,13 +14,8 @@ defmodule Cogctl.Actions.Groups.Rename do
   end
 
   def run(options, _args, _config, endpoint) do
-    group_name = :proplists.get_value(:group, options)
-    case Client.group_find(endpoint, name: group_name) do
-      {:ok, group} ->
-        do_rename(endpoint, group, :proplists.get_value(:name, options))
-      _ ->
-        display_error("Unable to find group named #{group_name}")
-    end
+    group = Groups.find_by_name(endpoint, :proplists.get_value(:group, options))
+    do_rename(endpoint, group, :proplists.get_value(:name, options))
   end
 
   defp do_rename(_endpoint, :undefined, _), do: display_arguments_error
