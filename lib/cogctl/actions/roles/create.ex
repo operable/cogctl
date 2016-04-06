@@ -3,7 +3,7 @@ defmodule Cogctl.Actions.Roles.Create do
   alias Cogctl.Table
 
   def option_spec do
-    [{:name, :undefined, 'name', {:string, :undefined}, 'Role name (required)'}]
+    [{:name, :undefined, :undefined, {:string, :undefined}, 'Role name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

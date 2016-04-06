@@ -1,4 +1,30 @@
 defmodule Cogctl.ActionUtil do
+
+  @doc """
+  Returns a structure with the field named `opt_key` set to
+  the value with the same key from the proplist that is passed
+  in as opts. If the value looked up from `opts` is `:undefined`
+  it is returned directly instead of the struct.
+  """
+  def option_to_struct(opts, opt_key, struct) do
+    option_to_struct(opts, opt_key, struct, opt_key)
+  end
+
+  @doc """
+  Returns a structure with the field named `field` set to
+  the value from the opts proplist at `opt_key`. If the
+  value looked up from `opts` is `:undefined` it is returned
+  directly instead of the struct.
+  """
+  def option_to_struct(opts, opt_key, struct, field) do
+    case :proplists.get_value(opt_key, opts) do
+      :undefined ->
+        :undefined
+      value ->
+        Map.put(struct, field, value)
+    end
+  end
+
   def convert_to_params(options, whitelist) do
     params = Keyword.take(options, Keyword.keys(whitelist))
 
@@ -47,12 +73,20 @@ defmodule Cogctl.ActionUtil do
       {:ok, endpoint_with_token} ->
         fun.(endpoint_with_token)
       {:error, error} ->
+        error = case error do
+                  error when is_list(error) ->
+                    Enum.join(error, "\n")
+                  error ->
+                    inspect(error)
+                end
+
         IO.puts(:stderr, """
-        #{error["error"]}
+        Unable to authenticate with Cog API:
+        #{error}
 
         You can specify appropriate credentials on the command line via
-        the `--user` and `--pw` flags, or set them in your `$HOME/.cogctl`
-        file.
+        the `--rest-user` and `--rest-passwordw` flags, or set them in
+        your `$HOME/.cogctl` file.
         """)
         :error
     end
