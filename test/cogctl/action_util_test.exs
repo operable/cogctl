@@ -33,7 +33,7 @@ defmodule Cogctl.ActionUtilTest do
   test "with_authentication returns error without running callback when authentication fails" do
     defmodule RejectEveryone do
       def authenticate(_client),
-        do: {:error, %{"error" => "nope"}}
+        do: {:error, %{"errors" => "nope"}}
     end
 
     me = self()
