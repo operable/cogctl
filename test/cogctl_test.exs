@@ -462,6 +462,55 @@ defmodule CogctlTest do
     ERROR: The relay `mimimi` could not be deleted: Resource not found
     Error: 1
     """
+  end
 
+  test "cogctl relay-groups" do
+    assert run("cogctl relay-groups") =~ ~r"""
+    NAME  CREATED  ID
+    """
+
+    assert run("cogctl relay-groups create myrelays") =~ ~r"""
+    Created relay group `myrelays`
+
+    ID    .*
+    Name  myrelays
+    """
+
+    run("cogctl relays create test-relay --token=hola")
+    run("cogctl relays create my-test --token=hola")
+
+    assert run("cogctl relay-groups add --relay=test-relay myrelays") =~ ~r"""
+    Relay `test-relay` added to relay group `myrelays`
+    """
+
+    assert run("cogctl relay-groups info myrelays") =~ ~r"""
+    Name           myrelays
+    ID             .*
+    Creation Time  .*
+
+    Relays
+    NAME        ID
+    test-relay  .*
+
+    Bundles
+    NAME  ID
+    """
+
+    run("cogctl relay-groups add --relay=my-test myrelays")
+
+    assert run("cogctl relay-groups remove --relay=test-relay myrelays") =~ ~r"""
+    Relay `test-relay` removed from relay group `myrelays`
+    """
+
+    assert run("cogctl relay-groups remove --relay=my-test myrelays") =~ ~r"""
+    Relay `my-test` removed from relay group `myrelays`
+    	NOTE: There are no more relays in this group.
+    """
+
+    assert run("cogctl relay-groups delete myrelays") =~ ~r"""
+    Deleted relay group `myrelays`
+    """
+
+    run("cogctl relays delete test-relay my-test")
   end
 end
