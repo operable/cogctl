@@ -12,7 +12,7 @@
   "ibrowse": {:hex, :ibrowse, "4.2.2"},
   "lager": {:git, "git://github.com/basho/lager.git", "54d520c2a6ca9a0fc898285c41b4ac6d4c1424fe", [branch: "master"]},
   "piper": {:git, "https://github.com/operable/piper.git", "4f00f9433f999740984a27b366f53a8f46a43b03", [ref: "4f00f9433f999740984a27b366f53a8f46a43b03"]},
-  "poison": {:hex, :poison, "1.5.2"},
+  "poison": {:hex, :poison, "2.1.0"},
   "porcelain": {:hex, :porcelain, "2.0.1"},
   "spanner": {:git, "https://github.com/operable/spanner.git", "18fe8134e22e27ba5a2ea5b3b0c7cf53908da36f", [ref: "18fe8134e22e27ba5a2ea5b3b0c7cf53908da36f"]},
   "uuid": {:hex, :uuid, "1.1.3"},

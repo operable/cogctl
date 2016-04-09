@@ -1,7 +1,6 @@
 defmodule Cogctl.Actions.Bundles.Create do
   use Cogctl.Action, "bundles create"
 
-  alias Cogctl.Actions.Bundles
   alias CogApi.HTTP.Client
 
   @template_extension ".mustache"
@@ -32,7 +31,7 @@ defmodule Cogctl.Actions.Bundles.Create do
 
     case results do
       {:ok, bundle} ->
-        Bundles.render(bundle, "Bundle created #{bundle.name}")
+        display_output("Bundle created #{bundle.name}")
       {:error, message} ->
         display_error(message)
     end
