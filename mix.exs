@@ -15,16 +15,17 @@ defmodule Cogctl.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :yaml_elixir]]
   end
 
   defp deps do
     [
-      {:getopt, github: "jcomellas/getopt", tag: "v0.8.2"},
+      {:getopt, github: "jcomellas/getopt", tag: "v0.8.2", override: true},
       {:ibrowse, "~> 4.2.2"},
       {:httpotion, "~> 2.1.0"},
       {:configparser_ex, "~> 0.2.0"},
       {:cog_api, github: "operable/cog-api-client"},
+      {:spanner, github: "operable/spanner", ref: "18fe8134e22e27ba5a2ea5b3b0c7cf53908da36f"}
     ]
   end
 
