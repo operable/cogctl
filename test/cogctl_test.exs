@@ -3,6 +3,38 @@ defmodule CogctlTest do
 
   doctest Cogctl
 
+  @scratch_dir Path.join([File.cwd!, "test", "scratch"])
+  @template_dir Path.join(@scratch_dir, "templates")
+
+  defp pre_bundle_create do
+    # Make sure the bundle doesn't exist first
+    run("cogctl bundles delete testfoo")
+
+    # Create some templates
+    Enum.each(["slack", "hipchat"], fn(adapter) ->
+      template_dir = Path.join(@template_dir, adapter)
+      File.mkdir_p!(template_dir)
+
+      Enum.each(["foo", "bar"], &File.write!(Path.join(template_dir, "#{&1}.mustache"), "{{#{&1}}}"))
+    end)
+
+    # Create a config file
+    config = """
+    ---
+    name: testfoo
+    version: 0.0.1
+    commands:
+      bar:
+        executable: /bin/foobar
+    """
+    File.write!(Path.join(@scratch_dir, "config.yaml"), config)
+  end
+
+  defp cleanup do
+    # Remove the scratch dir when we're finished
+    File.rm_rf!(@scratch_dir)
+  end
+
   test "cogctl" do
     help_text = String.strip(run("cogctl"))
     display_names = Cogctl.Optparse.action_display_names()
@@ -14,6 +46,18 @@ defmodule CogctlTest do
   end
 
   test "cogctl bundles" do
+    pre_bundle_create
+
+    assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "config.yaml")}") =~ ~r"""
+    Bundle created testfoo
+    """
+
+    cleanup
+
+    assert run("cogctl bundles delete testfoo") =~ ~r"""
+    Deleted testfoo
+    """
+
     assert run("cogctl bundles") =~ ~r"""
     NAME      STATUS   INSTALLED
     operable  enabled  .*
