@@ -513,4 +513,55 @@ defmodule CogctlTest do
 
     run("cogctl relays delete test-relay my-test")
   end
+
+  test "cogctl triggers" do
+
+    assert run("cogctl triggers") =~ ~r"""
+    Name  ID  Pipeline
+    """
+
+    assert run("cogctl triggers create --name=echo_stuff --pipeline=echo_stuff --as-user=somebody --timeout-sec=60 --description=echo_some_stuff") =~ ~r"""
+    Created echo_stuff
+
+    ID              .*
+    Name            echo_stuff
+    Pipeline        echo_stuff
+    As User         somebody
+    Timeout \(sec\)   60
+    Description     echo_some_stuff
+    Invocation URL  .*
+    """
+
+    assert run("cogctl triggers") =~ ~r"""
+    Name        ID                                    Pipeline
+    echo_stuff  [a-f0-9\-]{36}  echo_stuff
+    """
+
+    assert run("cogctl triggers info echo_stuff") =~ ~r"""
+    ID              .*
+    Name            echo_stuff
+    Pipeline        echo_stuff
+    As User         somebody
+    Timeout \(sec\)   60
+    Description     echo_some_stuff
+    Invocation URL  .*
+    """
+
+    assert run("cogctl triggers update echo_stuff --timeout-sec=120 --as-user=somebody_else --pipeline=another_command") =~ ~r"""
+    Updated echo_stuff
+
+    ID              .*
+    Name            echo_stuff
+    Pipeline        another_command
+    As User         somebody_else
+    Timeout \(sec\)   120
+    Description     echo_some_stuff
+    Invocation URL  .*
+    """
+
+    assert run("cogctl triggers delete echo_stuff") =~ ~r"""
+    Deleted echo_stuff
+    """
+  end
+
 end

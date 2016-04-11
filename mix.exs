@@ -21,7 +21,7 @@ defmodule Cogctl.Mixfile do
   defp deps do
     [
       # We override here because of a conflict in rebar. Spanner brings in emqtt which includes
-      # rebar as a dep. 
+      # rebar as a dep.
       {:getopt, github: "jcomellas/getopt", tag: "v0.8.2", override: true},
       {:ibrowse, "~> 4.2.2"},
       {:httpotion, "~> 2.1.0"},
