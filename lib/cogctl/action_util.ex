@@ -91,6 +91,11 @@ defmodule Cogctl.ActionUtil do
     :ok
   end
 
+  def display_error(errors) when is_list(errors) do 
+    "ERROR: " <> Enum.join(errors, "\n")
+    |> IO.puts
+    :error
+  end
   def display_error(error) do
     IO.puts(:stderr, "ERROR: #{inspect error}")
     :error
@@ -100,6 +105,7 @@ defmodule Cogctl.ActionUtil do
     display_error("Missing required arguments")
   end
 
+  defp format_error(%{"errors" => errors}), do: format_error(errors)
   defp format_error(error) when is_list(error), do: Enum.join(error, "\n")
   defp format_error(error), do: inspect(error)
 

@@ -368,4 +368,55 @@ defmodule CogctlTest do
     USER  CHAT PROVIDER  HANDLE
     """
   end
+
+  test "cogctl relays" do
+    assert run("cogctl relays") =~ ~r"""
+    NAME  STATUS  CREATED  ID
+    """
+
+    assert run("cogctl relays create test-relay --token=hola --description='Hola, Como estas'") =~ ~r"""
+    Created test-relay
+
+    ID    .*
+    Name  test-relay
+    """
+
+    assert run("cogctl relays enable test-relay") =~ ~r"""
+    Enabled test-relay
+    """
+
+    assert run("cogctl relays info test-relay") =~ ~r"""
+    Name           test-relay
+    ID             .*
+    Status         enabled
+    Creation Time  .*
+    Description    Hola, Como estas
+
+    Relay Groups
+    NAME  ID
+    """
+
+    assert run("cogctl relays disable test-relay") =~ ~r"""
+    Disabled test-relay
+    """
+
+    assert run("cogctl relays update test-relay --description='Hello, there'") =~ ~r"""
+    Updated test-relay
+
+    Name           test-relay
+    ID             .*
+    Status         disabled
+    Creation Time  .*
+    Description    Hello, there
+
+    Relay Groups
+    NAME  ID
+    """
+
+    assert run("cogctl relays delete test-relay mimimi") =~ ~r"""
+    Deleted test-relay
+    ERROR: Resource not found: The relay mimimi could not be deleted
+    """
+
+  end
 end
