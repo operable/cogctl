@@ -45,12 +45,14 @@ defmodule CogctlTest do
     role         .*
     rules        .*
     seed         .*
+    sleep        .*
     sort         .*
     sum          .*
     table        .*
     thorn        .*
     unique       .*
     wc           .*
+    which        .*
     """
   end
 
@@ -262,6 +264,7 @@ defmodule CogctlTest do
     """
   end
 
+
   test "cogctl permissions" do
     assert run("cogctl permissions") =~ ~r"""
     NAMESPACE  NAME                ID
@@ -270,6 +273,7 @@ defmodule CogctlTest do
     operable   manage_permissions  .*
     operable   manage_relays       .*
     operable   manage_roles        .*
+    operable   manage_triggers     .*
     operable   manage_users        .*
     """
 
