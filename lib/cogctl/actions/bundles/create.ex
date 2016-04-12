@@ -5,6 +5,26 @@ defmodule Cogctl.Actions.Bundles.Create do
 
   @template_extension ".mustache"
 
+  @moduledoc """
+  Creates bundles. The bundles create action creates bundles by taking a bundle
+  config file, running some validations on it and POSTing the resulting json.
+  Special considerations are made for templates. Templates can be inlined in the
+  bundle config or split up into separate files following a specific file hierachy.
+  In the later case this action will read each template and append the contents to
+  the config file.
+
+  The file hierachy looks as follows:
+    templates
+    └── <adapter>
+        └── <template_name>.mustache
+
+  Your template name should correspond to the command that it belongs to. For example,
+  a command called 'date' would have a template called 'date.mustache'
+
+  By default cogctl will look for a directory called 'templates' in the working directory.
+  Optionally you can pass a directory via the '--templates' option.
+  """
+
   def option_spec do
     [{:file, :undefined, :undefined, {:string, :undefined}, 'Path to your bundle config file (required)'},
      {:templates, :undefined, 'templates', {:string, 'templates'}, 'Path to your template directory'}]
