@@ -30,21 +30,19 @@ defmodule Cogctl.Actions.Bundles.Create do
      {:templates, :undefined, 'templates', {:string, 'templates'}, 'Path to your template directory'}]
   end
 
-  def run(options, _args, _config, %{token: nil}=endpoint) do
-    with_authentication(endpoint, &run(options, nil, nil, &1))
-  end
-
   def run(options, _args, _config, endpoint) do
-    config_file = :proplists.get_value(:file, options)
-    template_dir = :proplists.get_value(:templates, options)
-    do_create(endpoint, config_file, template_dir)
+    case convert_to_params(options, [file: :required,
+                                     templates: :required]) do
+      {:ok, params} ->
+        with_authentication(endpoint, &do_create(&1, params))
+      :error ->
+        display_arguments_error
+    end
   end
 
-  defp do_create(_endpoint, :undefined, _template_dir),
-    do: display_arguments_error
-  defp do_create(endpoint, bundle_file, template_dir) do
-    results = with {:ok, config}         <- Spanner.Config.Parser.read_from_file(bundle_file),
-                   {:ok, templates}      <- build_template_map(template_dir),
+  defp do_create(endpoint, params) do
+    results = with {:ok, config}         <- Spanner.Config.Parser.read_from_file(params.file),
+                   {:ok, templates}      <- build_template_map(params.templates),
                    {:ok, amended_config} <- maybe_add_templates(templates, config),
                    :ok                   <- Spanner.Config.validate(amended_config),
                  do: Client.bundle_create(endpoint, amended_config)
