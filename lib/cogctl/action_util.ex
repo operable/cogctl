@@ -78,7 +78,7 @@ defmodule Cogctl.ActionUtil do
         #{format_error(error)}
 
         You can specify appropriate credentials on the command line via
-        the `--rest-user` and `--rest-passwordw` flags, or set them in
+        the `--rest-user` and `--rest-password` flags, or set them in
         your `$HOME/.cogctl` file.
         """)
 

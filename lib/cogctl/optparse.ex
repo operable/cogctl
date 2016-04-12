@@ -50,6 +50,13 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Permissions.Delete,
                   Cogctl.Actions.Permissions.Grant,
                   Cogctl.Actions.Permissions.Revoke,
+
+                  Cogctl.Actions.Triggers,
+                  Cogctl.Actions.Triggers.Create,
+                  Cogctl.Actions.Triggers.Delete,
+                  Cogctl.Actions.Triggers.Info,
+                  Cogctl.Actions.Triggers.Update,
+
                   Cogctl.Actions.ChatHandles,
                   Cogctl.Actions.ChatHandles.Create,
                   Cogctl.Actions.ChatHandles.Delete]
