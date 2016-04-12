@@ -49,7 +49,7 @@ defmodule Cogctl.Actions.Bundles.Create do
 
     case results do
       {:ok, bundle} ->
-        display_output("Bundle created #{bundle.name}")
+        display_output("Created '#{bundle.name}' bundle")
       {:error, message} ->
         display_error(message)
     end
