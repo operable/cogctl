@@ -415,7 +415,8 @@ defmodule CogctlTest do
 
     assert run("cogctl relays delete test-relay mimimi") =~ ~r"""
     Deleted test-relay
-    ERROR: Resource not found: The relay mimimi could not be deleted
+    ERROR: The relay `mimimi` could not be deleted: Resource not found
+    Error: 1
     """
 
   end
