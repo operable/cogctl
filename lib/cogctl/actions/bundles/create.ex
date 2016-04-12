@@ -73,6 +73,13 @@ defmodule Cogctl.Actions.Bundles.Create do
   end
 
   defp templates(path, adapters) do
+    # Produces a map like this:
+    # %{<template_name> => %{
+    #     <adapter> => <template_content>,
+    #     <adapter> => <template_content>},
+    #   <template_name> => %{
+    #     ...}
+    #  }
     templates = Enum.reduce(adapters, %{}, fn(adapter, acc) ->
       Path.join(path, adapter)
       |> File.ls!
