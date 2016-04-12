@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 export DATABASE_URL=$DATABASE_URL.$BUILDKITE_BUILD_NUMBER
 export COG_ADAPTER="null"
 COG_DIR=cogctl_cog
@@ -15,7 +17,8 @@ else
   echo "Making sure cog is up-to-date..."
 
   cd $COG_DIR
-  git pull origin master
+  git fetch origin
+  git reset --hard origin/master
 fi
 
 mix do deps.get, ecto.create, ecto.migrate
