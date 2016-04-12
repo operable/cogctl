@@ -26,7 +26,7 @@ defmodule Cogctl.Mixfile do
       {:poison, "~> 2.0", override: true},
       {:configparser_ex, "~> 0.2.0"},
       {:cog_api, github: "operable/cog-api-client"},
-      {:spanner, github: "operable/spanner", ref: "18fe8134e22e27ba5a2ea5b3b0c7cf53908da36f"}
+      {:spanner, github: "operable/spanner"}
     ]
   end
 
