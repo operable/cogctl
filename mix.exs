@@ -15,16 +15,21 @@ defmodule Cogctl.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :yaml_elixir]]
   end
 
   defp deps do
     [
-      {:getopt, github: "jcomellas/getopt", tag: "v0.8.2"},
+      # We override here because of a conflict in rebar. Spanner brings in emqtt which includes
+      # rebar as a dep. 
+      {:getopt, github: "jcomellas/getopt", tag: "v0.8.2", override: true},
       {:ibrowse, "~> 4.2.2"},
       {:httpotion, "~> 2.1.0"},
+      # We override poison here because spanner is set to 1.5.2 due to phoenix requirements
+      {:poison, "~> 2.0", override: true},
       {:configparser_ex, "~> 0.2.0"},
       {:cog_api, github: "operable/cog-api-client"},
+      {:spanner, github: "operable/spanner"}
     ]
   end
 
