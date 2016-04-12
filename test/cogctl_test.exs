@@ -49,7 +49,7 @@ defmodule CogctlTest do
     pre_bundle_create
 
     assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "config.yaml")}") =~ ~r"""
-    Bundle created testfoo
+    Created 'testfoo' bundle
     """
 
     cleanup
