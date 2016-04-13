@@ -114,7 +114,8 @@ defmodule CogctlTest do
     Email       cog@localhost
 
     Groups
-    NAME  ID
+    NAME       ID
+    cog-admin  .*
     """
 
     output = run("""
@@ -195,9 +196,10 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl groups") =~ ~r"""
-    NAME   ID
-    admin  .*
-    ops    .*
+    NAME       ID
+    admin      .*
+    cog-admin  .*
+    ops        .*
     """
 
     assert run("cogctl groups rename ops devops") =~ ~r"""
@@ -272,6 +274,7 @@ defmodule CogctlTest do
 
     assert run("cogctl roles") =~ ~r"""
     NAME       ID
+    cog-admin  .*
     developer  .*
     """
 
