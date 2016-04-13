@@ -29,7 +29,7 @@ defmodule Cogctl.Mixfile do
       {:poison, "~> 2.0", override: true},
       {:configparser_ex, "~> 0.2.0"},
       {:cog_api, github: "operable/cog-api-client"},
-      {:spanner, github: "operable/spanner", branch: "kevsmith/propagate-rule-fixups"}
+      {:spanner, github: "operable/spanner"}
     ]
   end
 
