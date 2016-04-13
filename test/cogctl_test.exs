@@ -23,6 +23,7 @@ defmodule CogctlTest do
     ---
     name: testfoo
     version: 0.0.1
+    cog_bundle_version: 2
     commands:
       bar:
         executable: /bin/foobar
