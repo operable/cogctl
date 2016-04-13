@@ -50,8 +50,10 @@ defmodule Cogctl.Actions.Bundles.Create do
     case results do
       {:ok, bundle} ->
         display_output("Created '#{bundle.name}' bundle")
-      {:error, message} ->
-        display_error(message)
+      {:error, messages} when is_list(messages) ->
+        # Map over messages and convert any validation errors
+        # into strings so cogctl can display them
+        Enum.map(messages, &format_validation_reason/1) |> display_error
     end
   end
 
@@ -106,5 +108,13 @@ defmodule Cogctl.Actions.Bundles.Create do
   defp maybe_add_templates(external_templates, config) do
     templates = Map.merge(external_templates, Map.get(config, "templates", %{}))
     {:ok, Map.put(config, "templates", templates)}
+  end
+
+  defp format_validation_reason({reason, field_path}) do
+    field_path = String.replace(field_path, "#/", "", global: false)
+    "Invalid field '#{field_path}': #{reason}"
+  end
+  defp format_validation_reason(error) do
+    error
   end
 end
