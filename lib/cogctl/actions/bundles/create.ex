@@ -44,8 +44,8 @@ defmodule Cogctl.Actions.Bundles.Create do
     results = with {:ok, config}         <- Spanner.Config.Parser.read_from_file(params.file),
                    {:ok, templates}      <- build_template_map(params.templates),
                    {:ok, amended_config} <- maybe_add_templates(templates, config),
-                   :ok                   <- Spanner.Config.validate(amended_config),
-                 do: Client.bundle_create(endpoint, amended_config)
+                   {:ok, fixed_config}   <- Spanner.Config.validate(amended_config),
+                 do: Client.bundle_create(endpoint, fixed_config)
 
     case results do
       {:ok, bundle} ->
