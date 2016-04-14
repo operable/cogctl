@@ -1,41 +1,41 @@
 defmodule Cogctl.Actions.Users.Info do
   use Cogctl.Action, "users info"
-  alias Cogctl.Table
+  import Cogctl.Actions.Users.Util
 
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'User username (required)'}]
+    [{:user, :undefined, :undefined, {:string, :undefined}, 'User username (required)'},
+     {:groups, :undefined, 'groups', {:boolean, false}, 'Flag to display groups (default false)'},
+     {:roles, :undefined, 'roles', {:boolean, false}, 'Flag to display roles (default false)'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    with_authentication(endpoint,
-                        &do_info(&1, :proplists.get_value(:user, options)))
+    case convert_to_params(options, option_spec, [user: :required,
+                                                  groups: :optional,
+                                                  roles: :optional]) do
+      {:ok, params} ->
+        with_authentication(endpoint, &do_info(&1, params))
+      {:error, {:missing_params, missing_args}} ->
+        display_arguments_error(missing_args)
+    end
   end
 
-  defp do_info(_endpoint, :undefined) do
-    display_arguments_error
-  end
-
-  defp do_info(endpoint, user_username) do
-    case CogApi.HTTP.Internal.user_show(endpoint, user_username) do
-      {:ok, resp} ->
-        user = resp["user"]
-
-        user_attr = for {title, attr} <- [{"ID", "id"}, {"Username", "username"}, {"First Name", "first_name"}, {"Last Name", "last_name"}, {"Email", "email_address"}] do
-          [title, user[attr]]
+  defp do_info(endpoint, params) do
+    case CogApi.HTTP.Client.user_show(endpoint, %{username: params.user}) do
+      {:ok, user} ->
+        all = fn(:get, data, next) ->
+          Enum.flat_map(data, &next.(Map.delete(&1, :__struct__)))
         end
 
-        groups = Enum.map(user["groups"], fn(membership) ->
-                   [membership["name"], membership["id"]]
-                 end)
+        groups = if params.groups do
+          user.groups
+        end
+        roles = if params.roles do
+          get_in(user.groups, [all, :roles])
+        end
 
-        display_output("""
-                       #{Table.format(user_attr, false)}
-
-                       Groups
-                       #{Table.format([["NAME", "ID"]] ++ groups, true)}
-                       """ |> String.rstrip)
-      {:error, error} ->
-        display_error(error["errors"])
+        render(user, groups, roles)
+      error ->
+        display_error(error)
     end
   end
 end

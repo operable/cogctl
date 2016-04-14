@@ -112,8 +112,8 @@ defmodule CogctlTest do
 
   test "cogctl users" do
     assert run("cogctl users") =~ ~r"""
-    USERNAME  FULL NAME
-    admin     Cog Administrator
+    USERNAME  FULL NAME          EMAIL_ADDRESS
+    admin     Cog Administrator  cog@localhost
     """
 
     assert run("cogctl users info admin") =~ ~r"""
@@ -122,11 +122,45 @@ defmodule CogctlTest do
     First Name  Cog
     Last Name   Administrator
     Email       cog@localhost
-
-    Groups
-    NAME       ID
-    cog-admin  .*
     """
+
+    run("cogctl groups create mememe")
+    run("cogctl groups add mememe --email=cog@localhost")
+    run("cogctl roles create mimimi")
+    run("cogctl roles grant mimimi --group=cog-admin")
+
+    assert run("cogctl users info admin --groups") =~ ~r"""
+    ID          .*
+    Username    admin
+    First Name  Cog
+    Last Name   Administrator
+    Email       cog@localhost
+    Groups      cog-admin,mememe
+    """
+
+    assert run("cogctl users info admin --roles") =~ ~r"""
+    ID          .*
+    Username    admin
+    First Name  Cog
+    Last Name   Administrator
+    Email       cog@localhost
+    Roles       cog-admin,mimimi
+    """
+
+    assert run("cogctl users info admin --groups --roles") =~ ~r"""
+    ID          .*
+    Username    admin
+    First Name  Cog
+    Last Name   Administrator
+    Email       cog@localhost
+    Groups      cog-admin,mememe
+    Roles       cog-admin,mimimi
+    """
+
+    run("cogctl roles revoke mimimi --group=cog-admin")
+    run("cogctl roles delete mimimi")
+    run("cogctl groups remove mememe --email=cog@localhost")
+    run("cogctl groups delete mememe")
 
     output = run("""
     cogctl users create

@@ -42,7 +42,7 @@ defmodule Cogctl.Actions.Users.Create do
         #{Table.format(user_attrs, false)}
         """ |> String.rstrip)
       {:error, error} ->
-        display_error(error["errors"])
+        display_error(error)
     end
   end
 
