@@ -6,9 +6,9 @@ defmodule CogctlTest do
   @scratch_dir Path.join([File.cwd!, "test", "scratch"])
   @template_dir Path.join(@scratch_dir, "templates")
 
-  defp pre_bundle_create do
+  defp pre_bundle_create(name) do
     # Make sure the bundle doesn't exist first
-    run("cogctl bundles delete testfoo")
+    run("cogctl bundles delete #{name}")
 
     # Create some templates
     Enum.each(["slack", "hipchat"], fn(adapter) ->
@@ -21,14 +21,14 @@ defmodule CogctlTest do
     # Create a config file
     config = """
     ---
-    name: testfoo
+    name: #{name}
     version: 0.0.1
     cog_bundle_version: 2
     commands:
       bar:
         executable: /bin/foobar
     """
-    File.write!(Path.join(@scratch_dir, "config.yaml"), config)
+    File.write!(Path.join(@scratch_dir, "#{name}.yaml"), config)
   end
 
   defp cleanup do
@@ -47,9 +47,9 @@ defmodule CogctlTest do
   end
 
   test "cogctl bundles" do
-    pre_bundle_create
+    pre_bundle_create("testfoo")
 
-    assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "config.yaml")}") =~ ~r"""
+    assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "testfoo.yaml")}") =~ ~r"""
     Created 'testfoo' bundle
     """
 
@@ -462,7 +462,7 @@ defmodule CogctlTest do
 
     assert run("cogctl relays delete test-relay mimimi") =~ ~r"""
     Deleted test-relay
-    ERROR: The relay `mimimi` could not be deleted: Resource not found
+    ERROR: The relay `mimimi` could not be deleted: Resource not found for: 'relays'
     Error: 1
     """
   end
@@ -509,6 +509,21 @@ defmodule CogctlTest do
     Relay `my-test` removed from relay group `myrelays`
     	NOTE: There are no more relays in this group.
     """
+
+    bundle_names = Enum.map(1..5, &"bundle#{&1}")
+    Enum.each(bundle_names, fn(name) ->
+      pre_bundle_create(name)
+      run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "#{name}.yaml")}")
+    end)
+
+    assert run("cogctl relay-groups assign myrelays #{Enum.join(bundle_names, " ")}") =~ ~r"""
+    Assigned 'bundle1, bundle2, bundle3, bundle4, bundle5' to relay group `myrelays`
+    """
+
+    # Cleanup the bundle bits when we are finished
+    Enum.each(bundle_names, &run("cogctl bundles delete #{&1}"))
+    cleanup
+
 
     assert run("cogctl relay-groups delete myrelays") =~ ~r"""
     Deleted relay group `myrelays`
