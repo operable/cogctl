@@ -24,7 +24,7 @@ defmodule Cogctl.Actions.Roles.Grant do
   defp do_grant(_endpoint, _role, :undefined), do: display_arguments_error
 
   defp do_grant(endpoint, role, group) do
-    case HTTP.Roles.grant(endpoint, role, group) do
+    case HTTP.Client.group_add_role(endpoint, group, role) do
       {:ok, _} ->
         display_output("Granted #{role.name} to #{group.name}")
       {:error, error} ->
