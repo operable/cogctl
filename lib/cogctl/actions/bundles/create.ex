@@ -28,13 +28,15 @@ defmodule Cogctl.Actions.Bundles.Create do
   def option_spec do
     [{:file, :undefined, :undefined, {:string, :undefined}, 'Path to your bundle config file (required)'},
      {:templates, :undefined, 'templates', {:string, 'templates'}, 'Path to your template directory'},
-     {:enabled, :undefined, 'enable', {:boolean, false}, 'Enable bundle after installing'}]
+     {:enabled, :undefined, 'enable', {:boolean, false}, 'Enable bundle after installing'},
+     {:"relay-groups", :undefined, 'relay-groups', {:string, :undefined}, 'List of relay group names separated by commas to assign the bundle'}]
   end
 
   def run(options, _args, _config, endpoint) do
     case convert_to_params(options, [file: :required,
                                      templates: :required,
-                                     enabled: :optional]) do
+                                     enabled: :optional,
+                                     "relay-groups": :optional]) do
       {:ok, params} ->
         with_authentication(endpoint, &do_create(&1, params))
       {:error, {:missing_params, missing_params}} ->
@@ -43,20 +45,54 @@ defmodule Cogctl.Actions.Bundles.Create do
   end
 
   defp do_create(endpoint, params) do
-    results = with {:ok, config}         <- Spanner.Config.Parser.read_from_file(params.file),
-                   {:ok, templates}      <- build_template_map(params.templates),
-                   {:ok, amended_config} <- maybe_add_templates(templates, config),
-                   {:ok, fixed_config}   <- Spanner.Config.validate(amended_config),
-                   do: Client.bundle_create(endpoint, Map.put(params, "config", fixed_config))
+    result = with {:ok, config} <- parse_config(params),
+                  {:ok, bundle} <- create_bundle(endpoint, params, config),
+                  do: {:ok, bundle}
 
-    case results do
+    case result do
       {:ok, bundle} ->
-        display_output("Created '#{bundle.name}' bundle")
+        display_output("Created #{bundle.name} bundle")
+        assign_to_relay_groups(endpoint, bundle, params)
+        :ok
       {:error, messages} when is_list(messages) ->
         # Map over messages and convert any validation errors
         # into strings so cogctl can display them
         Enum.map(messages, &format_validation_reason/1) |> display_error
     end
+  end
+
+  defp parse_config(params) do
+    with {:ok, config}         <- Spanner.Config.Parser.read_from_file(params.file),
+         {:ok, templates}      <- build_template_map(params.templates),
+         {:ok, amended_config} <- maybe_add_templates(templates, config),
+         {:ok, fixed_config}   <- Spanner.Config.validate(amended_config),
+         do: {:ok, fixed_config}
+  end
+
+  defp create_bundle(endpoint, params, config) do
+    params = Map.put(params, "config", config)
+    Client.bundle_create(endpoint, params)
+  end
+
+  defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_group_names}) do
+    relay_groups = String.split(relay_group_names, ",")
+
+    Enum.reduce_while(relay_groups, {:ok, []}, fn relay_group, {:ok, acc} ->
+      result = Client.relay_group_add_bundle(%{name: relay_group}, %{bundle: bundle.name}, endpoint)
+
+      case result do
+        {:ok, relay_group} ->
+          display_output("Assigned #{bundle.name} bundle to #{relay_group.name} relay group")
+          {:cont, {:ok, [relay_group|acc]}}
+        error ->
+          {:halt, error}
+      end
+    end)
+  end
+
+  # Nothing to assign
+  defp assign_to_relay_groups(_endpoint, _bundle, _params) do
+    {:ok, []}
   end
 
   defp build_template_map(template_dir) do
