@@ -2,6 +2,8 @@ defmodule Cogctl.Actions.Bundles.Create do
   use Cogctl.Action, "bundles create"
 
   alias CogApi.HTTP.Client
+  alias Cogctl.Actions.Bundles
+  alias Cogctl.Table
 
   @template_extension ".mustache"
 
@@ -52,8 +54,26 @@ defmodule Cogctl.Actions.Bundles.Create do
     case result do
       {:ok, bundle} ->
         display_output("Created #{bundle.name} bundle")
+
         assign_to_relay_groups(endpoint, bundle, params)
-        :ok
+
+        status = Bundles.enabled_to_status(bundle.enabled)
+        bundle = Map.merge(bundle, %{status: status})
+
+        bundle_attrs = for {title, attr} <- [{"ID", :id}, {"Name", :name}, {"Status", :status}, {"Installed", :inserted_at}] do
+          [title, Map.get(bundle, attr) |> to_string]
+        end
+
+        commands = for command <- bundle.commands do
+          [command["name"], command["id"]]
+        end
+
+        display_output("""
+        #{Table.format(bundle_attrs, false)}
+
+        Commands
+        #{Table.format([["NAME", "ID"]|commands], true)}
+        """ |> String.rstrip)
       {:error, messages} when is_list(messages) ->
         # Map over messages and convert any validation errors
         # into strings so cogctl can display them
