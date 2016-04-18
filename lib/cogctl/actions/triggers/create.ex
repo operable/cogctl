@@ -6,6 +6,7 @@ defmodule Cogctl.Actions.Triggers.Create do
   def option_spec do
     [{:name, :undefined, 'name', {:string, :undefined}, 'Trigger name (required)'},
      {:pipeline, :undefined, 'pipeline', {:string, :undefined}, 'Pipeline text (required)'},
+     {:enabled, :undefined, 'enabled', {:boolean, :undefined}, 'Enabled'},
      {:as_user, :undefined, 'as-user', {:string, :undefined}, 'User to execute pipeline as'},
      {:timeout_sec, :undefined, 'timeout-sec', {:string, :undefined}, 'Timeout (seconds)'},
      {:description, :undefined, 'description', {:string, :undefined}, 'Description'}]
@@ -14,6 +15,7 @@ defmodule Cogctl.Actions.Triggers.Create do
   def run(options, _args, _config, endpoint) do
     case convert_to_params(options, [name: :required,
                                      pipeline: :required,
+                                     enabled: :optional,
                                      as_user: :optional,
                                      timeout_sec: :optional,
                                      description: :optional]) do

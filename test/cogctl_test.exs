@@ -549,7 +549,7 @@ defmodule CogctlTest do
   test "cogctl triggers" do
 
     assert run("cogctl triggers") =~ ~r"""
-    Name  ID  Pipeline
+    Name  ID  Enabled  Pipeline
     """
 
     assert run("cogctl triggers create --name=echo_stuff --pipeline=echo_stuff --as-user=somebody --timeout-sec=60 --description=echo_some_stuff") =~ ~r"""
@@ -558,6 +558,7 @@ defmodule CogctlTest do
     ID              .*
     Name            echo_stuff
     Pipeline        echo_stuff
+    Enabled         true
     As User         somebody
     Timeout \(sec\)   60
     Description     echo_some_stuff
@@ -565,26 +566,35 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl triggers") =~ ~r"""
-    Name        ID                                    Pipeline
-    echo_stuff  [a-f0-9\-]{36}  echo_stuff
+    Name        ID                                    Enabled  Pipeline
+    echo_stuff  [a-f0-9\-]{36}  true     echo_stuff
     """
 
     assert run("cogctl triggers info echo_stuff") =~ ~r"""
     ID              .*
     Name            echo_stuff
     Pipeline        echo_stuff
+    Enabled         true
     As User         somebody
     Timeout \(sec\)   60
     Description     echo_some_stuff
     Invocation URL  .*
     """
 
+    assert run("cogctl triggers disable echo_stuff") =~ ~r"""
+    Disabled trigger echo_stuff
+    """
+
+    assert run("cogctl triggers enable echo_stuff") =~ ~r"""
+    Enabled trigger echo_stuff
+    """
     assert run("cogctl triggers update echo_stuff --timeout-sec=120 --as-user=somebody_else --pipeline=another_command") =~ ~r"""
     Updated echo_stuff
 
     ID              .*
     Name            echo_stuff
     Pipeline        another_command
+    Enabled         true
     As User         somebody_else
     Timeout \(sec\)   120
     Description     echo_some_stuff

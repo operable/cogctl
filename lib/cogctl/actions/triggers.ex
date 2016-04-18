@@ -12,9 +12,9 @@ defmodule Cogctl.Actions.Triggers do
     case CogApi.HTTP.Client.trigger_index(endpoint) do
       {:ok, triggers} ->
         attrs = for t <- triggers do
-          [t.name, t.id, t.pipeline]
+          [t.name, t.id, to_string(t.enabled), t.pipeline]
         end
-        display_output(Table.format([["Name", "ID", "Pipeline"]] ++ attrs, true))
+        display_output(Table.format([["Name", "ID", "Enabled", "Pipeline"]] ++ attrs, true))
       {:error, error} ->
         display_error(error)
     end
