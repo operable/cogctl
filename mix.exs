@@ -28,7 +28,7 @@ defmodule Cogctl.Mixfile do
       # We override poison here because spanner is set to 1.5.2 due to phoenix requirements
       {:poison, "~> 2.0", override: true},
       {:configparser_ex, "~> 0.2.0"},
-      {:cog_api, github: "operable/cog-api-client", ref: "2c2dd4eb9fbe6f54a8fff64490cd86c9f7a693ea"},
+      {:cog_api, github: "operable/cog-api-client", ref: "1c033b09b4be9271c2da1119e81bbb6766799661"},
       {:spanner, github: "operable/spanner"}
     ]
   end
