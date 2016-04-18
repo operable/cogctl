@@ -27,12 +27,14 @@ defmodule Cogctl.Actions.Bundles.Create do
 
   def option_spec do
     [{:file, :undefined, :undefined, {:string, :undefined}, 'Path to your bundle config file (required)'},
-     {:templates, :undefined, 'templates', {:string, 'templates'}, 'Path to your template directory'}]
+     {:templates, :undefined, 'templates', {:string, 'templates'}, 'Path to your template directory'},
+     {:enabled, :undefined, 'enable', {:boolean, false}, 'Enable bundle after installing'}]
   end
 
   def run(options, _args, _config, endpoint) do
     case convert_to_params(options, [file: :required,
-                                     templates: :required]) do
+                                     templates: :required,
+                                     enabled: :optional]) do
       {:ok, params} ->
         with_authentication(endpoint, &do_create(&1, params))
       {:error, {:missing_params, missing_params}} ->
@@ -45,7 +47,7 @@ defmodule Cogctl.Actions.Bundles.Create do
                    {:ok, templates}      <- build_template_map(params.templates),
                    {:ok, amended_config} <- maybe_add_templates(templates, config),
                    {:ok, fixed_config}   <- Spanner.Config.validate(amended_config),
-                 do: Client.bundle_create(endpoint, fixed_config)
+                   do: Client.bundle_create(endpoint, Map.put(params, "config", fixed_config))
 
     case results do
       {:ok, bundle} ->
