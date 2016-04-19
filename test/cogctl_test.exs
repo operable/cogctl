@@ -499,7 +499,7 @@ defmodule CogctlTest do
     run("cogctl relays create test-relay --token=hola")
     run("cogctl relays create my-test --token=hola")
 
-    assert run("cogctl relay-groups add --relay=test-relay myrelays") =~ ~r"""
+    assert run("cogctl relay-groups add myrelays test-relay ") =~ ~r"""
     Relay `test-relay` added to relay group `myrelays`
     """
 
@@ -516,13 +516,13 @@ defmodule CogctlTest do
     NAME  ID
     """
 
-    run("cogctl relay-groups add --relay=my-test myrelays")
+    run("cogctl relay-groups add myrelays my-test ")
 
-    assert run("cogctl relay-groups remove --relay=test-relay myrelays") =~ ~r"""
+    assert run("cogctl relay-groups remove myrelays test-relay ") =~ ~r"""
     Relay `test-relay` removed from relay group `myrelays`
     """
 
-    assert run("cogctl relay-groups remove --relay=my-test myrelays") =~ ~r"""
+    assert run("cogctl relay-groups remove myrelays my-test ") =~ ~r"""
     Relay `my-test` removed from relay group `myrelays`
 
     NOTE: There are no more relays in this group.
