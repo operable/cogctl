@@ -21,11 +21,14 @@ defmodule Cogctl.Actions.Relays.Delete do
       end
     end)
 
-    if length(results.failure) > 0 do
-      display_error(Enum.join(results.failure, ","))
-    end
     if length(results.success) > 0 do
       display_output("Deleted '#{Enum.join(results.success, ",")}'")
+    end
+    if length(results.failure) > 0 do
+      Enum.each(results.failure, &display_error/1)
+      :error
+    else
+      :ok
     end
 
   end
