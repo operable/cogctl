@@ -23,8 +23,8 @@ defmodule Cogctl.Actions.Users.Create do
     with_authentication(endpoint, &do_create(&1, params))
   end
 
-  defp do_create(_endpoint, :error) do
-    display_arguments_error
+  defp do_create(_endpoint, {:error, {:missing_params, missing_params}}) do
+    display_arguments_error(missing_params)
   end
 
   defp do_create(endpoint, {:ok, params}) do

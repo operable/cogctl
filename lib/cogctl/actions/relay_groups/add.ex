@@ -14,8 +14,8 @@ defmodule Cogctl.Actions.RelayGroups.Add do
                                      name: :required]) do
       {:ok, params} ->
         do_add(endpoint, params)
-      _ ->
-        display_arguments_error
+      {:error, {:missing_params, missing_args}} ->
+        display_arguments_error(missing_args)
     end
   end
 

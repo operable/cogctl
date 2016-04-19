@@ -10,7 +10,7 @@ defmodule Cogctl.ActionUtilTest do
 
   test "converting missing required options to params" do
     params = ActionUtil.convert_to_params([a: true, b: :undefined, c: false], [b: :required, c: :optional])
-    assert params == :error
+    assert params == {:error, {:missing_params, [:b]}}
   end
 
   test "with_authentication runs function when authentication succeeds" do

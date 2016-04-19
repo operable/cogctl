@@ -11,8 +11,8 @@ defmodule Cogctl.Actions.Permissions do
     with_authentication(endpoint, &do_list(&1, params))
   end
 
-  defp do_list(_endpoint, :error) do
-    display_arguments_error
+  defp do_list(_endpoint, {:error, {:missing_params, missing_params}}) do
+    display_arguments_error(missing_params)
   end
 
   defp do_list(endpoint, {:ok, params}) do

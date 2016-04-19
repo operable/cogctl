@@ -19,8 +19,8 @@ defmodule Cogctl.Actions.Relays.Update do
                                      description: :optional]) do
       {:ok, params} ->
         do_update(endpoint, params)
-      _ ->
-        display_arguments_error
+      {:error, {:missing_params, missing_params}} ->
+        display_arguments_error(missing_params)
     end
   end
 

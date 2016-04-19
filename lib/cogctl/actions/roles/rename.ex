@@ -14,11 +14,11 @@ defmodule Cogctl.Actions.Roles.Rename do
   end
 
   defp do_rename(_endpoint, :undefined, _params) do
-    display_arguments_error
+    display_arguments_error("role")
   end
 
-  defp do_rename(_endpoint, _role_name, :error) do
-    display_arguments_error
+  defp do_rename(_endpoint, _role_name, {:error, {:missing_params, missing_params}}) do
+    display_arguments_error(missing_params)
   end
 
   defp do_rename(endpoint, role_name, {:ok, params}) do

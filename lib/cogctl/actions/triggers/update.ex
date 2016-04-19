@@ -25,8 +25,8 @@ defmodule Cogctl.Actions.Triggers.Update do
       {name, {:ok, params}} when is_binary(name) ->
         with_authentication(endpoint,
                             &do_update(&1, name, params))
-      _ ->
-        display_arguments_error
+      {:error, {:missing_params, missing_params}} ->
+        display_arguments_error(missing_params)
     end
   end
 

@@ -19,8 +19,8 @@ defmodule Cogctl.Actions.Triggers.Create do
                                      description: :optional]) do
       {:ok, params} ->
         with_authentication(endpoint, &do_create(&1, params))
-      :error ->
-        display_arguments_error
+      {:error, {:missing_params, missing_params}} ->
+        display_arguments_error(missing_params)
     end
   end
 

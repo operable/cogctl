@@ -35,27 +35,27 @@ defmodule Cogctl.ActionUtil do
     params = Keyword.take(options, Keyword.keys(whitelist))
 
     # Check if any required params are undefined
-    invalid = Enum.any?(params, fn
-      {key, :undefined} ->
+    missing_params = Enum.filter(params, fn
+      ({key, :undefined}) ->
         case Keyword.get(whitelist, key, :optional) do
           :required ->
             true
           :optional ->
             false
         end
-      _ ->
-        false
+      (_) -> false
     end)
 
-    case invalid do
-      true ->
-        :error
-      false ->
+    case missing_params do
+      [] ->
         params = params
                   |> Enum.reject(&match?({_, :undefined}, &1))
                   |> Enum.into(%{})
 
         {:ok, params}
+      missing ->
+        missing_keys = Enum.map(missing, fn({key, _}) -> key end)
+        {:error, {:missing_params, missing_keys}}
     end
   end
 
@@ -136,9 +136,13 @@ defmodule Cogctl.ActionUtil do
     :error
   end
 
-  def display_arguments_error do
-    display_error("Missing required arguments")
-  end
+  def display_arguments_error,
+    do: display_error("Missing required arguments")
+
+  def display_arguments_error(missing_args) when is_list(missing_args),
+    do: display_error("Missing required arguments: '#{Enum.join(missing_args, ",")}'")
+  def display_arguments_error(missing_arg),
+    do: display_error("Missing required argument: '#{missing_arg}'")
 
   defp format_error(%{"errors" => errors}), do: format_error(errors)
   defp format_error(error) when is_list(error), do: Enum.join(error, "\n")

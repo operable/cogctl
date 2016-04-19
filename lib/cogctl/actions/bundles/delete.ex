@@ -9,7 +9,7 @@ defmodule Cogctl.Actions.Bundles.Delete do
     do: with_authentication(endpoint, &do_delete(&1, args))
 
   defp do_delete(_endpoint, []) do
-    display_arguments_error
+    display_arguments_error("bundle")
   end
 
   defp do_delete(endpoint, bundle_names) when is_list(bundle_names) do
