@@ -22,9 +22,16 @@ defmodule Cogctl.Actions.RelayGroups.Remove do
   defp do_remove(endpoint, params) do
     case CogApi.HTTP.Client.relay_group_remove_relay(%{name: params.name}, %{relay: params.relay}, endpoint) do
       {:ok, _} ->
-        display_output("Relay `#{params.relay}` removed from relay group `#{params.name}`")
-        if last_relay?(endpoint, params.name),
-          do: display_output("\tNOTE: There are no more relays in this group.")
+        output = ["Relay `#{params.relay}` removed from relay group `#{params.name}`"]
+
+        output = case last_relay?(endpoint, params.name) do
+          true ->
+            output ++ ["NOTE: There are no more relays in this group."]
+          false ->
+            output
+        end
+
+        display_output(Enum.join(output, "\n\n"))
       {:error, error} ->
         display_error(error)
     end
