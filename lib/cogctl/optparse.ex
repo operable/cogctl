@@ -54,6 +54,8 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Triggers,
                   Cogctl.Actions.Triggers.Create,
                   Cogctl.Actions.Triggers.Delete,
+                  Cogctl.Actions.Triggers.Disable,
+                  Cogctl.Actions.Triggers.Enable,
                   Cogctl.Actions.Triggers.Info,
                   Cogctl.Actions.Triggers.Update,
 

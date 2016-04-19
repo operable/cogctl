@@ -8,6 +8,7 @@ defmodule Cogctl.Actions.Triggers.Update do
 
       {:name, :undefined, 'name', {:string, :undefined}, 'Trigger name'},
       {:pipeline, :undefined, 'pipeline', {:string, :undefined}, 'Pipeline text'},
+      {:enabled, :undefined, 'enabled', {:boolean, :undefined}, 'Enabled'},
       {:as_user, :undefined, 'as-user', {:string, :undefined}, 'User to execute pipeline as'},
       {:timeout_sec, :undefined, 'timeout-sec', {:string, :undefined}, 'Timeout (seconds)'},
       {:description, :undefined, 'description', {:string, :undefined}, 'Description'}]
@@ -16,6 +17,7 @@ defmodule Cogctl.Actions.Triggers.Update do
   def run(options, _args, _config, endpoint) do
     params = convert_to_params(options, [name: :optional,
                                          pipeline: :optional,
+                                         enabled: :optional,
                                          as_user: :optional,
                                          timeout_sec: :optional,
                                          description: :optional])
@@ -31,19 +33,14 @@ defmodule Cogctl.Actions.Triggers.Update do
   end
 
   defp do_update(endpoint, trigger_name, params) do
-    case CogApi.HTTP.Client.trigger_show_by_name(endpoint, trigger_name) do
-      {:ok, trigger} ->
-        case CogApi.HTTP.Client.trigger_update(endpoint, trigger.id, params) do
-          {:ok, updated} ->
-            table_data = Util.table(updated)
-            display_output("""
-            Updated #{trigger_name}
+    case Util.update(endpoint, trigger_name, params) do
+      {:ok, updated} ->
+        table_data = Util.table(updated)
+        display_output("""
+        Updated #{trigger_name}
 
-            #{Table.format(table_data, false)}
-            """ |> String.rstrip)
-          {:error, error} ->
-            display_error(error)
-        end
+        #{Table.format(table_data, false)}
+        """ |> String.rstrip)
       {:error, error} ->
         display_error(error)
     end
