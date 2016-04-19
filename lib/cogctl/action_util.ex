@@ -127,8 +127,7 @@ defmodule Cogctl.ActionUtil do
   end
 
   def display_error(errors) when is_list(errors) do 
-    "ERROR: " <> Enum.join(errors, "\n")
-    |> IO.puts
+    IO.puts(:stderr, "ERROR: " <> Enum.join(errors, "\n"))
     :error
   end
   def display_error(error) do

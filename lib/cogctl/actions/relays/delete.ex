@@ -14,20 +14,31 @@ defmodule Cogctl.Actions.Relays.Delete do
   end
 
   defp do_delete(endpoint, relay_names) do
-    Enum.reduce(relay_names, 0, fn(relay_name, acc) ->
+    results = Enum.reduce(relay_names, %{success: [], failure: []}, fn(relay_name, acc) ->
       case delete(endpoint, relay_name) do
-        :ok -> acc
-        _ -> acc + 1
+        {:ok, name} -> %{acc | success: [name | acc.success]}
+        {:error, error} -> %{acc | failure: [error | acc.failure]}
       end
     end)
+
+    if length(results.success) > 0 do
+      display_output("Deleted '#{Enum.join(results.success, ",")}'")
+    end
+    if length(results.failure) > 0 do
+      Enum.each(results.failure, &display_error/1)
+      :error
+    else
+      :ok
+    end
+
   end
 
   defp delete(endpoint, relay_name) do
     case CogApi.HTTP.Client.relay_delete(%{name: relay_name}, endpoint) do
       :ok ->
-        display_output("Deleted #{relay_name}")
+        {:ok, relay_name}
       {:error, error} ->
-        display_error(error)
+        {:error, error}
     end
   end
 end
