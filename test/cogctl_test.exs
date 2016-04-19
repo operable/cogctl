@@ -515,7 +515,7 @@ defmodule CogctlTest do
 
     assert run("cogctl relay-groups remove --relay=my-test myrelays") =~ ~r"""
     Relay `my-test` removed from relay group `myrelays`
-    	NOTE: There are no more relays in this group.
+    \tNOTE: There are no more relays in this group.
     """
 
     bundle_names = Enum.map(1..5, &"bundle#{&1}")
