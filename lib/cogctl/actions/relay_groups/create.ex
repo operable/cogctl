@@ -13,8 +13,8 @@ defmodule Cogctl.Actions.RelayGroups.Create do
     case convert_to_params(options, [name: :required]) do
       {:ok, params} ->
         do_create(endpoint, params)
-      _ ->
-        display_arguments_error
+      {:error, {:missing_params, missing_params}} ->
+        display_arguments_error(missing_params)
     end
   end
 

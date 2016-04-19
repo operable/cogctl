@@ -22,8 +22,8 @@ defmodule Cogctl.Actions.Users.Update do
                         &do_update(&1, :proplists.get_value(:user, options), params))
   end
 
-  defp do_update(_endpoint, _user_username, :error) do
-    display_arguments_error
+  defp do_update(_endpoint, _user_username, {:error, {:missing_params, missing_params}}) do
+    display_arguments_error(missing_params)
   end
 
   defp do_update(endpoint, user_username, {:ok, params}) do

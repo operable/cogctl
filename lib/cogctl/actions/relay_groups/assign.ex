@@ -22,8 +22,8 @@ defmodule Cogctl.Actions.RelayGroups.Assign do
         # The rest of the bundles, if there are any, get appended here.
         params = %{params | bundles: [params.bundles | args]}
         with_authentication(endpoint, &do_assign(&1, params))
-      :error ->
-        display_arguments_error
+      {:error, {:missing_params, missing_params}} ->
+        display_arguments_error(missing_params)
     end
   end
 
