@@ -25,6 +25,12 @@ defmodule Cogctl.ActionUtil do
     end
   end
 
+  @doc """
+  Returns a map containing the key/value pairs of the
+  parameters that are expected for a command. The map is
+  built using the options entered and a list of which
+  options are required and which are optional.
+  """
   def convert_to_params(options, whitelist) do
     params = Keyword.take(options, Keyword.keys(whitelist))
 
@@ -51,6 +57,35 @@ defmodule Cogctl.ActionUtil do
 
         {:ok, params}
     end
+  end
+
+  @doc """
+  Returns a map containing the key/value pairs of the
+  parameters that are expected for a command. The map is
+  built using the options entered and a list of which
+  options are required, which are optional, and the
+  specifications for each parameter. The spec denotes
+  if a list, integer, float, or string are expected and
+  formats the entered value as such.
+  """
+  def convert_to_params(options, opt_spec, whitelist) do
+    structure_options(options, opt_spec)
+    |> convert_to_params(whitelist)
+  end
+
+  defp structure_options(options, opt_spec) do
+    format_spec = Enum.map(opt_spec, fn({key, _, _, {format, _}, _}) ->
+      {key, format}
+    end)
+    Enum.into(options, [], fn({key, value}) ->
+      case {value, Keyword.get(format_spec, key)} do
+        {:undefined, _} -> {key, value}
+        {_, :list} -> {key, String.split(value, ",")}
+        {_, :integer} -> {key, String.to_integer(value)}
+        {_, :float} -> {key, String.to_float(value)}
+        _ -> {key, value}
+      end
+    end)
   end
 
   @doc """

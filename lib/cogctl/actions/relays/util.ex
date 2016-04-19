@@ -17,10 +17,22 @@ defmodule Cogctl.Actions.Relays.Util do
     Table.format(relay_info, sort) |> display_output
   end
 
+  def render({relay_group_messages, error_count}, relay_info, sort) do
+    group_message = Enum.join(relay_group_messages, "\n")
+    Table.format(relay_info, sort) <> "\n\n" <> group_message
+    |> display_output
+    if error_count > 0, do: :error
+  end
   def render(relay_info, sort, message) do
     message <> "\n\n" <> Table.format(relay_info, sort) |> display_output
   end
 
+  def render({relay_group_messages, error_count}, relay_info, sort, message) do
+    group_message = Enum.join(relay_group_messages, "\n")
+    message <> "\n\n" <> Table.format(relay_info, sort) <> "\n\n" <> group_message
+    |> display_output
+    if error_count > 0, do: :error
+  end
   def render(relay_info, group_info, sort, nil) do
     Table.format(relay_info, false) <> "\n\nRelay Groups\n" <> Table.format(group_info, sort)
     |> display_output

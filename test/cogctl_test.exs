@@ -422,8 +422,6 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl relays create test-relay --token=hola --description='Hola, Como estas'") =~ ~r"""
-    Created test-relay
-
     ID    .*
     Name  test-relay
     """
@@ -463,8 +461,20 @@ defmodule CogctlTest do
     assert run("cogctl relays delete test-relay mimimi") =~ ~r"""
     Deleted test-relay
     ERROR: The relay `mimimi` could not be deleted: Resource not found for: 'relays'
-    Error: 1
     """
+
+    run("cogctl relay-groups create mygroup")
+
+    assert run("cogctl relays create --groups=group,mygroup test-relay --token=hola") =~ ~r"""
+    ID    .*
+    Name  test-relay
+
+    Adding 'test-relay' to relay group 'group': Error. Resource not found for: 'relay_groups'
+    Adding 'test-relay' to relay group 'mygroup': Ok.
+    """
+
+    run("cogctl relays delete test-relay")
+    run("cogctl relay-groups delete mygroup")
   end
 
   test "cogctl relay-groups" do
@@ -473,8 +483,6 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl relay-groups create myrelays") =~ ~r"""
-    Created relay group `myrelays`
-
     ID    .*
     Name  myrelays
     """
@@ -528,8 +536,14 @@ defmodule CogctlTest do
     assert run("cogctl relay-groups delete myrelays") =~ ~r"""
     Deleted relay group `myrelays`
     """
+    assert run("cogctl relay-groups create testgroup --members relay1,test-relay,relay3") =~ ~r"""
+    ID    .*
+    Name  testgroup
+
+    """
 
     run("cogctl relays delete test-relay my-test")
+    run("cogctl relay-groups delete testgroup")
   end
 
   test "cogctl triggers" do
