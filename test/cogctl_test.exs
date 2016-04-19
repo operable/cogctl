@@ -50,12 +50,16 @@ defmodule CogctlTest do
     pre_bundle_create("testfoo")
 
     assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "testfoo.yaml")}") =~ ~r"""
-    Created 'testfoo' bundle
+    Created testfoo bundle
 
     ID         .*
     Name       testfoo
     Status     disabled
     Installed  .*
+
+    Commands
+    NAME  ID
+    bar   .*
     """
 
     cleanup

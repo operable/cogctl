@@ -53,9 +53,8 @@ defmodule Cogctl.Actions.Bundles.Create do
 
     case result do
       {:ok, bundle} ->
-        display_output("Created #{bundle.name} bundle")
-
-        assign_to_relay_groups(endpoint, bundle, params)
+        messages = ["Created #{bundle.name} bundle"]
+        messages = messages ++ assign_to_relay_groups(endpoint, bundle, params)
 
         status = Bundles.enabled_to_status(bundle.enabled)
         bundle = Map.merge(bundle, %{status: status})
@@ -69,6 +68,8 @@ defmodule Cogctl.Actions.Bundles.Create do
         end
 
         display_output("""
+        #{Enum.join(messages, "\n")}
+
         #{Table.format(bundle_attrs, false)}
 
         Commands
@@ -97,22 +98,21 @@ defmodule Cogctl.Actions.Bundles.Create do
   defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_group_names}) do
     relay_groups = String.split(relay_group_names, ",")
 
-    Enum.reduce_while(relay_groups, {:ok, []}, fn relay_group, {:ok, acc} ->
+    Enum.map(relay_groups, fn relay_group ->
       result = Client.relay_group_add_bundles(%{name: relay_group}, %{bundles: [bundle.name]}, endpoint)
 
       case result do
         {:ok, relay_group} ->
-          display_output("Assigned #{bundle.name} bundle to #{relay_group.name} relay group")
-          {:cont, {:ok, [relay_group|acc]}}
-        error ->
-          {:halt, error}
+          "Assigned #{bundle.name} bundle to #{relay_group.name} relay group"
+        {:error, error} ->
+          "ERROR: #{inspect error}"
       end
     end)
   end
 
   # Nothing to assign
   defp assign_to_relay_groups(_endpoint, _bundle, _params) do
-    {:ok, []}
+    []
   end
 
   defp build_template_map(template_dir) do
