@@ -98,7 +98,7 @@ defmodule Cogctl.Actions.Bundles.Create do
     relay_groups = String.split(relay_group_names, ",")
 
     Enum.reduce_while(relay_groups, {:ok, []}, fn relay_group, {:ok, acc} ->
-      result = Client.relay_group_add_bundle(%{name: relay_group}, %{bundle: bundle.name}, endpoint)
+      result = Client.relay_group_add_bundle(%{name: relay_group}, %{bundles: [bundle.name]}, endpoint)
 
       case result do
         {:ok, relay_group} ->
