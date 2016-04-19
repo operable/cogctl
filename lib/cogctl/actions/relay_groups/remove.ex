@@ -1,9 +1,22 @@
 defmodule Cogctl.Actions.RelayGroups.Remove do
   use Cogctl.Action, "relay-groups remove"
 
+  @moduledoc """
+  Used to remove relays from relay groups
+
+  Usage:
+  'cogctl relay-groups remove $RELAYGROUP $RELAY1 $RELAY2 $RELAY3'
+  """
+
   def option_spec() do
     [{:relay_group, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
-     # Technically this will just be the first bundle
+     # Technically this will just be the first relay
+     # This command just uses positional options. The first argument is the name
+     # of the relay group. Anything after that is considered a relay.
+     # getopt will only assign the first item in the relay list to the relays
+     # option, but that's fine since we only require one. The rest of the relays
+     # will come in as arguments. We can stick them all together before calling
+     # the api.
      {:relays, :undefined, :undefined, {:string, :undefined}, 'Relay names (required)'}]
   end
 

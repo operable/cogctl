@@ -6,11 +6,20 @@ defmodule Cogctl.Actions.RelayGroups.Unassign do
   work properly. Iterates over the list of bundles and removes the assignment from
   the relay-group. If an error occurs, the operation is aborted and an error message
   returned to the user.
+
+  Usage:
+  'cogctl relay-groups unassign $RELAYGROUP $BUNDLE1 $BUNDLE2 $BUNDLE3'
   """
 
   def option_spec() do
     [{:relay_group, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
-     # Technically this will just be the first bundle
+     # Technically this will just be the first relay
+     # This command just uses positional options. The first argument is the name
+     # of the relay group. Anything after that is considered a bundle.
+     # getopt will only assign the first item in the bundle list to the bundles
+     # option, but that's fine since we only require one. The rest of the bundles
+     # will come in as arguments. We can stick them all together before calling
+     # the api.
      {:bundles, :undefined, :undefined, {:string, :undefined}, 'Bundle names (required)'}]
   end
 

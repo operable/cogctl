@@ -14,7 +14,7 @@ defmodule Cogctl.Actions.RelayGroups.Add do
      # This command just uses positional options. The first argument is the name
      # of the relay group. Anything after that is considered a relay.
      # getopt will only assign the first item in the relay list to the relays
-     # option. But that's fine since we only require one. The rest of the relays
+     # option, but that's fine since we only require one. The rest of the relays
      # will come in as arguments. We can stick them all together before calling
      # the api.
      {:relays, :undefined, :undefined, :string, 'Relay names (required)'}]
