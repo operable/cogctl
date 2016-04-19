@@ -51,6 +51,11 @@ defmodule CogctlTest do
 
     assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "testfoo.yaml")}") =~ ~r"""
     Created 'testfoo' bundle
+
+    ID         .*
+    Name       testfoo
+    Status     disabled
+    Installed  .*
     """
 
     cleanup
@@ -524,12 +529,41 @@ defmodule CogctlTest do
       run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "#{name}.yaml")}")
     end)
 
+    pre_bundle_create("bundle6")
+    run("cogctl bundles create --enable --relay-groups=myrelays #{Path.join(@scratch_dir, "bundle6.yaml")}")
+
+    assert run("cogctl bundles info bundle6") =~ ~r"""
+    ID         .*
+    Name       bundle6
+    Status     enabled
+    Installed  .*
+    """
+
     assert run("cogctl relay-groups assign myrelays #{Enum.join(bundle_names, " ")}") =~ ~r"""
     Assigned 'bundle1, bundle2, bundle3, bundle4, bundle5' to relay group `myrelays`
     """
 
+    assert run("cogctl relay-groups info myrelays") =~ ~r"""
+    Name           myrelays
+    ID             .*
+    Creation Time  .*
+
+    Relays
+    NAME  ID
+
+    Bundles
+    NAME     ID
+    bundle1  .*
+    bundle2  .*
+    bundle3  .*
+    bundle4  .*
+    bundle5  .*
+    bundle6  .*
+    """
+
     # Cleanup the bundle bits when we are finished
     Enum.each(bundle_names, &run("cogctl bundles delete #{&1}"))
+    run("cogctl bundles delete bundle6")
     cleanup
 
 
