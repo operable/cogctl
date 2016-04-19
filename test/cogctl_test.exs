@@ -388,13 +388,42 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl roles info developer") =~ ~r"""
-    NAME       ID
-    developer  .*
-
-    Permissions
-    NAMESPACE  NAME  ID
-    site       echo  .*
+    ID:    .*
+    Name:  developer
     """
+
+    run("cogctl permissions create site:code")
+    run("cogctl permissions grant site:code --role=developer")
+    run("cogctl groups create your_land")
+    run("cogctl groups create my_land")
+    run("cogctl roles grant developer --group=your_land")
+    run("cogctl roles grant developer --group=my_land")
+
+    assert run("cogctl roles info developer --permissions") =~ ~r"""
+    ID:           .*
+    Name:         developer
+    Permissions:  site:code,site:echo
+    """
+
+    assert run("cogctl roles info developer --groups") =~ ~r"""
+    ID:      .*
+    Name:    developer
+    Groups:  my_land,your_land
+    """
+
+    assert run("cogctl roles info developer --groups --permissions") =~ ~r"""
+    ID:           .*
+    Name:         developer
+    Permissions:  site:code,site:echo
+    Groups:       my_land,your_land
+    """
+
+    run("cogctl permissions revoke site:code --role=developer")
+    run("cogctl permissions delete site:code")
+    run("cogctl roles revoke developer --group=your_land")
+    run("cogctl roles revoke developer --group=my_land")
+    run("cogctl groups delete your_land")
+    run("cogctl groups delete my_land")
 
     assert run("cogctl permissions revoke site:echo --role=developer") =~ ~r"""
     Revoked site:echo from developer
