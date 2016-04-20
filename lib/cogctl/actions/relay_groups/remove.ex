@@ -34,7 +34,7 @@ defmodule Cogctl.Actions.RelayGroups.Remove do
   defp do_remove(endpoint, params) do
     case CogApi.HTTP.Client.relay_group_remove_relays(%{name: params.relay_group}, %{relays: params.relays}, endpoint) do
       {:ok, _} ->
-        output = ["Removed `#{params.relays}` from relay group `#{params.relay_group}`"]
+        output = ["Removed '#{params.relays}' from relay group '#{params.relay_group}'"]
 
         output = case last_relay?(endpoint, params.relay_group) do
           true ->
