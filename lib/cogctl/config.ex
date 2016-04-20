@@ -26,6 +26,7 @@ defmodule Cogctl.Config do
         case write_values(fd, values, creating) do
           :ok ->
             File.rename(config_file(:write), config_file)
+            File.chmod(config_file, 0o600)
           error ->
             error
         end
