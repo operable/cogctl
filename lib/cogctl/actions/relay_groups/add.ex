@@ -5,27 +5,19 @@ defmodule Cogctl.Actions.RelayGroups.Add do
   Used to add relays to relay groups.
 
   Usage:
-  'cogctl relay-groups add $RELAYGROUP $RELAY1 $RELAY2 $RELAY3'
+  'cogctl relay-groups add $RELAYGROUP --relays=$RELAY1,$RELAY2,$RELAY3'
   """
 
   def option_spec() do
-    [{:relay_group, :undefined, :undefined, :string, 'Relay Group name (required)'},
-     # Technically this will just be the first relay
-     # This command just uses positional options. The first argument is the name
-     # of the relay group. Anything after that is considered a relay.
-     # getopt will only assign the first item in the relay list to the relays
-     # option, but that's fine since we only require one. The rest of the relays
-     # will come in as arguments. We can stick them all together before calling
-     # the api.
-     {:relays, :undefined, :undefined, :string, 'Relay names (required)'}]
+    [{:relay_group, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
+     {:relays, :undefined, 'relays', {:list, :undefined}, 'Relay names (required)'}]
   end
 
-  def run(options, args, _config, endpoint) do
+  def run(options, _args, _config, endpoint) do
     # At least one relay is required, so we specify that here
-    case convert_to_params(options, [relay_group: :required,
-                                     relays: :required]) do
+    case convert_to_params(options, option_spec, [relay_group: :required,
+                                                  relays: :required]) do
       {:ok, params} ->
-        params = %{params | relays: [params.relays | args]}
         with_authentication(endpoint, &do_add(&1, params))
       {:error, {:missing_params, missing_args}} ->
         display_arguments_error(missing_args)
@@ -35,7 +27,9 @@ defmodule Cogctl.Actions.RelayGroups.Add do
   defp do_add(endpoint, params) do
     case CogApi.HTTP.Client.relay_group_add_relays_by_name(params.relay_group, params.relays, endpoint) do
       {:ok, _} ->
-        display_output("Added '#{Enum.join(params.relays, ", ")}' to relay group '#{params.relay_group}'")
+        relay_string = List.wrap(params.relays)
+        |> Enum.join(", ")
+        display_output("Added '#{relay_string}' to relay group '#{params.relay_group}'")
       {:error, error} ->
         display_error(error)
     end

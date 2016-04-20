@@ -8,28 +8,20 @@ defmodule Cogctl.Actions.RelayGroups.Unassign do
   returned to the user.
 
   Usage:
-  'cogctl relay-groups unassign $RELAYGROUP $BUNDLE1 $BUNDLE2 $BUNDLE3'
+  'cogctl relay-groups unassign $RELAYGROUP --bundles=$BUNDLE1,$BUNDLE2,$BUNDLE3'
   """
 
   def option_spec() do
     [{:relay_group, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
-     # Technically this will just be the first relay
-     # This command just uses positional options. The first argument is the name
-     # of the relay group. Anything after that is considered a bundle.
-     # getopt will only assign the first item in the bundle list to the bundles
-     # option, but that's fine since we only require one. The rest of the bundles
-     # will come in as arguments. We can stick them all together before calling
-     # the api.
-     {:bundles, :undefined, :undefined, {:string, :undefined}, 'Bundle names (required)'}]
+     {:bundles, :undefined, 'bundles', {:list, :undefined}, 'Bundle names (required)'}]
   end
 
-  def run(options, args, _config, endpoint) do
+  def run(options, _args, _config, endpoint) do
     # At least one bundle is required, so we specify that here
-    case convert_to_params(options, [relay_group: :required,
-                                     bundles: :required]) do
+    case convert_to_params(options, option_spec, [relay_group: :required,
+                                                  bundles: :required]) do
       {:ok, params} ->
         # The rest of the bundles, if there are any, get appended here.
-        params = %{params | bundles: [params.bundles | args]}
         with_authentication(endpoint, &do_unassign(&1, params))
       {:error, {:missing_params, missing_params}} ->
         display_arguments_error(missing_params)
@@ -39,7 +31,9 @@ defmodule Cogctl.Actions.RelayGroups.Unassign do
   defp do_unassign(endpoint, params) do
     case CogApi.HTTP.Client.relay_group_remove_bundles_by_name(params.relay_group, params.bundles, endpoint) do
       {:ok, _} ->
-        display_output("Unassigned '#{Enum.join(params.bundles, ", ")}' from relay group `#{params.relay_group}`")
+        bundle_string = List.wrap(params.bundles)
+        |> Enum.join(", ")
+        display_output("Unassigned '#{bundle_string}' from relay group `#{params.relay_group}`")
       {:error, error} ->
         display_error(error)
     end
