@@ -1,30 +1,36 @@
 defmodule Cogctl.Actions.RelayGroups.Remove do
   use Cogctl.Action, "relay-groups remove"
 
+  @moduledoc """
+  Used to remove relays from relay groups
+
+  Usage:
+  'cogctl relay-groups remove $RELAYGROUP --relays=$RELAY1,$RELAY2,$RELAY3'
+  """
+
   def option_spec() do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
-     {:relay, :undefined, 'relay', {:string, :undefined}, 'Relay name (required)'}]
+    [{:relay_group, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
+     {:relays, :undefined, 'relays', {:list, :undefined}, 'Relay names (required)'}]
   end
 
-  def run(options, _args, _config, %{token: nil}=endpoint) do
-    with_authentication(endpoint, &run(options, nil, nil, &1))
-  end
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, [relay: :required,
-                                     name: :required]) do
+    case convert_to_params(options, option_spec, [relay_group: :required,
+                                                  relays: :required]) do
       {:ok, params} ->
-        do_remove(endpoint, params)
+        with_authentication(endpoint, &do_remove(&1, params))
       {:error, {:missing_params, missing_params}} ->
         display_arguments_error(missing_params)
     end
   end
 
   defp do_remove(endpoint, params) do
-    case CogApi.HTTP.Client.relay_group_remove_relay(%{name: params.name}, %{relay: params.relay}, endpoint) do
+    case CogApi.HTTP.Client.relay_group_remove_relays_by_name(params.relay_group, params.relays, endpoint) do
       {:ok, _} ->
-        output = ["Relay `#{params.relay}` removed from relay group `#{params.name}`"]
+        relay_string = List.wrap(params.relays)
+        |> Enum.join(", ")
+        output = ["Removed '#{relay_string}' from relay group '#{params.relay_group}'"]
 
-        output = case last_relay?(endpoint, params.name) do
+        output = case last_relay?(endpoint, params.relay_group) do
           true ->
             output ++ ["NOTE: There are no more relays in this group."]
           false ->
@@ -32,6 +38,7 @@ defmodule Cogctl.Actions.RelayGroups.Remove do
         end
 
         display_output(Enum.join(output, "\n\n"))
+
       {:error, error} ->
         display_error(error)
     end

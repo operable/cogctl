@@ -40,7 +40,7 @@ defmodule Cogctl.Actions.RelayGroups.Create do
 
   defp add_to_group(group, relays, endpoint) do
     Enum.flat_map_reduce(relays, 0, fn(relay, acc) ->
-       case CogApi.HTTP.Client.relay_group_add_relay(%{name: group.name}, %{relay: relay}, endpoint) do
+       case CogApi.HTTP.Client.relay_group_add_relays_by_name(group.name, relay, endpoint) do
          {:ok, _} ->
            {["Adding '#{relay}' to relay group '#{group.name}': Ok."], acc}
          {:error, error} ->
