@@ -1,6 +1,6 @@
 %{"adz": {:git, "https://github.com/operable/adz.git", "601ceb3a19716ea635a7cd83c05f5593f5cf6c40", [tag: "0.2"]},
   "carrier": {:git, "https://github.com/operable/carrier.git", "dd1d990a3307ddfd4145723fcb6d83aeaa7b7981", []},
-  "cog_api": {:git, "https://github.com/operable/cog-api-client.git", "f9d2c35e324663effa6c024c5e22fcdaf8906fda", [ref: "f9d2c35e324663effa6c024c5e22fcdaf8906fda"]},
+  "cog_api": {:git, "https://github.com/operable/cog-api-client.git", "e1d2d7d99826ec89fcdc3faf2b2f7a6653babf32", [branch: "lhaskins/error-handling-relay-groups"]},
   "configparser_ex": {:hex, :configparser_ex, "0.2.0"},
   "dialyxir": {:hex, :dialyxir, "0.3.3"},
   "emqttc": {:git, "https://github.com/operable/emqttc.git", "dc36f593822f8e01771a7edc780441fdfb2f7b15", [tag: "cog-0.2"]},

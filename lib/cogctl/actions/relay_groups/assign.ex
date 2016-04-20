@@ -37,7 +37,7 @@ defmodule Cogctl.Actions.RelayGroups.Assign do
   end
 
   defp do_assign(endpoint, params) do
-    case CogApi.HTTP.Client.relay_group_add_bundles(%{name: params.relay_group}, %{bundles: params.bundles}, endpoint) do
+    case CogApi.HTTP.Client.relay_group_add_bundles_by_name(params.relay_group, params.bundles, endpoint) do
       {:ok, _} ->
         display_output("Assigned '#{Enum.join(params.bundles, ", ")}' to relay group `#{params.relay_group}`")
       {:error, error} ->

@@ -37,7 +37,7 @@ defmodule Cogctl.Actions.RelayGroups.Unassign do
   end
 
   defp do_unassign(endpoint, params) do
-    case CogApi.HTTP.Client.relay_group_remove_bundles(%{name: params.relay_group}, %{bundles: params.bundles}, endpoint) do
+    case CogApi.HTTP.Client.relay_group_remove_bundles_by_name(params.relay_group, params.bundles, endpoint) do
       {:ok, _} ->
         display_output("Unassigned '#{Enum.join(params.bundles, ", ")}' from relay group `#{params.relay_group}`")
       {:error, error} ->

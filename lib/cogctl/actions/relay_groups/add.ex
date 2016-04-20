@@ -33,7 +33,7 @@ defmodule Cogctl.Actions.RelayGroups.Add do
   end
 
   defp do_add(endpoint, params) do
-    case CogApi.HTTP.Client.relay_group_add_relays(%{name: params.relay_group}, %{relays: params.relays}, endpoint) do
+    case CogApi.HTTP.Client.relay_group_add_relays_by_name(params.relay_group, params.relays, endpoint) do
       {:ok, _} ->
         display_output("Added '#{Enum.join(params.relays, ", ")}' to relay group '#{params.relay_group}'")
       {:error, error} ->
