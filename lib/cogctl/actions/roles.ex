@@ -9,7 +9,7 @@ defmodule Cogctl.Actions.Roles do
   end
 
   def run(_options, _args, _config, endpoint),
-  do: with_authentication(endpoint, &do_list/1)
+    do: with_authentication(endpoint, &do_list/1)
 
   defp do_list(endpoint) do
     case Client.role_index(endpoint) do
