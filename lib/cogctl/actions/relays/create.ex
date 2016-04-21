@@ -6,7 +6,8 @@ defmodule Cogctl.Actions.Relays.Create do
     [{:name, :undefined, :undefined, {:string, :undefined}, 'Relay name (required)'},
      {:token, :undefined, 'token', {:string, :undefined}, 'Relay token (required)'},
      {:description, :undefined, 'description', {:string, :undefined}, 'Relay description'},
-     {:groups, :undefined, 'groups', {:list, :undefined}, 'Relay groups'}]
+     {:groups, :undefined, 'groups', {:list, :undefined}, 'Relay groups'},
+     {:id, :undefined, 'id', {:string, :undefined}, 'Relay id (must be uuid)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do
@@ -16,7 +17,8 @@ defmodule Cogctl.Actions.Relays.Create do
     case convert_to_params(options, option_spec, [name: :required,
                                                   token: :required,
                                                   description: :optional,
-                                                  groups: :optional]) do
+                                                  groups: :optional,
+                                                  id: :optional]) do
       {:ok, params} ->
         do_create(endpoint, params)
       {:error, {:missing_params, missing_params}} ->
