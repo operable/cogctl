@@ -21,11 +21,7 @@ defmodule Cogctl.Actions.Rules.Create do
         rule = resp["rule"]
         rule_attrs = [{"ID", resp["id"]}, {"Rule Text", rule}]
 
-        display_output("""
-        Created #{resp["id"]}
-
-        #{Table.format(rule_attrs, false)}
-        """ |> String.rstrip)
+        Table.format(rule_attrs, false) |> display_output
       {:error, error} ->
         display_error(error["errors"])
     end

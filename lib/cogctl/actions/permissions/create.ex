@@ -1,6 +1,8 @@
 defmodule Cogctl.Actions.Permissions.Create do
   use Cogctl.Action, "permissions create"
 
+  alias Cogctl.Actions.Permissions.View, as: PermissionView
+
   def option_spec do
     [{:name, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'}]
   end
@@ -15,11 +17,11 @@ defmodule Cogctl.Actions.Permissions.Create do
   end
 
   defp do_create(endpoint, "site:" <> name) do
-    case CogApi.HTTP.Permissions.create(endpoint, name) do
-      {:ok, _resp} ->
-        display_output("Created site:#{name}")
+    case CogApi.HTTP.Client.permission_create(endpoint, name) do
+      {:ok, permission} ->
+        PermissionView.render(permission)
       {:error, error} ->
-        display_error(error["errors"])
+        display_error(error)
     end
   end
 

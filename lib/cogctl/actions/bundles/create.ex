@@ -53,8 +53,7 @@ defmodule Cogctl.Actions.Bundles.Create do
 
     case result do
       {:ok, bundle} ->
-        messages = ["Created #{bundle.name} bundle"]
-        messages = messages ++ assign_to_relay_groups(endpoint, bundle, params)
+        messages = assign_to_relay_groups(endpoint, bundle, params)
 
         status = Bundles.enabled_to_status(bundle.enabled)
         bundle = Map.merge(bundle, %{status: status})

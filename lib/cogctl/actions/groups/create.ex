@@ -20,7 +20,7 @@ defmodule Cogctl.Actions.Groups.Create do
   defp do_create(endpoint, group_name) do
     case Client.group_create(endpoint, %{name: group_name}) do
       {:ok, group} ->
-        Groups.render(group, "Created group #{group_name}")
+        Groups.render(group)
       {:error, message} ->
         display_error(message)
     end

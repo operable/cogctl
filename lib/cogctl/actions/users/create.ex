@@ -36,11 +36,7 @@ defmodule Cogctl.Actions.Users.Create do
           generate_table_row(title, Map.fetch!(user, attr))
         end
 
-        display_output("""
-        Created #{username}
-
-        #{Table.format(user_attrs, false)}
-        """ |> String.rstrip)
+        Table.format(user_attrs, false) |> display_output
       {:error, error} ->
         display_error(error)
     end

@@ -18,17 +18,11 @@ defmodule Cogctl.Actions.Roles.Create do
   defp do_create(endpoint, name) do
     case CogApi.HTTP.Roles.create(endpoint, %{name: name}) do
       {:ok, role} ->
-        name = role.name
-
         role_attrs = for {title, attr} <- [{"ID", :id}, {"Name", :name}] do
           [title, Map.fetch!(role, attr)]
         end
 
-        display_output("""
-        Created #{name}
-
-        #{Table.format(role_attrs, false)}
-        """ |> String.rstrip)
+        Table.format(role_attrs, false) |> display_output
       {:error, error} ->
         display_error(error)
     end
