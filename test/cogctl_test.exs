@@ -494,9 +494,17 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl relays create test-relay --token=hola --description='Hola, Como estas'") =~ ~r"""
-    ID    .*
-    Name  test-relay
+    ID      .*
+    Name    test-relay
+    Status  disabled
     """
+
+    assert run("cogctl relays create test-relay2 --enable --token=hola --description='Hola, mi amigo'") =~ ~r"""
+    ID      .*
+    Name    test-relay2
+    Status  enabled
+    """
+    run("cogctl relays delete test-relay2")
 
     assert run("cogctl relays enable test-relay") =~ ~r"""
     Enabled test-relay
@@ -537,9 +545,10 @@ defmodule CogctlTest do
 
     run("cogctl relay-groups create mygroup")
 
-    assert run("cogctl relays create --groups=group,mygroup test-relay --token=hola") =~ ~r"""
-    ID    .*
-    Name  test-relay
+    assert run("cogctl relays create --enable --groups=group,mygroup test-relay --token=hola") =~ ~r"""
+    ID      .*
+    Name    test-relay
+    Status  enabled
 
     Adding 'test-relay' to relay group 'group': Error. Resource not found for: 'relay_groups'
     Adding 'test-relay' to relay group 'mygroup': Ok.
