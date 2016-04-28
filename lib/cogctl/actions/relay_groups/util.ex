@@ -12,27 +12,45 @@ defmodule Cogctl.Actions.RelayGroups.Util do
     Table.format(group_info, sort) |> display_output
   end
 
-  def render({relay_messages, error_count}, group_info, sort) do
-    relay_message = Enum.join(relay_messages, "\n")
-    Table.format(group_info, sort) <> "\n\n" <> relay_message
-    |> display_output
-    if error_count > 0, do: :error
+  # If the errorcount is not equal to 0, be sure that an error code
+  # is returned upon execution
+  def render({relay_messages, 0}, group_info, sort) do
+    render_output(relay_messages, group_info, sort)
+  end
+  def render({relay_messages, _errorcount}, group_info, sort) do
+    render_output(relay_messages, group_info, sort)
+    :error
   end
   def render(group_info, sort, message) do
     message <> "\n\n" <> Table.format(group_info, sort) |> display_output
   end
 
-  def render({relay_messages, error_count}, group_info, sort, message) do
-    relay_message = Enum.join(relay_messages, "\n")
-    message <> "\n\n" <> Table.format(group_info, sort) <> "\n\n" <> relay_message
-    |> display_output
-    if error_count > 0, do: :error
+  # If the errorcount is not equal to 0, be sure that an error code
+  # is returned upon execution
+  def render({relay_messages, 0}, group_info, sort, message) do
+    render_output(relay_messages, group_info, sort, message)
+  end
+  def render({relay_messages, _errorcount}, group_info, sort, message) do
+    render_output(relay_messages, group_info, sort, message)
+    :error
   end
 
   def render(group_info, relay_info, bundle_info, sort, nil) do
     Table.format(group_info, false)
         <> "\n\nRelays\n" <> Table.format(relay_info, sort)
         <> "\n\nBundles\n" <> Table.format(bundle_info, sort)
+    |> display_output
+  end
+
+  defp render_output(relay_messages, group_info, sort) do
+    relay_message = Enum.join(relay_messages, "\n")
+    Table.format(group_info, sort) <> "\n\n" <> relay_message
+    |> display_output
+  end
+
+  defp render_output(relay_messages, group_info, sort, message) do
+    relay_message = Enum.join(relay_messages, "\n")
+    message <> relay_message <> "\n\n" <> Table.format(group_info, sort)
     |> display_output
   end
 end
