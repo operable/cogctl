@@ -12,7 +12,17 @@ defmodule Cogctl.Actions.Relays.Util do
 
   def get_status(true), do: "enabled"
   def get_status(false), do: "disabled"
+  def get_status(value), do: value
 
+  # If the errorcount is not equal to 0, be sure that an error code
+  # is returned upon execution
+  def render(relay, {relay_group_msgs, 0}) do
+    render_output(relay_group_msgs, relay)
+  end
+  def render(relay, {relay_group_msgs, _errorcount}) do
+    render_output(relay_group_msgs, relay)
+    :error
+  end
   def render(relay_info, sort) do
     Table.format(relay_info, sort) |> display_output
   end
@@ -60,6 +70,13 @@ defmodule Cogctl.Actions.Relays.Util do
     end
   end
 
+  defp render_output(relay_group_msgs, relay) do
+    relay_info = format_table(relay)
+
+    Table.format(relay_info, false) <> "\n\n" <> Table.format(relay_group_msgs, false)
+    |> display_output
+  end
+
   defp render_output(relay_group_messages, relay_info, sort) do
     group_message = Enum.join(relay_group_messages, "\n")
     Table.format(relay_info, sort) <> "\n\n" <> group_message
@@ -71,4 +88,13 @@ defmodule Cogctl.Actions.Relays.Util do
     message <> group_message <> "\n\n" <> Table.format(relay_info, sort)
     |> display_output
   end
+
+  defp format_table(relay) do
+    [
+      {"ID",     relay.id},
+      {"Name",   relay.name},
+      {"Status", get_status(relay.enabled)},
+    ]
+  end
+
 end
