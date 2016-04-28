@@ -32,11 +32,7 @@ defmodule Cogctl.Actions.ChatHandles.Create do
           [title, chat_handle[attr]]
         end
 
-        display_output("""
-        Created #{chat_handle["handle"]} for #{chat_provider} chat provider
-
-        #{Table.format(chat_handle_attrs, false)}
-        """ |> String.rstrip)
+        Table.format(chat_handle_attrs, false) |> display_output
       {:error, error} ->
         display_error(error["errors"])
     end

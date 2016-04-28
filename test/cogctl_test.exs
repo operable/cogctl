@@ -50,8 +50,6 @@ defmodule CogctlTest do
     pre_bundle_create("testfoo")
 
     assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "testfoo.yaml")}") =~ ~r"""
-    Created testfoo bundle
-
     ID         .*
     Name       testfoo
     Status     disabled
@@ -172,8 +170,6 @@ defmodule CogctlTest do
     """)
 
     assert output =~ ~r"""
-    Created jfrost
-
     ID          .*
     Username    jfrost
     First Name  Jack
@@ -202,8 +198,6 @@ defmodule CogctlTest do
     """)
 
     assert output =~ ~r"""
-    Created rrobin
-
     ID          .*
     Username    rrobin
     First Name
@@ -222,8 +216,6 @@ defmodule CogctlTest do
 
   test "cogctl groups" do
     assert run("cogctl groups create admin") =~ ~r"""
-    Created group admin
-
     ID     .*
     Name   admin
     Users
@@ -231,8 +223,6 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl groups create ops") =~ ~r"""
-    Created group ops
-
     ID     .*
     Name   ops
     Users
@@ -264,8 +254,6 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl roles create tester") =~ ~r"""
-    Created tester
-
     ID    .*
     Name  tester
     """
@@ -309,8 +297,6 @@ defmodule CogctlTest do
 
   test "cogctl roles" do
     assert run("cogctl roles create developer") =~ ~r"""
-    Created developer
-
     ID    .*
     Name  developer
     """
@@ -329,8 +315,6 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl groups create helpdesk") =~ ~r"""
-    Created group helpdesk
-
     ID     .*
     Name   helpdesk
     Users
@@ -368,12 +352,12 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl permissions create site:echo") =~ ~r"""
-    Created site:echo
+    ID         .*
+    Namespace  site
+    Name       echo
     """
 
     assert run("cogctl roles create developer") =~ ~r"""
-    Created developer
-
     ID    .*
     Name  developer
     """
@@ -447,8 +431,6 @@ defmodule CogctlTest do
     run("cogctl permissions create site:test")
 
     assert run("cogctl rules create --rule-text='when command is operable:echo must have site:test'") =~ ~r"""
-    Created .*
-
     ID         .*
     Rule Text  when command is operable:echo must have site:test
     """
@@ -471,7 +453,10 @@ defmodule CogctlTest do
 
   test "cogctl chat-handles" do
     assert run("cogctl chat-handles create --user=admin --chat-provider=null --handle=admininator") =~ ~r"""
-    Created admininator for null chat provider
+    ID             .*
+    User           admin
+    Chat Provider  null
+    Handle         admininator
     """
 
     assert run("cogctl chat-handles") =~ ~r"""
@@ -660,8 +645,6 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl triggers create --name=echo_stuff --pipeline=echo_stuff --as-user=somebody --timeout-sec=60 --description=echo_some_stuff") =~ ~r"""
-    Created echo_stuff
-
     ID              .*
     Name            echo_stuff
     Pipeline        echo_stuff

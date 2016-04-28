@@ -31,11 +31,7 @@ defmodule Cogctl.Actions.Triggers.Create do
       {:ok, trigger} ->
         table_data = Util.table(trigger)
 
-        display_output("""
-        Created #{trigger.name}
-
-        #{Table.format(table_data, false)}
-        """ |> String.rstrip)
+        Table.format(table_data, false) |> display_output
       {:error, error} ->
         display_error(error)
     end
