@@ -3,20 +3,14 @@ defmodule Cogctl.Actions.Users.Info do
   import Cogctl.Actions.Users.Util
 
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'User username (required)'},
+    [{:user, :undefined, :undefined, :string, 'User username (required)'},
      {:groups, :undefined, 'groups', {:boolean, false}, 'Flag to display groups (default false)'},
      {:roles, :undefined, 'roles', {:boolean, false}, 'Flag to display roles (default false)'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, option_spec, [user: :required,
-                                                  groups: :optional,
-                                                  roles: :optional]) do
-      {:ok, params} ->
-        with_authentication(endpoint, &do_info(&1, params))
-      {:error, {:missing_params, missing_args}} ->
-        display_arguments_error(missing_args)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_info(&1, params))
   end
 
   defp do_info(endpoint, params) do

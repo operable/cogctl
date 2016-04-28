@@ -7,15 +7,11 @@ defmodule Cogctl.Actions.Permissions do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, role: :optional)
+    params = convert_to_params(options)
     with_authentication(endpoint, &do_list(&1, params))
   end
 
-  defp do_list(_endpoint, {:error, {:missing_params, missing_params}}) do
-    display_arguments_error(missing_params)
-  end
-
-  defp do_list(endpoint, {:ok, params}) do
+  defp do_list(endpoint, params) do
     case CogApi.HTTP.Internal.permission_index(endpoint, params) do
       {:ok, resp} ->
         permissions = resp["permissions"]

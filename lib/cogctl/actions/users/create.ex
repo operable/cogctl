@@ -8,26 +8,18 @@ defmodule Cogctl.Actions.Users.Create do
   def option_spec do
     [{:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name'},
      {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name'},
-     {:email_address, :undefined, 'email', {:string, :undefined}, 'Email address (required)'},
-     {:username, :undefined, 'username', {:string, :undefined}, 'Username (required)'},
-     {:password, :undefined, 'password', {:string, :undefined}, 'Password (required)'}]
+     {:email_address, :undefined, 'email', :string, 'Email address (required)'},
+     {:username, :undefined, 'username', :string, 'Username (required)'},
+     {:password, :undefined, 'password', :string, 'Password (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [first_name: :optional,
-                                         last_name: :optional,
-                                         email_address: :required,
-                                         username: :required,
-                                         password: :required])
+    params = convert_to_params(options)
 
     with_authentication(endpoint, &do_create(&1, params))
   end
 
-  defp do_create(_endpoint, {:error, {:missing_params, missing_params}}) do
-    display_arguments_error(missing_params)
-  end
-
-  defp do_create(endpoint, {:ok, params}) do
+  defp do_create(endpoint, params) do
     case CogApi.HTTP.Users.create(endpoint, params) do
       {:ok, user} ->
         username = user.username

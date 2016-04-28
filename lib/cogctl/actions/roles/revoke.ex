@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Roles.Revoke do
   use Cogctl.Action, "roles revoke"
 
   def option_spec do
-    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name (required)'},
+    [{:role, :undefined, :undefined, :string, 'Role name (required)'},
      {:group_to_revoke, :undefined, 'group', {:string, :undefined}, 'Name of group to revoke role from'}]
   end
 

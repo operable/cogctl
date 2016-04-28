@@ -3,7 +3,7 @@ defmodule Cogctl.Actions.Users.Update do
   alias Cogctl.Table
 
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'Username (required)'},
+    [{:user, :undefined, :undefined, :string, 'Username (required)'},
      {:first_name, :undefined, 'first-name', {:string, :undefined}, 'First name'},
      {:last_name, :undefined, 'last-name', {:string, :undefined}, 'Last name'},
      {:email_address, :undefined, 'email', {:string, :undefined}, 'Email address'},
@@ -12,21 +12,13 @@ defmodule Cogctl.Actions.Users.Update do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [first_name: :optional,
-                                         last_name: :optional,
-                                         email_address: :optional,
-                                         username: :optional,
-                                         password: :optional])
+    params = convert_to_params(options)
 
     with_authentication(endpoint,
                         &do_update(&1, :proplists.get_value(:user, options), params))
   end
 
-  defp do_update(_endpoint, _user_username, {:error, {:missing_params, missing_params}}) do
-    display_arguments_error(missing_params)
-  end
-
-  defp do_update(endpoint, user_username, {:ok, params}) do
+  defp do_update(endpoint, user_username, params) do
     case CogApi.HTTP.Internal.user_update(endpoint, user_username, %{user: params}) do
       {:ok, resp} ->
         user = resp["user"]

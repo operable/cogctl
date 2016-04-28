@@ -4,7 +4,7 @@ defmodule Cogctl.Actions.Groups.Info do
   alias Cogctl.Actions.Groups
 
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'}]
+    [{:group, :undefined, :undefined, :string, 'Group name (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do

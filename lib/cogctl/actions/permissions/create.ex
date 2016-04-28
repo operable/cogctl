@@ -4,7 +4,7 @@ defmodule Cogctl.Actions.Permissions.Create do
   alias Cogctl.Actions.Permissions.View, as: PermissionView
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'}]
+    [{:name, :undefined, :undefined, :string, 'Permission name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

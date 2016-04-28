@@ -6,8 +6,8 @@ defmodule Cogctl.Actions.Roles.Grant do
   alias Cogctl.Actions.Roles
 
   def option_spec do
-    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name (required)'},
-     {:group, :undefined, 'group', {:string, :undefined}, 'Group name (required)'}]
+    [{:role, :undefined, :undefined, :string, 'Role name (required)'},
+     {:group, :undefined, 'group', :string, 'Group name (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do

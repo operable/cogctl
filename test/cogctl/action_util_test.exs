@@ -3,16 +3,6 @@ defmodule Cogctl.ActionUtilTest do
 
   alias Cogctl.ActionUtil
 
-  test "converting valid options to params" do
-    params = ActionUtil.convert_to_params([a: :undefined, b: true, c: false], [b: :required, c: :optional])
-    assert params == {:ok, %{b: true, c: false}}
-  end
-
-  test "converting missing required options to params" do
-    params = ActionUtil.convert_to_params([a: true, b: :undefined, c: false], [b: :required, c: :optional])
-    assert params == {:error, {:missing_params, [:b]}}
-  end
-
   test "with_authentication runs function when authentication succeeds" do
     defmodule AuthEveryone do
       def authenticate(client),

@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Permissions.Revoke do
   use Cogctl.Action, "permissions revoke"
 
   def option_spec do
-    [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'},
+    [{:permission, :undefined, :undefined, :string, 'Permission name (required)'},
      {:role_to_revoke, :undefined, 'role', {:string, :undefined}, 'Role to revoke permission from'}]
   end
 

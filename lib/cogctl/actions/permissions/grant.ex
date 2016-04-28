@@ -2,8 +2,8 @@ defmodule Cogctl.Actions.Permissions.Grant do
   use Cogctl.Action, "permissions grant"
 
   def option_spec do
-    [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'},
-     {:role, :undefined, 'role', {:string, :undefined}, 'Role name (required)'}]
+    [{:permission, :undefined, :undefined, :string, 'Permission name (required)'},
+     {:role, :undefined, 'role', :string, 'Role name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

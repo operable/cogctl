@@ -28,22 +28,15 @@ defmodule Cogctl.Actions.Bundles.Create do
   """
 
   def option_spec do
-    [{:file, :undefined, :undefined, {:string, :undefined}, 'Path to your bundle config file (required)'},
+    [{:file, :undefined, :undefined, :string, 'Path to your bundle config file (required)'},
      {:templates, :undefined, 'templates', {:string, 'templates'}, 'Path to your template directory'},
      {:enabled, :undefined, 'enable', {:boolean, false}, 'Enable bundle after installing'},
-     {:"relay-groups", :undefined, 'relay-groups', {:string, :undefined}, 'List of relay group names separated by commas to assign the bundle'}]
+     {:"relay-groups", :undefined, 'relay-groups', {:list, :undefined}, 'List of relay group names separated by commas to assign the bundle'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, [file: :required,
-                                     templates: :required,
-                                     enabled: :optional,
-                                     "relay-groups": :optional]) do
-      {:ok, params} ->
-        with_authentication(endpoint, &do_create(&1, params))
-      {:error, {:missing_params, missing_params}} ->
-        display_arguments_error(missing_params)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_create(&1, params))
   end
 
   defp do_create(endpoint, params) do
@@ -94,9 +87,7 @@ defmodule Cogctl.Actions.Bundles.Create do
     Client.bundle_create(endpoint, params)
   end
 
-  defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_group_names}) do
-    relay_groups = String.split(relay_group_names, ",")
-
+  defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_groups}) do
     Enum.map(relay_groups, fn relay_group ->
       result = Client.relay_group_add_bundles_by_name(relay_group, bundle.name, endpoint)
 

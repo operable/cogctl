@@ -3,16 +3,12 @@ defmodule Cogctl.Actions.Rules.Create do
   alias Cogctl.Table
 
   def option_spec do
-    [{:rule_text, ?r, 'rule-text', {:string, :undefined}, 'Text of the rule (required)'}]
+    [{:rule_text, ?r, 'rule-text', :string, 'Text of the rule (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do
     with_authentication(endpoint,
                         &do_create(&1, :proplists.get_value(:rule_text, options)))
-  end
-
-  defp do_create(_endpoint, :undefined) do
-    display_arguments_error
   end
 
   defp do_create(endpoint, rule_text) do

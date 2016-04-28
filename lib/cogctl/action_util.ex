@@ -27,65 +27,17 @@ defmodule Cogctl.ActionUtil do
 
   @doc """
   Returns a map containing the key/value pairs of the
-  parameters that are expected for a command. The map is
-  built using the options entered and a list of which
-  options are required and which are optional.
+  parameters for a command.
   """
-  def convert_to_params(options, whitelist) do
-    params = Keyword.take(options, Keyword.keys(whitelist))
-
-    # Check if any required params are undefined
-    missing_params = Enum.filter(params, fn
-      ({key, :undefined}) ->
-        case Keyword.get(whitelist, key, :optional) do
-          :required ->
-            true
-          :optional ->
-            false
-        end
+  @spec convert_to_params([{atom(), any()}]) :: Map.t
+  def convert_to_params(options) do
+    Enum.reject(options, fn
+      ({_, nil}) -> true
+      ({_, :undefined}) -> true
+      ({_, ""}) -> true
       (_) -> false
     end)
-
-    case missing_params do
-      [] ->
-        params = params
-                  |> Enum.reject(&match?({_, :undefined}, &1))
-                  |> Enum.into(%{})
-
-        {:ok, params}
-      missing ->
-        missing_keys = Enum.map(missing, fn({key, _}) -> key end)
-        {:error, {:missing_params, missing_keys}}
-    end
-  end
-
-  @doc """
-  Returns a map containing the key/value pairs of the
-  parameters that are expected for a command. The map is
-  built using the options entered and a list of which
-  options are required, which are optional, and the
-  specifications for each parameter. The spec denotes
-  if a list, integer, float, or string are expected and
-  formats the entered value as such.
-  """
-  def convert_to_params(options, opt_spec, whitelist) do
-    structure_options(options, opt_spec)
-    |> convert_to_params(whitelist)
-  end
-
-  defp structure_options(options, opt_spec) do
-    format_spec = Enum.map(opt_spec, fn({key, _, _, {format, _}, _}) ->
-      {key, format}
-    end)
-    Enum.into(options, [], fn({key, value}) ->
-      case {value, Keyword.get(format_spec, key)} do
-        {:undefined, _} -> {key, value}
-        {_, :list} -> {key, String.split(value, ",")}
-        {_, :integer} -> {key, String.to_integer(value)}
-        {_, :float} -> {key, String.to_float(value)}
-        _ -> {key, value}
-      end
-    end)
+    |> Enum.into(%{})
   end
 
   @doc """

@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Triggers.Delete do
   use Cogctl.Action, "triggers delete"
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'name'}]
+    [{:name, :undefined, :undefined, :string, 'name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

@@ -4,8 +4,8 @@ defmodule Cogctl.Actions.Triggers.Create do
   alias Cogctl.Actions.Triggers.Util
 
   def option_spec do
-    [{:name, :undefined, 'name', {:string, :undefined}, 'Trigger name (required)'},
-     {:pipeline, :undefined, 'pipeline', {:string, :undefined}, 'Pipeline text (required)'},
+    [{:name, :undefined, 'name', :string, 'Trigger name (required)'},
+     {:pipeline, :undefined, 'pipeline', :string, 'Pipeline text (required)'},
      {:enabled, :undefined, 'enabled', {:boolean, :undefined}, 'Enabled'},
      {:as_user, :undefined, 'as-user', {:string, :undefined}, 'User to execute pipeline as'},
      {:timeout_sec, :undefined, 'timeout-sec', {:string, :undefined}, 'Timeout (seconds)'},
@@ -13,17 +13,8 @@ defmodule Cogctl.Actions.Triggers.Create do
   end
 
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, [name: :required,
-                                     pipeline: :required,
-                                     enabled: :optional,
-                                     as_user: :optional,
-                                     timeout_sec: :optional,
-                                     description: :optional]) do
-      {:ok, params} ->
-        with_authentication(endpoint, &do_create(&1, params))
-      {:error, {:missing_params, missing_params}} ->
-        display_arguments_error(missing_params)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_create(&1, params))
   end
 
   defp do_create(endpoint, params) do

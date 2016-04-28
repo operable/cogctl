@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Bundles.Disable do
   use Cogctl.Action, "bundles disable"
 
   def option_spec() do
-    [{:bundle, :undefined, :undefined, {:string, :undefined}, 'Bundle name'}]
+    [{:bundle, :undefined, :undefined, :string, 'Bundle name (required)'}]
   end
 
   def run(options, _args,  _config, endpoint) do

@@ -3,7 +3,7 @@ defmodule Cogctl.Actions.RelayGroups.Create do
   import Cogctl.Actions.RelayGroups.Util, only: [render: 2, render: 3]
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
+    [{:name, :undefined, :undefined, :string, 'Relay Group name (required)'},
      {:members, :undefined, 'members', {:list, :undefined}, 'Relay names'}]
   end
 
@@ -11,13 +11,8 @@ defmodule Cogctl.Actions.RelayGroups.Create do
     with_authentication(endpoint, &run(options, nil, nil, &1))
   end
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, option_spec, [name: :required,
-                                                  members: :optional]) do
-      {:ok, params} ->
-        do_create(endpoint, params)
-      {:error, {:missing_params, missing_params}} ->
-        display_arguments_error(missing_params)
-    end
+    params = convert_to_params(options)
+    do_create(endpoint, params)
   end
 
   defp do_create(endpoint, params) do

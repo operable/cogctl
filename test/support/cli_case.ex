@@ -32,6 +32,12 @@ defmodule Support.CliCase do
     raise ~s(Commands must start with "cogctl")
   end
 
+  def run_no_capture("cogctl" <> args) do
+    args
+    |> String.split
+    |> Cogctl.main
+  end
+
   defp smart_split([], acc), do: acc
   defp smart_split([head|tail], acc) do
     {start, sub} = check?(head)

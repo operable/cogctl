@@ -4,7 +4,7 @@ defmodule Cogctl.Actions.Triggers.Update do
   alias Cogctl.Actions.Triggers.Util
   def option_spec do
     [
-      {:trigger, :undefined, :undefined, {:string, :undefined}, 'Trigger name (required)'},
+      {:trigger, :undefined, :undefined, :string, 'Trigger name (required)'},
 
       {:name, :undefined, 'name', {:string, :undefined}, 'Trigger name'},
       {:pipeline, :undefined, 'pipeline', {:string, :undefined}, 'Pipeline text'},
@@ -15,21 +15,10 @@ defmodule Cogctl.Actions.Triggers.Update do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [name: :optional,
-                                         pipeline: :optional,
-                                         enabled: :optional,
-                                         as_user: :optional,
-                                         timeout_sec: :optional,
-                                         description: :optional])
+    params = convert_to_params(options)
     name = :proplists.get_value(:trigger, options)
 
-    case {name, params} do
-      {name, {:ok, params}} when is_binary(name) ->
-        with_authentication(endpoint,
-                            &do_update(&1, name, params))
-      {:error, {:missing_params, missing_params}} ->
-        display_arguments_error(missing_params)
-    end
+    with_authentication(endpoint, &do_update(&1, name, params))
   end
 
   defp do_update(endpoint, trigger_name, params) do

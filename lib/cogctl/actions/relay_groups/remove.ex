@@ -9,18 +9,13 @@ defmodule Cogctl.Actions.RelayGroups.Remove do
   """
 
   def option_spec() do
-    [{:relay_group, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
-     {:relays, :undefined, 'relays', {:list, :undefined}, 'Relay names (required)'}]
+    [{:relay_group, :undefined, :undefined, :string, 'Relay Group name (required)'},
+     {:relays, :undefined, 'relays', :list, 'Relay names (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, option_spec, [relay_group: :required,
-                                                  relays: :required]) do
-      {:ok, params} ->
-        with_authentication(endpoint, &do_remove(&1, params))
-      {:error, {:missing_params, missing_params}} ->
-        display_arguments_error(missing_params)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_remove(&1, params))
   end
 
   defp do_remove(endpoint, params) do
