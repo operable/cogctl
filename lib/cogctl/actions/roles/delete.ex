@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Roles.Delete do
   use Cogctl.Action, "roles delete"
 
   def option_spec do
-    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name (required)'}]
+    [{:role, :undefined, :undefined, :string, 'Role name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

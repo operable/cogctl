@@ -2,7 +2,7 @@
   "configparser_ex": {:hex, :configparser_ex, "0.2.0"},
   "dialyxir": {:hex, :dialyxir, "0.3.3"},
   "ex_json_schema": {:hex, :ex_json_schema, "0.3.1"},
-  "getopt": {:git, "https://github.com/jcomellas/getopt.git", "388dc95caa7fb97ec7db8cfc39246a36aba61bd8", [tag: "v0.8.2"]},
+  "getopt": {:git, "https://github.com/operable/getopt.git", "6014121002e3e34e8064486d4b34aedaa887f1c4", []},
   "httpotion": {:hex, :httpotion, "2.1.0"},
   "ibrowse": {:hex, :ibrowse, "4.2.2"},
   "piper": {:git, "https://github.com/operable/piper.git", "4f00f9433f999740984a27b366f53a8f46a43b03", []},

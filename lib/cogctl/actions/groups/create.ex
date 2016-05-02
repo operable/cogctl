@@ -5,7 +5,7 @@ defmodule Cogctl.Actions.Groups.Create do
   alias CogApi.HTTP.Client
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'}]
+    [{:name, :undefined, :undefined, :string, 'Group name (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do

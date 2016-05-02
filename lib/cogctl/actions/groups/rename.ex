@@ -5,8 +5,8 @@ defmodule Cogctl.Actions.Groups.Rename do
   alias CogApi.HTTP.Client
 
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group id (required)'},
-     {:name, :undefined, :undefined, {:string, :undefined}, 'Name (required)'}]
+    [{:group, :undefined, :undefined, :string, 'Group id (required)'},
+     {:name, :undefined, :undefined, :string, 'Name (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do

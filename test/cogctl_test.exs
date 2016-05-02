@@ -71,9 +71,7 @@ defmodule CogctlTest do
     operable  enabled  .*
     """
 
-    assert run("cogctl bundles info") =~ ~r"""
-    ERROR: "Missing required arguments"
-    """
+    assert run("cogctl bundles info") =~ ~r(.*cogctl: Missing required arguments: 'bundle')
 
     assert run("cogctl bundles info operable") =~ ~r"""
     ID         .*

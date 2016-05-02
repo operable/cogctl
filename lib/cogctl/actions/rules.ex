@@ -3,7 +3,7 @@ defmodule Cogctl.Actions.Rules do
   alias Cogctl.Table
 
   def option_spec do
-    [{:command, :undefined, :undefined, {:string, :undefined}, 'Full command name including bundle name (required), Ex.: "operable:echo"'}]
+    [{:command, :undefined, :undefined, :string, 'Full command name including bundle name (required), Ex.: "operable:echo"'}]
   end
 
   def run(options, _args, _config, endpoint) do

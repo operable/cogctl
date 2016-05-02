@@ -3,20 +3,14 @@ defmodule Cogctl.Actions.Roles.Info do
   import Cogctl.Actions.Roles.Util, only: [render: 3]
 
   def option_spec do
-    [{:role, :undefined, :undefined, {:string, :undefined}, 'Role name (required)'},
+    [{:role, :undefined, :undefined, :string, 'Role name (required)'},
      {:permissions, :undefined, 'permissions', {:boolean, false}, 'Flag to display Permissions data'},
      {:groups, :undefined, 'groups', {:boolean, false}, 'Flag to display Groups data'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, option_spec, [role: :required,
-                                                  permissions: :optional,
-                                                  groups: :optional]) do
-      {:ok, params} ->
-        with_authentication(endpoint, &do_info(&1, params))
-      {:error, {:missing_params, missing_args}} ->
-        display_arguments_error(missing_args)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_info(&1, params))
   end
 
   defp do_info(endpoint, params) do

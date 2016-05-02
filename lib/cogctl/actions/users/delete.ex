@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Users.Delete do
   use Cogctl.Action, "users delete"
 
   def option_spec do
-    [{:user, :undefined, :undefined, {:string, :undefined}, 'Username'}]
+    [{:user, :undefined, :undefined, :string, 'Username (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

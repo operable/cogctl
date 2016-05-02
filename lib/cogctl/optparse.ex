@@ -1,4 +1,7 @@
 defmodule Cogctl.Optparse do
+  @moduledoc """
+  Parses command args and options.
+  """
 
   @valid_actions [Cogctl.Actions.Bootstrap,
                   Cogctl.Actions.Profiles,
@@ -69,46 +72,140 @@ defmodule Cogctl.Optparse do
     end
   end
 
-  def parse([arg]) when arg in ["--help", "-?"] do
-    parse(nil)
+  @doc """
+  Parses command invocation. If required args, as defined in the action's
+  module, are missing, then we exit with an error. If we get a help flag,
+  we display usage info and return ':done'. Otherwise we return the handler
+  along with it's options and remaining args.
+  """
+  @spec parse([String.t]) :: {module(), Keyword.t, [String.t]} | :done | {:error, String.t} | :error
+  def parse([action_str]) when action_str in ["--help", "-?"] do
+    parse(:help)
   end
-  def parse(args) when length(args) > 0 do
-    case parse_action(args) do
-      :nil ->
-        IO.puts "Unable to parse '#{Enum.join(args, " ")}'"
-        exit({:shutdown, 1})
-      {handler, other_args} ->
-        other_args = Enum.map(other_args, &String.to_char_list(&1))
-        {name, specs} = opt_specs(handler)
-        {:ok, {options, remaining}} = :getopt.parse(specs, other_args)
-        case Enum.member?(options, :help) do
-          true ->
-            :getopt.usage(specs, name)
-            :done
-          false ->
-            {handler, ensure_elixir_strings(options), ensure_elixir_strings(remaining)}
-        end
+  def parse(action_str) when length(action_str) > 0 do
+    with {handler, args} <- parse_action(action_str) do
+      case parse_args(handler, args) do
+        :help ->
+          show_usage(handler)
+          :done
+        {:error, {:missing_required_options, missing}} ->
+          show_usage(handler, :stderr)
+          {:error, "Missing required arguments: '#{Enum.join(missing, ", ")}'"}
+        {options, remaining_args} ->
+          {handler, options, remaining_args}
+        error ->
+          {:error, inspect(error)}
+      end
     end
   end
-  def parse(_) do
-    actions = format_actions(action_display_names)
-    IO.puts "Usage: cogctl\t[#{actions}]"
-    IO.puts ""
-    IO.puts "       cogctl <action> --help will display action specific help information."
+  # Get's triggered when a user explicitly requests help from the root command
+  # For example: 'cogctl --help'
+  def parse(:help) do
+    show_usage(:root)
     :done
   end
+  # Get's triggered when a user passes no arguments
+  def parse(_) do
+    show_usage(:root, :stderr)
+    :error
+  end
+
+  defp parse_args(handler, args) do
+    specs = opt_specs(handler)
+    case :getopt.parse(specs, args) do
+      {:ok, {options, remaining}} ->
+        if show_help?(options) do
+          :help
+        else
+          check(specs, {options, remaining})
+        end
+      error ->
+        error
+    end
+  end
+
+  defp check(specs, {options, remaining}) do
+    case :getopt.check(specs, options) do
+      :ok ->
+        cast(specs, {options, remaining})
+      error ->
+        error
+    end
+  end
+
+  defp cast(specs, {options, remaining}) do
+    options = ensure_elixir_strings(options)
+    remaining = ensure_elixir_strings(remaining)
+    cast_options = Enum.reduce(specs, options, fn
+      ({name, _short, _long, type, _desc}, options) ->
+        type = get_type(type)
+        Keyword.update(options, name, :undefined, &cast(type, &1))
+      (_, options) ->
+        options
+    end)
+    {cast_options, remaining}
+  end
+
+  defp cast(:list, value) when is_list(value),
+    do: value
+  defp cast(:list, :undefined),
+    do: []
+  defp cast(:list, value) when is_binary(value) do
+    String.split(value, ",")
+    |> Enum.reject(&(String.length(&1) == 0))
+  end
+  defp cast(_type, value),
+    do: value
+
+  defp handler_name(handler) do
+    String.to_char_list("cogctl " <> handler.display_name())
+  end
+
+  defp show_help?(options),
+    do: Keyword.get(options, :help, false)
+
+  defp show_usage(handler, output_stream \\ :stdio),
+    do: do_show_usage(handler, output_stream)
+
+  defp do_show_usage(:root, output_stream) do
+    actions = format_actions(action_display_names)
+    IO.puts output_stream, "Usage: cogctl\t[#{actions}]"
+    IO.puts output_stream, ""
+    IO.puts output_stream, "       cogctl <action> --help will display action specific help information."
+  end
+  defp do_show_usage(handler, output_stream) do
+    output_stream = case output_stream do
+      :stdio -> :standard_io
+      :stderr -> :standard_error
+    end
+    :getopt.usage(opt_specs(handler), handler_name(handler), output_stream)
+  end
+
+  # Returns the type from the option spec
+  defp get_type({type, _default}),
+    do: type
+  defp get_type(type),
+    do: type
 
   defp parse_action(args) do
     handlers = handler_patterns()
-    Enum.reduce(handlers, nil,
-      fn(%{handler: handler, pattern: pattern}, nil) ->
+    result = Enum.reduce(handlers, :unknown_action,
+      fn(%{handler: handler, pattern: pattern}, :unknown_action) ->
         if starts_with?(args, pattern) do
-          {handler, args -- pattern}
+          remaining_args = Enum.map(args -- pattern, &String.to_char_list(&1))
+          {:ok, handler, remaining_args}
         else
-          nil
+          :unknown_action
         end
         (_handler, accum) -> accum
       end)
+
+    case result do
+      {:ok, handler, remaining_args} ->
+        {handler, remaining_args}
+      :unknown_action ->
+        {:error, "Unknown action '#{hd(args)}' in '#{Enum.join(args, " ")}'"}
+    end
   end
 
   defp handler_patterns() do
@@ -119,20 +216,20 @@ defmodule Cogctl.Optparse do
   end
 
   defp opt_specs(handler) do
-    name = String.to_char_list("cogctl " <> handler.display_name())
-    specs = handler.option_spec()
-    {name, global_opts(specs)}
+    handler.option_spec()
+    |> global_opts
   end
 
   defp global_opts(opts) do
-    opts ++ [{:help, ??, 'help', :undefined, 'Displays this brief help'},
+    opts ++ [{:help, ??, 'help', {:boolean, false}, 'Displays this brief help'},
      {:host, ?h, 'host', {:string, :undefined}, 'Host name or network address of the target Cog instance'},
      {:port, ?p, 'port', {:integer, :undefined}, 'REST API port of the target Cog instances'},
-     {:secure, ?s, 'secure', :undefined, 'Use HTTPS to connect to Cog'},
+     {:secure, ?s, 'secure', {:boolean, false}, 'Use HTTPS to connect to Cog'},
      {:rest_user, ?U, 'rest-user', {:string, :undefined}, 'REST API user'},
      {:rest_password, ?P, 'rest-password', {:string, :undefined}, 'REST API password'},
      {:profile, :undefined, 'profile', {:string, :undefined}, '$HOME/.cogctl profile to use'}]
   end
+
   defp ensure_elixir_strings(items) do
     ensure_elixir_strings(items, [])
   end

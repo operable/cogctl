@@ -5,7 +5,7 @@ defmodule Cogctl.Actions.Triggers.Info do
   alias Cogctl.Actions.Triggers.Util
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Trigger name (required)'}]
+    [{:name, :undefined, :undefined, :string, 'Trigger name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

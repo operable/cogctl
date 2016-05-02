@@ -3,7 +3,7 @@ defmodule Cogctl.Actions.RelayGroups.Info do
   import Cogctl.Actions.RelayGroups.Util, only: [get_details: 1, render: 5]
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Relay name (required)'}]
+    [{:name, :undefined, :undefined, :string, 'Relay name (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do

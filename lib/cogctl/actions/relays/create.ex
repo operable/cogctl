@@ -3,29 +3,17 @@ defmodule Cogctl.Actions.Relays.Create do
   alias Cogctl.Actions.Relays.Util
 
   def option_spec do
-    [{:name, :undefined, :undefined, {:string, :undefined}, 'Relay name (required)'},
-     {:token, :undefined, 'token', {:string, :undefined}, 'Relay token (required)'},
+    [{:name, :undefined, :undefined, :string, 'Relay name (required)'},
+     {:token, :undefined, 'token', :string, 'Relay token (required)'},
      {:enable, :undefined, 'enable', {:boolean, false}, 'Flag to enable the relay (default false)'},
      {:description, :undefined, 'description', {:string, :undefined}, 'Relay description'},
      {:groups, :undefined, 'groups', {:list, :undefined}, 'Relay groups'},
      {:id, :undefined, 'id', {:string, :undefined}, 'Relay id (must be uuid)'}]
   end
 
-  def run(options, _args, _config, %{token: nil}=endpoint) do
-    with_authentication(endpoint, &run(options, nil, nil, &1))
-  end
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, option_spec, [name: :required,
-                                                  token: :required,
-                                                  enable: :optional,
-                                                  description: :optional,
-                                                  groups: :optional,
-                                                  id: :optional]) do
-      {:ok, params} ->
-        do_create(endpoint, params)
-      {:error, {:missing_params, missing_params}} ->
-        display_arguments_error(missing_params)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_create(&1, params))
   end
 
   defp do_create(endpoint, params) do

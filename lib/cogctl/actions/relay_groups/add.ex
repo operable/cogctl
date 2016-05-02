@@ -9,19 +9,14 @@ defmodule Cogctl.Actions.RelayGroups.Add do
   """
 
   def option_spec() do
-    [{:relay_group, :undefined, :undefined, {:string, :undefined}, 'Relay Group name (required)'},
-     {:relays, :undefined, 'relays', {:list, :undefined}, 'Relay names (required)'}]
+    [{:relay_group, :undefined, :undefined, :string, 'Relay Group name (required)'},
+     {:relays, :undefined, 'relays', :list, 'Relay names (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do
     # At least one relay is required, so we specify that here
-    case convert_to_params(options, option_spec, [relay_group: :required,
-                                                  relays: :required]) do
-      {:ok, params} ->
-        with_authentication(endpoint, &do_add(&1, params))
-      {:error, {:missing_params, missing_args}} ->
-        display_arguments_error(missing_args)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_add(&1, params))
   end
 
   defp do_add(endpoint, params) do

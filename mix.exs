@@ -22,7 +22,7 @@ defmodule Cogctl.Mixfile do
     [
       # We override here because of a conflict in rebar. Spanner brings in emqtt which includes
       # rebar as a dep.
-      {:getopt, github: "jcomellas/getopt", tag: "v0.8.2", override: true},
+      {:getopt, github: "operable/getopt"},
       {:ibrowse, "~> 4.2.2"},
       {:httpotion, "~> 2.1.0"},
       # We override poison here because spanner is set to 1.5.2 due to phoenix requirements

@@ -2,18 +2,13 @@ defmodule Cogctl.Actions.ChatHandles.Delete do
   use Cogctl.Action, "chat-handles delete"
 
   def option_spec do
-    [{:user, :undefined, 'user', {:string, :undefined}, 'Username user that owns the handle to delete (required)'},
-     {:chat_provider, :undefined, 'chat-provider', {:string, :undefined}, 'Chat provider name (required)'}]
+    [{:user, :undefined, 'user', :string, 'Username user that owns the handle to delete (required)'},
+     {:chat_provider, :undefined, 'chat-provider', :string, 'Chat provider name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    case convert_to_params(options, [user: :required,
-                                     chat_provider: :required]) do
-      {:ok, params} ->
-        with_authentication(endpoint, &do_delete(&1, params))
-      {:error, {:missing_params, missing_params}} ->
-        display_arguments_error(missing_params)
-    end
+    params = convert_to_params(options)
+    with_authentication(endpoint, &do_delete(&1, params))
   end
 
   defp do_delete(endpoint, params) do

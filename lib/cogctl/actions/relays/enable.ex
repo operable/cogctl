@@ -3,7 +3,7 @@ defmodule Cogctl.Actions.Relays.Enable do
   import Cogctl.Actions.Relays.Util, only: [update_status: 3]
 
   def option_spec() do
-    [{:relay, :undefined, :undefined, {:string, :undefined}, 'Relay name (required)'}]
+    [{:relay, :undefined, :undefined, :string, 'Relay name (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do

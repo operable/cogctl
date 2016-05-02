@@ -2,7 +2,7 @@ defmodule Cogctl.Actions.Permissions.Delete do
   use Cogctl.Action, "permissions delete"
 
   def option_spec do
-    [{:permission, :undefined, :undefined, {:string, :undefined}, 'Permission name (required)'}]
+    [{:permission, :undefined, :undefined, :string, 'Permission name (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do

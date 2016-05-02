@@ -6,8 +6,8 @@ defmodule Cogctl.Actions.Groups.Remove do
   alias CogApi.HTTP.Client
 
   def option_spec do
-    [{:group, :undefined, :undefined, {:string, :undefined}, 'Group name (required)'},
-     {:email, :undefined, 'email', {:string, :undefined}, 'User email address (required)'}]
+    [{:group, :undefined, :undefined, :string, 'Group name (required)'},
+     {:email, :undefined, 'email', :string, 'User email address (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do

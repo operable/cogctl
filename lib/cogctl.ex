@@ -28,13 +28,15 @@ defmodule Cogctl do
         :ok
       :error ->
         exit({:shutdown, 1})
+      {:error, msg} ->
+        exit_with_error(msg)
       error ->
-        display_error(error)
+        exit_with_error("ERROR: #{inspect(error)}")
     end
   end
 
-  defp display_error(error) do
-    IO.puts "Error: #{inspect error}"
+  defp exit_with_error(error) do
+    IO.puts(:stderr, "cogctl: #{error}")
     exit({:shutdown, 1})
   end
 
