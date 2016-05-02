@@ -1,4 +1,4 @@
-%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "3141babe1d77ab1b691e284617ce431faf973463", [branch: "peck/optional-status-code-return"]},
+%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "eee4226a710fe510f441983dd0c3d63f5f705925", []},
   "configparser_ex": {:hex, :configparser_ex, "0.2.0"},
   "dialyxir": {:hex, :dialyxir, "0.3.3"},
   "ex_json_schema": {:hex, :ex_json_schema, "0.3.1"},
