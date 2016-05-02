@@ -32,8 +32,8 @@ defmodule Cogctl.Actions.Bootstrap do
   end
 
   defp do_bootstrap(endpoint, config) do
-    case CogApi.HTTP.Internal.bootstrap_create(endpoint) do
-      {:ok, admin} ->
+    case CogApi.HTTP.Internal.bootstrap_create(endpoint, status_code: true) do
+      {200, admin} ->
         values = config.values
                  |> Map.put(endpoint.host, %{"user" => get_in(admin, ["bootstrap", "username"]),
                                            "password" => get_in(admin, ["bootstrap", "password"]),
@@ -43,9 +43,9 @@ defmodule Cogctl.Actions.Bootstrap do
         config = %{config | dirty: true, values: values}
         Cogctl.Config.save(config)
         display_output("Bootstrapped")
-      {:error, %{"errors" => %{"bootstrap" => error}}} ->
-        display_error(error)
-      {:error, %{"errors" => error}} ->
+      {423, _} ->
+        display_output("Already bootstrapped")
+      {_, %{"errors" => error}} ->
         display_error(error)
     end
   end

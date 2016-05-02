@@ -63,7 +63,7 @@ defmodule Cogctl.Actions.Bundles.Create do
         end
 
         commands = for command <- bundle.commands do
-          [command["name"], command["id"]]
+          [command.name, command.id]
         end
 
         display_output("""
