@@ -34,7 +34,7 @@ defmodule Support.CliHelpers do
 
   def ensure_started do
     case run("cogctl bootstrap") do
-      "ERROR: \"Already bootstrapped\"\n" ->
+      "Already bootstrapped\n" ->
         :ok
       "Bootstrapped\n" ->
         :ok
