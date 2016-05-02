@@ -22,13 +22,8 @@ defmodule Cogctl.Actions.Permissions.View do
     [["Permissions", permission_names]]
   end
 
-  defp format_table(permisssions) when is_list(permisssions) do
-    rows = Enum.map(permisssions, fn(permission) ->
-      [permission["namespace"],
-       permission["name"],
-       permission["id"]]
-    end)
-    [["NAMESPACE", "NAME", "ID"]] ++ rows
+  defp format_table(permissions) when is_list(permissions) do
+    [["NAMESPACE", "NAME", "ID"] | Enum.map(permissions, &([&1["namespace"], &1["name"], &1["id"]]))]
   end
   defp format_table(permission) do
     [
