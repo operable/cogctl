@@ -4,7 +4,7 @@
   "ex_json_schema": {:hex, :ex_json_schema, "0.3.1"},
   "exactor": {:hex, :exactor, "2.2.0"},
   "exjsx": {:hex, :exjsx, "3.2.0"},
-  "exvcr": {:git, "https://github.com/operable/exvcr.git", "f64a59aeaf5e4b07bc2ba560786abb6e3bea12dc", [branch: "fix-cached-status-code"]},
+  "exvcr": {:hex, :exvcr, "0.7.3"},
   "getopt": {:git, "https://github.com/operable/getopt.git", "6014121002e3e34e8064486d4b34aedaa887f1c4", []},
   "httpotion": {:hex, :httpotion, "2.1.0"},
   "ibrowse": {:hex, :ibrowse, "4.2.2"},
