@@ -46,66 +46,6 @@ defmodule CogctlTest do
     assert String.ends_with?(help_text, more_help_text)
   end
 
-  test "cogctl bundles" do
-    pre_bundle_create("testfoo")
-
-    assert run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "testfoo.yaml")}") =~ ~r"""
-    ID         .*
-    Name       testfoo
-    Status     disabled
-    Installed  .*
-
-    Commands
-    NAME  ID
-    bar   .*
-    """
-
-    cleanup
-
-    assert run("cogctl bundles delete testfoo") =~ ~r"""
-    Deleted testfoo
-    """
-
-    assert run("cogctl bundles") =~ ~r"""
-    NAME      STATUS   INSTALLED
-    operable  enabled  .*
-    """
-
-    assert run("cogctl bundles info") =~ ~r(.*cogctl: Missing required arguments: 'bundle')
-
-    assert run("cogctl bundles info operable") =~ ~r"""
-    ID         .*
-    Name       operable
-    Status     enabled
-    Installed  .*
-
-    Commands
-    NAME         ID
-    alias        .*
-    bundle       .*
-    echo         .*
-    filter       .*
-    greet        .*
-    group        .*
-    help         .*
-    max          .*
-    min          .*
-    permissions  .*
-    raw          .*
-    role         .*
-    rules        .*
-    seed         .*
-    sleep        .*
-    sort         .*
-    sum          .*
-    table        .*
-    thorn        .*
-    unique       .*
-    wc           .*
-    which        .*
-    """
-  end
-
   test "cogctl users" do
     assert run("cogctl users") =~ ~r"""
     USERNAME  FULL NAME          EMAIL_ADDRESS
