@@ -1,6 +1,6 @@
 defmodule Cogctl.Actions.Permissions do
   use Cogctl.Action, "permissions"
-  alias Cogctl.Table
+  alias Cogctl.Actions.Permissions.View, as: PermissionView
 
   def option_spec do
     [{:role, :undefined, 'role', {:string, :undefined}, 'Name of role to filter permissions by'}]
@@ -15,11 +15,7 @@ defmodule Cogctl.Actions.Permissions do
     case CogApi.HTTP.Internal.permission_index(endpoint, params) do
       {:ok, resp} ->
         permissions = resp["permissions"]
-        permission_attrs = Enum.map(permissions, fn(permission) ->
-                               [permission["namespace"], permission["name"], permission["id"]]
-                           end)
-
-        display_output(Table.format([["NAMESPACE", "NAME", "ID"]] ++ permission_attrs, true))
+        PermissionView.render(permissions)
       {:error, error} ->
         display_error(error["errors"])
     end
