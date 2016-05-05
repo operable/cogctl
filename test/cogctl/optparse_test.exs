@@ -73,4 +73,9 @@ defmodule Cogctl.OptParse.Test do
     assert options == []
     assert args == ["foo", "biz", "baz", "buz"]
   end
+
+  test "exit gracefully when invalid options are passed" do
+    assert capture_parse("relays create --bar") =~ ~r(Usage: .*)
+    assert_received {:error, "Unknown option: '--bar'"}
+  end
 end
