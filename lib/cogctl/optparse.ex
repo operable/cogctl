@@ -91,6 +91,9 @@ defmodule Cogctl.Optparse do
         {:error, {:missing_required_options, missing}} ->
           show_usage(handler, :stderr)
           {:error, "Missing required arguments: '#{Enum.join(missing, ", ")}'"}
+        {:error, {:invalid_option, invalid_option_name}} ->
+          show_usage(handler, :stderr)
+          {:error, "Unknown option: '#{invalid_option_name}'"}
         {options, remaining_args} ->
           {handler, options, remaining_args}
         error ->
