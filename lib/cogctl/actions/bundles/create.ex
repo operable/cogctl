@@ -70,7 +70,7 @@ defmodule Cogctl.Actions.Bundles.Create do
       {:error, messages} when is_list(messages) ->
         # Map over messages and convert any validation errors
         # into strings so cogctl can display them
-        Enum.map(messages, &format_validation_reason/1) |> display_error
+        Enum.map(messages, &format_validation_error/1) |> display_error
     end
   end
 
@@ -78,8 +78,22 @@ defmodule Cogctl.Actions.Bundles.Create do
     with {:ok, config}         <- Spanner.Config.Parser.read_from_file(params.file),
          {:ok, templates}      <- build_template_map(params.templates),
          {:ok, amended_config} <- maybe_add_templates(templates, config),
-         {:ok, fixed_config}   <- Spanner.Config.validate(amended_config),
+         {:ok, fixed_config}   <- validate_config(amended_config),
          do: {:ok, fixed_config}
+  end
+
+  defp validate_config(config) do
+    case Spanner.Config.validate(config) do
+      {:ok, validated_config} ->
+        {:ok, validated_config}
+      {:warning, upgraded_config, warnings} ->
+        # If the user passes a config with deprecated fields, we should warn them
+        Enum.map(warnings, &format_validation_warning/1) |> display_warning
+        {:ok, upgraded_config}
+      {:error, errors, warnings} ->
+        Enum.map(warnings, &format_validation_warning/1) |> display_warning
+        {:error, errors}
+    end
   end
 
   defp create_bundle(endpoint, params, config) do
@@ -158,11 +172,22 @@ defmodule Cogctl.Actions.Bundles.Create do
     {:ok, Map.put(config, "templates", templates)}
   end
 
-  defp format_validation_reason({reason, field_path}) do
-    field_path = String.replace(field_path, "#/", "", global: false)
-    "Invalid field '#{field_path}': #{reason}"
+  defp format_validation_reason(reason, field_path) do
+    String.replace(field_path, "#/", "", global: false)
+    "'#{field_path}': #{reason}"
   end
-  defp format_validation_reason(error) do
+
+  defp format_validation_error({reason, field_path}) do
+    "Invalid field #{format_validation_reason(reason, field_path)}"
+  end
+  defp format_validation_error(error) do
     error
+  end
+
+  defp format_validation_warning({reason, field_path}) do
+    format_validation_reason(reason, field_path)
+  end
+  defp format_validation_warning(warning) do
+    warning
   end
 end

@@ -78,12 +78,21 @@ defmodule Cogctl.ActionUtil do
     :ok
   end
 
-  def display_error(errors) when is_list(errors) do 
-    IO.puts(:stderr, "ERROR: " <> Enum.join(errors, "\n"))
+  def display_warning(warnings) when is_list(warnings) do
+    Enum.map(warnings, &display_warning/1)
+    :ok
+  end
+  def display_warning(warning) do
+    IO.puts(:stderr, "cogctl: WARNING: #{inspect warning}")
+    :ok
+  end
+
+  def display_error(errors) when is_list(errors) do
+    Enum.map(errors, &display_error/1)
     :error
   end
   def display_error(error) do
-    IO.puts(:stderr, "ERROR: #{inspect error}")
+    IO.puts(:stderr, "cogctl: ERROR: #{inspect error}")
     :error
   end
 
