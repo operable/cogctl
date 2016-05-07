@@ -23,10 +23,12 @@ defmodule CogctlTest do
     ---
     name: #{name}
     version: 0.0.1
-    cog_bundle_version: 2
+    cog_bundle_version: 3
     commands:
       bar:
         executable: /bin/foobar
+        rules:
+        - "allow"
     """
     File.write!(Path.join(@scratch_dir, "#{name}.yaml"), config)
   end
@@ -362,7 +364,7 @@ defmodule CogctlTest do
 
   test "cogctl rules" do
     assert run("cogctl rules operable:test") =~ ~r"""
-    ERROR: "No rules for command found"
+    cogctl: ERROR: "No rules for command found"
     """
 
     # Set up the permission
@@ -463,7 +465,7 @@ defmodule CogctlTest do
 
     assert run("cogctl relays delete test-relay mimimi") =~ ~r"""
     Deleted 'test-relay'
-    ERROR: The relay `mimimi` could not be deleted: Resource not found for: 'relays'
+    cogctl: ERROR: The relay `mimimi` could not be deleted: Resource not found for: 'relays'
     """
 
     run("cogctl relay-groups create mygroup")
@@ -511,7 +513,7 @@ defmodule CogctlTest do
     NAME  ID
     """
 
-    run("cogctl relay-groups add myrelays my-test ")
+    run("cogctl relay-groups add myrelays --relays=my-test ")
 
     assert run("cogctl relay-groups remove myrelays --relays=test-relay ") =~ ~r"""
     Removed 'test-relay' from relay group 'myrelays'
