@@ -370,6 +370,18 @@ defmodule CogctlTest do
     # Set up the permission
     run("cogctl permissions create site:test")
 
+
+    # Remove default rule from echo
+    initial_expected = ~r"""
+    ID                                    COMMAND        RULE TEXT
+    (?<id>.*)  operable:echo  when command is operable:echo allow
+    """
+    initial = Regex.named_captures(initial_expected, run("cogctl rules operable:echo"))
+    assert run("cogctl rules delete #{initial["id"]}") =~ ~r"""
+    Deleted .*
+    """
+
+    # Add new rule
     assert run("cogctl rules create --rule-text='when command is operable:echo must have site:test'") =~ ~r"""
     ID         .*
     Rule Text  when command is operable:echo must have site:test
@@ -388,6 +400,12 @@ defmodule CogctlTest do
     # Clean up the permission after we are done
     assert run("cogctl permissions delete site:test") =~ ~r"""
     Deleted site:test
+    """
+
+    # Add the original rule back
+    assert run("cogctl rules create --rule-text='when command is operable:echo allow'") =~ ~r"""
+    ID         .*
+    Rule Text  when command is operable:echo allow
     """
   end
 
