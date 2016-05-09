@@ -236,6 +236,9 @@ defmodule CogctlTest do
   end
 
   test "cogctl roles" do
+    # Make sure the role doesn't exist
+    run("cogctl roles delete developer")
+
     assert run("cogctl roles create developer") =~ ~r"""
     ID    .*
     Name  developer
@@ -291,11 +294,17 @@ defmodule CogctlTest do
     operable   manage_users        .*
     """
 
+    # Make sure the permission doesn't exist first
+    run("cogctl permissions delete site:echo")
+
     assert run("cogctl permissions create site:echo") =~ ~r"""
     ID         .*
     Namespace  site
     Name       echo
     """
+
+    # Make sure the role doesn't exist
+    run("cogctl roles delete developer")
 
     assert run("cogctl roles create developer") =~ ~r"""
     ID    .*
