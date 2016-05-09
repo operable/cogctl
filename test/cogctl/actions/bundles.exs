@@ -24,6 +24,24 @@ defmodule Cogctl.Actions.Bundles.Test do
     """
   end
 
+  test "creating a bundle from an old config file" do
+    config_path = BundleHelpers.create_old_config_file("oldfoo")
+
+    assert run_capture_stderr("cogctl bundles create #{config_path}") =~ ~r"""
+    WARNING: [\s\S]+
+    """
+    assert run_capture_stdio("cogctl bundles create #{config_path}") =~ ~r"""
+    ID         .*
+    Name       oldfoo
+    Status     disabled
+    Installed  .*
+
+    Commands
+    NAME  ID
+    bar   .*
+    """
+  end
+
   test "creating a bundle with templates" do
     config_path = BundleHelpers.create_config_file("testfoo")
     templates_path = BundleHelpers.create_templates
@@ -62,7 +80,8 @@ defmodule Cogctl.Actions.Bundles.Test do
 
   test "bundles info returns an error when args are missing" do
     assert run("cogctl bundles info") =~ ~r"""
-    ERROR: "Missing required arguments"
+    Usage: [\s\S]*\
+    cogctl: ERROR: Missing required arguments: 'bundle'
     """
   end
 
@@ -75,28 +94,7 @@ defmodule Cogctl.Actions.Bundles.Test do
 
     Commands
     NAME         ID
-    alias        .*
-    bundle       .*
-    echo         .*
-    filter       .*
-    greet        .*
-    group        .*
-    help         .*
-    max          .*
-    min          .*
-    permissions  .*
-    raw          .*
-    role         .*
-    rules        .*
-    seed         .*
-    sleep        .*
-    sort         .*
-    sum          .*
-    table        .*
-    thorn        .*
-    unique       .*
-    wc           .*
-    which        .*
+    [a-zA-Z-]+\s+.*\n
     """)
   end
 end

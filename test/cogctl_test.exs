@@ -23,10 +23,12 @@ defmodule CogctlTest do
     ---
     name: #{name}
     version: 0.0.1
-    cog_bundle_version: 2
+    cog_bundle_version: 3
     commands:
       bar:
         executable: /bin/foobar
+        rules:
+        - "allow"
     """
     File.write!(Path.join(@scratch_dir, "#{name}.yaml"), config)
   end
@@ -234,6 +236,9 @@ defmodule CogctlTest do
   end
 
   test "cogctl roles" do
+    # Make sure the role doesn't exist
+    run("cogctl roles delete developer")
+
     assert run("cogctl roles create developer") =~ ~r"""
     ID    .*
     Name  developer
@@ -289,11 +294,17 @@ defmodule CogctlTest do
     operable   manage_users        .*
     """
 
+    # Make sure the permission doesn't exist first
+    run("cogctl permissions delete site:echo")
+
     assert run("cogctl permissions create site:echo") =~ ~r"""
     ID         .*
     Namespace  site
     Name       echo
     """
+
+    # Make sure the role doesn't exist
+    run("cogctl roles delete developer")
 
     assert run("cogctl roles create developer") =~ ~r"""
     ID    .*
@@ -368,6 +379,18 @@ defmodule CogctlTest do
     # Set up the permission
     run("cogctl permissions create site:test")
 
+
+    # Remove default rule from echo
+    initial_expected = ~r"""
+    ID                                    COMMAND        RULE TEXT
+    (?<id>.*)  operable:echo  when command is operable:echo allow
+    """
+    initial = Regex.named_captures(initial_expected, run("cogctl rules operable:echo"))
+    assert run("cogctl rules delete #{initial["id"]}") =~ ~r"""
+    Deleted .*
+    """
+
+    # Add new rule
     assert run("cogctl rules create --rule-text='when command is operable:echo must have site:test'") =~ ~r"""
     ID         .*
     Rule Text  when command is operable:echo must have site:test
@@ -386,6 +409,12 @@ defmodule CogctlTest do
     # Clean up the permission after we are done
     assert run("cogctl permissions delete site:test") =~ ~r"""
     Deleted site:test
+    """
+
+    # Add the original rule back
+    assert run("cogctl rules create --rule-text='when command is operable:echo allow'") =~ ~r"""
+    ID         .*
+    Rule Text  when command is operable:echo allow
     """
   end
 
@@ -463,7 +492,7 @@ defmodule CogctlTest do
 
     assert run("cogctl relays delete test-relay mimimi") =~ ~r"""
     Deleted 'test-relay'
-    ERROR: The relay `mimimi` could not be deleted: Resource not found for: 'relays'
+    ERROR: "The relay `mimimi` could not be deleted: Resource not found for: 'relays'"
     """
 
     run("cogctl relay-groups create mygroup")
@@ -511,7 +540,7 @@ defmodule CogctlTest do
     NAME  ID
     """
 
-    run("cogctl relay-groups add myrelays my-test ")
+    run("cogctl relay-groups add myrelays --relays=my-test ")
 
     assert run("cogctl relay-groups remove myrelays --relays=test-relay ") =~ ~r"""
     Removed 'test-relay' from relay group 'myrelays'

@@ -9,15 +9,7 @@ defmodule Support.CliHelpers do
   def run("cogctl" <> args) do
     capture_io(fn ->
       capture_io(:stderr, fn ->
-        try do
-          args
-          |> String.split
-          |> smart_split([])
-          |> Cogctl.main
-        catch
-          _, _ ->
-            nil
-        end
+        try_run("cogctl" <> args)
       end) |> IO.write
     end)
   end
@@ -25,10 +17,38 @@ defmodule Support.CliHelpers do
     raise ~s(Commands must start with "cogctl")
   end
 
+  def run_capture_stderr("cogctl" <> args) do
+    capture_io(:stderr, fn ->
+      capture_io(fn ->
+        try_run("cogctl" <> args)
+      end)
+    end)
+  end
+
+  def run_capture_stdio("cogctl" <> args) do
+    capture_io(fn ->
+      capture_io(:stderr, fn ->
+        try_run("cogctl" <> args)
+      end)
+    end)
+  end
+
+  def try_run("cogctl" <> args) do
+    try do
+      args
+      |> String.split
+      |> smart_split([])
+      |> Cogctl.main
+    catch
+      _, _ ->
+        nil
+    end
+  end
+
   def run_no_capture("cogctl" <> args) do
     args
-    |> String.strip
     |> String.split
+    |> smart_split([])
     |> Cogctl.main
   end
 
