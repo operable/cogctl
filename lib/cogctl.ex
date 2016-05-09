@@ -95,8 +95,7 @@ defmodule Cogctl do
   defp load_profile(name, config) do
     case Map.get(config.values, name) do
       nil ->
-        IO.puts "Profile '#{name}' is missing."
-        exit({:shutdown, 1})
+        exit_with_error("ERROR: Profile '#{name}' is missing.")
       profile ->
         build_profile(profile)
     end
