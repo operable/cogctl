@@ -28,7 +28,7 @@ defmodule Cogctl.Actions.Bundles.Test do
     config_path = BundleHelpers.create_old_config_file("oldfoo")
 
     assert run_capture_stderr("cogctl bundles create #{config_path}") =~ ~r"""
-    cogctl: WARNING: [\s\S]+
+    WARNING: [\s\S]+
     """
     assert run_capture_stdio("cogctl bundles create #{config_path}") =~ ~r"""
     ID         .*
@@ -81,7 +81,7 @@ defmodule Cogctl.Actions.Bundles.Test do
   test "bundles info returns an error when args are missing" do
     assert run("cogctl bundles info") =~ ~r"""
     Usage: [\s\S]*\
-    cogctl: Missing required arguments: 'bundle'
+    cogctl: ERROR: Missing required arguments: 'bundle'
     """
   end
 

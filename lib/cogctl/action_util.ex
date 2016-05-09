@@ -83,7 +83,7 @@ defmodule Cogctl.ActionUtil do
     :ok
   end
   def display_warning(warning) do
-    IO.puts(:stderr, "cogctl: WARNING: #{inspect warning}")
+    IO.puts(:stderr, "WARNING: #{inspect warning}")
     :ok
   end
 
@@ -92,7 +92,7 @@ defmodule Cogctl.ActionUtil do
     :error
   end
   def display_error(error) do
-    IO.puts(:stderr, "cogctl: ERROR: #{inspect error}")
+    IO.puts(:stderr, "ERROR: #{inspect error}")
     :error
   end
 

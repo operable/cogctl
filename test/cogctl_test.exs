@@ -364,7 +364,7 @@ defmodule CogctlTest do
 
   test "cogctl rules" do
     assert run("cogctl rules operable:test") =~ ~r"""
-    cogctl: ERROR: "No rules for command found"
+    ERROR: "No rules for command found"
     """
 
     # Set up the permission
@@ -483,7 +483,7 @@ defmodule CogctlTest do
 
     assert run("cogctl relays delete test-relay mimimi") =~ ~r"""
     Deleted 'test-relay'
-    cogctl: ERROR: "The relay `mimimi` could not be deleted: Resource not found for: 'relays'"
+    ERROR: "The relay `mimimi` could not be deleted: Resource not found for: 'relays'"
     """
 
     run("cogctl relay-groups create mygroup")

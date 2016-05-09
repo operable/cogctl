@@ -53,7 +53,7 @@ defmodule Cogctl.OptParse.Test do
     # We test to see if "bundles create" prints usage info
     assert capture_parse("bundles create") =~ ~r(Usage: .*)
     # Then we check to see if it returns the correct value
-    assert_received {:error, "Missing required arguments: 'file'"}
+    assert_received {:error, "ERROR: Missing required arguments: 'file'"}
   end
 
   test "lists are returned as elixir lists" do
@@ -76,6 +76,6 @@ defmodule Cogctl.OptParse.Test do
 
   test "exit gracefully when invalid options are passed" do
     assert capture_parse("relays create --bar") =~ ~r(Usage: .*)
-    assert_received {:error, "Unknown option: '--bar'"}
+    assert_received {:error, "ERROR: Unknown option: '--bar'"}
   end
 end
