@@ -79,7 +79,7 @@ defmodule Cogctl.ActionUtil do
   end
 
   def display_warning(warnings) when is_list(warnings) do
-    Enum.map(warnings, &display_warning/1)
+    IO.puts(:stderr, Enum.map_join(warnings, "\n", &("WARNING: #{inspect &1}")))
     :ok
   end
   def display_warning(warning) do
@@ -88,7 +88,7 @@ defmodule Cogctl.ActionUtil do
   end
 
   def display_error(errors) when is_list(errors) do
-    Enum.map(errors, &display_error/1)
+    IO.puts(:stderr, Enum.map_join(errors, "\n", &("ERROR: #{inspect &1}")))
     :error
   end
   def display_error(error) do
