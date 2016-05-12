@@ -208,7 +208,7 @@ defmodule Cogctl.Optparse do
         {:ok, handler, remaining_args}
       :unknown_action ->
         suggestion = get_suggestion(handlers, args)
-        {:error, "Unknown action in '#{Enum.join(args, " ")}'. Did you mean '#{suggestion}'"}
+        {:error, "Unknown action in '#{Enum.join(args, " ")}'. Did you mean '#{suggestion}'?"}
     end
   end
 
