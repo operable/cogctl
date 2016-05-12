@@ -142,8 +142,8 @@ defmodule Cogctl.Optparse do
     cast_options = Enum.reduce(specs, options, fn
       ({name, _short, _long, type, _desc}, options) ->
         type = get_type(type)
-        case :proplists.get_value(name, options, :undefined) do
-          :undefined ->
+        case :proplists.get_value(name, options, nil) do
+          nil ->
             options
           value ->
             new_value = cast(type, value)

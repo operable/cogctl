@@ -33,7 +33,7 @@ defmodule Cogctl.OptParse.Test do
 
   test "parses commands with no options" do
     {handler, options, args} = parse("bundles")
-    {_, options} = Keyword.split(options, @standard_options)
+    {_, options} = :proplists.split(options, @standard_options)
 
     assert handler == Cogctl.Actions.Bundles
     assert options == []
@@ -42,10 +42,16 @@ defmodule Cogctl.OptParse.Test do
 
   test "parses commands with options" do
     {handler, options, args} = parse("bundles create my_config.yaml --templates my_templates --enable")
-    {_, options} = Keyword.split(options, @standard_options)
+    file = :proplists.get_value(:file, options)
+    templates = :proplists.get_value(:templates, options)
+    enabled = :proplists.get_value(:enabled, options)
+    relay_groups = :proplists.get_value(:"relay-groups", options)
 
     assert handler == Cogctl.Actions.Bundles.Create
-    assert options == [file: "my_config.yaml", templates: "my_templates", enabled: true, "relay-groups": []]
+    assert file == "my_config.yaml"
+    assert templates == "my_templates"
+    assert enabled == true
+    assert relay_groups == []
     assert args == []
   end
 
@@ -58,16 +64,18 @@ defmodule Cogctl.OptParse.Test do
 
   test "lists are returned as elixir lists" do
     {handler, options, args} = parse("relay-groups create foo --members bar,biz,baz")
-    {_, options} = Keyword.split(options, @standard_options)
+    members = :proplists.get_value(:members, options)
+    name = :proplists.get_value(:name, options)
 
     assert handler == Cogctl.Actions.RelayGroups.Create
-    assert options == [name: "foo", members: ["bar", "biz", "baz"]]
+    assert members == ["bar", "biz", "baz"]
+    assert name == "foo"
     assert args == []
   end
 
   test "extra args are returned" do
     {handler, options, args} = parse("bundles delete foo biz baz buz")
-    {_, options} = Keyword.split(options, @standard_options)
+    {_, options} = :proplists.split(options, @standard_options)
 
     assert handler == Cogctl.Actions.Bundles.Delete
     assert options == []
