@@ -83,7 +83,7 @@ defmodule Cogctl.Optparse do
     parse(:help)
   end
   def parse(action_str) when length(action_str) > 0 do
-    with {handler, args} <- parse_action(action_str) do
+    with {:ok, handler, args} <- parse_action(action_str) do
       case parse_args(handler, args) do
         :help ->
           show_usage(handler)
@@ -205,10 +205,17 @@ defmodule Cogctl.Optparse do
 
     case result do
       {:ok, handler, remaining_args} ->
-        {handler, remaining_args}
+        {:ok, handler, remaining_args}
       :unknown_action ->
-        {:error, "Unknown action '#{hd(args)}' in '#{Enum.join(args, " ")}'"}
+        suggestion = get_suggestion(handlers, args)
+        {:error, "Unknown action in '#{Enum.join(args, " ")}'. Did you mean '#{suggestion}'?"}
     end
+  end
+
+  defp get_suggestion(handlers, args) do
+    action = Enum.join(args, " ")
+    Enum.map(handlers, &Enum.join(Map.get(&1, :pattern), " "))
+    |> Enum.max_by(&String.jaro_distance(&1, action))
   end
 
   defp handler_patterns() do

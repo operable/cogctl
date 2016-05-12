@@ -78,4 +78,8 @@ defmodule Cogctl.OptParse.Test do
     assert capture_parse("relays create --bar") =~ ~r(Usage: .*)
     assert_received {:error, "ERROR: Unknown option: '--bar'"}
   end
+
+  test "exit with a suggestion when an unknown command is passed" do
+    assert parse("boostrap") == {:error, "Unknown action in 'boostrap'. Did you mean 'bootstrap'?"}
+  end
 end
