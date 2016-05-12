@@ -83,7 +83,7 @@ defmodule Cogctl.Optparse do
     parse(:help)
   end
   def parse(action_str) when length(action_str) > 0 do
-    with {handler, args} <- parse_action(action_str) do
+    with {:ok, handler, args} <- parse_action(action_str) do
       case parse_args(handler, args) do
         :help ->
           show_usage(handler)
@@ -205,7 +205,7 @@ defmodule Cogctl.Optparse do
 
     case result do
       {:ok, handler, remaining_args} ->
-        {handler, remaining_args}
+        {:ok, handler, remaining_args}
       :unknown_action ->
         {:error, "Unknown action '#{hd(args)}' in '#{Enum.join(args, " ")}'"}
     end
