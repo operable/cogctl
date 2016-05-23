@@ -73,8 +73,15 @@ defmodule Cogctl.ActionUtil do
     end
   end
 
-  def display_output(output) do
-    IO.puts(output)
+  @doc """
+  Displays output on stdout. If false is passed for verbose(default is true),
+  just return ':ok'
+  """
+  @spec display_output(String.t, Boolean.t) :: :ok
+  def display_output(output, verbose \\ true) do
+    if verbose do
+      IO.puts(output)
+    end
     :ok
   end
 

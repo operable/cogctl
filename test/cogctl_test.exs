@@ -283,8 +283,8 @@ defmodule CogctlTest do
 
 
   test "cogctl permissions" do
-    assert run("cogctl permissions") =~ ~r"""
-    NAMESPACE  NAME                ID
+    assert run("cogctl permissions") =~ table_string("""
+    BUNDLE     NAME                ID
     operable   manage_commands     .*
     operable   manage_groups       .*
     operable   manage_permissions  .*
@@ -292,15 +292,15 @@ defmodule CogctlTest do
     operable   manage_roles        .*
     operable   manage_triggers     .*
     operable   manage_users        .*
-    """
+    """)
 
     # Make sure the permission doesn't exist first
     run("cogctl permissions delete site:echo")
 
     assert run("cogctl permissions create site:echo") =~ ~r"""
-    ID         .*
-    Namespace  site
-    Name       echo
+    ID      .*
+    Bundle  site
+    Name    echo
     """
 
     # Make sure the role doesn't exist
@@ -316,8 +316,8 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl permissions --role=developer") =~ ~r"""
-    NAMESPACE  NAME  ID
-    site       echo  .*
+    BUNDLE  NAME  ID
+    site    echo  .*
     """
 
     assert run("cogctl roles info developer") =~ ~r"""
@@ -373,12 +373,11 @@ defmodule CogctlTest do
 
   test "cogctl rules" do
     assert run("cogctl rules operable:test") =~ ~r"""
-    cogctl: ERROR: "No rules for command found"
+    cogctl: ERROR: \"Command operable:test not found\"
     """
 
     # Set up the permission
     run("cogctl permissions create site:test")
-
 
     # Remove default rule from echo
     initial_expected = ~r"""
@@ -555,17 +554,21 @@ defmodule CogctlTest do
     bundle_names = Enum.map(1..3, &"bundle#{&1}")
     Enum.each(bundle_names, fn(name) ->
       pre_bundle_create(name)
-      run("cogctl bundles create --templates #{@template_dir} #{Path.join(@scratch_dir, "#{name}.yaml")}")
+      run("cogctl bundle install --templates #{@template_dir} #{Path.join(@scratch_dir, "#{name}.yaml")}")
     end)
 
     pre_bundle_create("bundle4")
-    run("cogctl bundles create --enable --relay-groups=myrelays #{Path.join(@scratch_dir, "bundle4.yaml")}")
+    run("cogctl bundle install --enable --relay-groups=myrelays #{Path.join(@scratch_dir, "bundle4.yaml")}")
 
-    assert run("cogctl bundles info bundle4") =~ ~r"""
-    ID         .*
-    Name       bundle4
-    Status     enabled
-    Installed  .*
+    assert run("cogctl bundle info bundle4") =~ ~r"""
+    Bundle ID:           .*
+    Version ID:          .*
+    Name:                bundle4
+    Installed Versions:  0.0.1
+    Status:              Enabled
+    Version:             0.0.1
+    Commands:            bar
+    Relay Groups:        myrelays
     """
 
     assert run("cogctl relay-groups assign myrelays --bundles=#{Enum.join(bundle_names, ",")}") =~ ~r"""
@@ -589,8 +592,9 @@ defmodule CogctlTest do
     """
 
     # Cleanup the bundle bits when we are finished
-    Enum.each(bundle_names, &run("cogctl bundles delete #{&1}"))
-    run("cogctl bundles delete bundle4")
+    Enum.each(bundle_names, &run("cogctl bundle disable #{&1}"))
+    Enum.each(bundle_names, &run("cogctl bundle uninstall --all #{&1}"))
+    run("cogctl bundle uninstall bundle4 --all")
     cleanup
 
     assert run("cogctl relay-groups delete myrelays") =~ ~r"""

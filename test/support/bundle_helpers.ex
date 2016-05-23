@@ -85,7 +85,7 @@ defmodule Support.BundleHelpers do
   @spec create_bundle(String.t) :: String.t
   def create_bundle(name) do
     config_path = create_config_file(name)
-    Support.CliHelpers.run("cogctl bundles create #{config_path}")
+    Support.CliHelpers.run("cogctl bundle install #{config_path}")
     name
   end
 

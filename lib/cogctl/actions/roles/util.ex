@@ -36,7 +36,7 @@ defmodule Cogctl.Actions.Roles.Util do
 
   defp format_permissions(nil), do: []
   defp format_permissions(permissions) do
-    permission_names = Enum.map(permissions, &(&1.namespace <> ":" <> &1.name))
+    permission_names = Enum.map(permissions, &(&1.bundle <> ":" <> &1.name))
     |> Enum.sort
     |> Enum.join(",")
 

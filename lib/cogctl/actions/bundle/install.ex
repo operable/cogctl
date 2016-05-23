@@ -1,9 +1,9 @@
-defmodule Cogctl.Actions.Bundles.Create do
-  use Cogctl.Action, "bundles create"
+defmodule Cogctl.Actions.Bundle.Install do
+  use Cogctl.Action, "bundle install"
 
   alias CogApi.HTTP.Client
-  alias Cogctl.Actions.Bundles
   alias Cogctl.Table
+  import Cogctl.Actions.Bundle.Helpers, only: [field: 2]
 
   @template_extension ".mustache"
 
@@ -29,49 +29,55 @@ defmodule Cogctl.Actions.Bundles.Create do
 
   def option_spec do
     [{:file, :undefined, :undefined, :string, 'Path to your bundle config file (required)'},
-     {:templates, :undefined, 'templates', {:string, 'templates'}, 'Path to your template directory'},
-     {:enabled, :undefined, 'enable', {:boolean, false}, 'Enable bundle after installing'},
+     {:templates, ?t, 'templates', {:string, 'templates'}, 'Path to your template directory'},
+     # TODO: Implement enabling bundles on install
+     {:enabled, ?e, 'enable', {:boolean, false}, 'Enable bundle after installing'},
+     {:verbose, ?v, 'verbose', {:boolean, false}, 'Verbose output'},
      {:"relay-groups", :undefined, 'relay-groups', {:list, :undefined}, 'List of relay group names separated by commas to assign the bundle'}]
   end
 
   def run(options, _args, _config, endpoint) do
     params = convert_to_params(options)
-    with_authentication(endpoint, &do_create(&1, params))
+    with_authentication(endpoint, &do_install(&1, params))
   end
 
-  defp do_create(endpoint, params) do
+  defp do_install(endpoint, params) do
     result = with {:ok, config} <- parse_config(params),
-                  {:ok, bundle} <- create_bundle(endpoint, params, config),
+                  {:ok, bundle} <- install_bundle(endpoint, params, config),
                   do: {:ok, bundle}
 
     case result do
-      {:ok, bundle} ->
-        messages = assign_to_relay_groups(endpoint, bundle, params)
+      {:ok, bundle_version} ->
+        assign_to_relay_groups(endpoint, bundle_version, params)
 
-        status = Bundles.enabled_to_status(bundle.enabled)
-        bundle = Map.merge(bundle, %{status: status})
-
-        bundle_attrs = for {title, attr} <- [{"ID", :id}, {"Name", :name}, {"Status", :status}, {"Installed", :inserted_at}] do
-          [title, Map.get(bundle, attr) |> to_string]
+        case enable_bundle_version(endpoint, bundle_version, params) do
+          :error ->
+            render(bundle_version, "Disabled", params)
+            display_error("Could not enable bundle.")
+          status ->
+            render(bundle_version, status, params)
         end
 
-        commands = for command <- bundle.commands do
-          [command.name, command.id]
-        end
-
-        display_output("""
-        #{Enum.join(messages, "\n")}
-
-        #{Table.format(bundle_attrs, false)}
-
-        Commands
-        #{Table.format([["NAME", "ID"]|commands], true)}
-        """ |> String.rstrip)
       {:error, messages} when is_list(messages) ->
         # Map over messages and convert any validation errors
         # into strings so cogctl can display them
         Enum.map(messages, &format_validation_error/1) |> display_error
+      {:error, error} ->
+        display_error(error)
     end
+  end
+
+  defp render(bundle_version, status, params) do
+    table = Enum.reject(
+      [field("Bundle ID:", bundle_version.bundle_id),
+       field("Version ID:", bundle_version.id),
+       field("Name:", bundle_version.name),
+       field("Version:", bundle_version.version),
+       field("Status:", status)],
+     &is_nil/1)
+
+    Table.format(table)
+    |> display_output(params.verbose)
   end
 
   defp parse_config(params) do
@@ -96,20 +102,22 @@ defmodule Cogctl.Actions.Bundles.Create do
     end
   end
 
-  defp create_bundle(endpoint, params, config) do
+  defp install_bundle(endpoint, params, config) do
     params = Map.put(params, "config", config)
-    Client.bundle_create(endpoint, params)
+    Client.bundle_install(endpoint, params)
   end
 
-  defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_groups}) do
+  defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_groups}=params) do
     Enum.map(relay_groups, fn relay_group ->
       result = Client.relay_group_add_bundles_by_name(relay_group, bundle.name, endpoint)
 
       case result do
         {:ok, relay_group} ->
-          "Assigned #{bundle.name} bundle to #{relay_group.name} relay group"
+          message = "Assigned #{bundle.name} bundle to #{relay_group.name} relay group"
+          display_output(message, params.verbose)
         {:error, error} ->
-          "ERROR: #{inspect error}"
+          inspect(error)
+          |> display_error
       end
     end)
   end
@@ -117,6 +125,19 @@ defmodule Cogctl.Actions.Bundles.Create do
   # Nothing to assign
   defp assign_to_relay_groups(_endpoint, _bundle, _params) do
     []
+  end
+
+  defp enable_bundle_version(endpoint, bundle_version, params) do
+    if params.enabled do
+      case Client.bundle_enable_version(endpoint, bundle_version.bundle_id, bundle_version.id) do
+        {:ok, _} ->
+          "Enabled"
+        {:error, error} ->
+          display_error(error)
+      end
+    else
+      "Disabled"
+    end
   end
 
   defp build_template_map(template_dir) do

@@ -32,22 +32,22 @@ defmodule Cogctl.OptParse.Test do
   end
 
   test "parses commands with no options" do
-    {handler, options, args} = parse("bundles")
+    {handler, options, args} = parse("relay-groups")
     {_, options} = :proplists.split(options, @standard_options)
 
-    assert handler == Cogctl.Actions.Bundles
+    assert handler == Cogctl.Actions.RelayGroups
     assert options == []
     assert args == []
   end
 
   test "parses commands with options" do
-    {handler, options, args} = parse("bundles create my_config.yaml --templates my_templates --enable")
+    {handler, options, args} = parse("bundle install my_config.yaml --templates my_templates --enable")
     file = :proplists.get_value(:file, options)
     templates = :proplists.get_value(:templates, options)
     enabled = :proplists.get_value(:enabled, options)
     relay_groups = :proplists.get_value(:"relay-groups", options)
 
-    assert handler == Cogctl.Actions.Bundles.Create
+    assert handler == Cogctl.Actions.Bundle.Install
     assert file == "my_config.yaml"
     assert templates == "my_templates"
     assert enabled == true
@@ -57,7 +57,7 @@ defmodule Cogctl.OptParse.Test do
 
   test "fails when required args aren't passed" do
     # We test to see if "bundles create" prints usage info
-    assert capture_parse("bundles create") =~ ~r(Usage: .*)
+    assert capture_parse("bundle install") =~ ~r(Usage: .*)
     # Then we check to see if it returns the correct value
     assert_received {:error, "ERROR: Missing required arguments: 'file'"}
   end
@@ -74,10 +74,10 @@ defmodule Cogctl.OptParse.Test do
   end
 
   test "extra args are returned" do
-    {handler, options, args} = parse("bundles delete foo biz baz buz")
+    {handler, options, args} = parse("relay-groups delete foo biz baz buz")
     {_, options} = :proplists.split(options, @standard_options)
 
-    assert handler == Cogctl.Actions.Bundles.Delete
+    assert handler == Cogctl.Actions.RelayGroups.Delete
     assert options == []
     assert args == ["foo", "biz", "baz", "buz"]
   end
