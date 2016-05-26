@@ -6,15 +6,16 @@ defmodule Support.BundleHelpers do
   def cleanup do
     # Get the list of bundles
     # This is highly dependant on the output of 'cogctl bundles'
-    bundle_names = CliHelpers.run("cogctl bundles")
+    bundle_names = CliHelpers.run("cogctl bundle")
     |> String.split("\n")
     |> tl
-    |> Enum.reject(&(Regex.match?(~r(operable), &1)))
+    |> Enum.reject(&(Regex.match?(~r(operable|site), &1)))
     |> Enum.map(&String.split(&1, ~r(\s+)))
     |> Enum.reject(&(length(&1) <= 1))
     |> Enum.map(&hd/1)
 
-    CliHelpers.run("cogctl bundles delete #{Enum.join(bundle_names, " ")}")
+    Enum.each(bundle_names, &CliHelpers.run("cogctl bundle disable #{&1}"))
+    Enum.each(bundle_names, &CliHelpers.run("cogctl bundle uninstall #{&1} --all"))
   end
 
   @doc """
