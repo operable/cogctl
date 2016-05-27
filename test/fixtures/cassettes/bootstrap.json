@@ -1,0 +1,27 @@
+[
+  {
+    "request": {
+      "body": "{}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "method": "post",
+      "options": [],
+      "request_body": "",
+      "url": "http://localhost:4000/v1/bootstrap"
+    },
+    "response": {
+      "body": "{\"bootstrap\":{\"username\":\"admin\",\"password\":\"iOSpl7(aDyn1xQ.2YGoMEH?6&A<s@LNj\"}}",
+      "headers": {
+        "server": "Cowboy",
+        "date": "Fri, 27 May 2016 16:26:48 GMT",
+        "content-length": "80",
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "max-age=0, private, must-revalidate",
+        "x-request-id": "a8loh01cb4b2m3oegoelsab1mlkq629o"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  }
+]

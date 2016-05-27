@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.Permissions.View do
 
   def render_resource(nil), do: []
   def render_resource(permissions) do
-    permission_names = Enum.map(permissions, &(&1.namespace <> ":" <> &1.name))
+    permission_names = Enum.map(permissions, &(&1.bundle <> ":" <> &1.name))
     |> Enum.sort
     |> Enum.join(",")
 
@@ -23,12 +23,12 @@ defmodule Cogctl.Actions.Permissions.View do
   end
 
   defp format_table(permissions) when is_list(permissions) do
-    [["NAMESPACE", "NAME", "ID"] | Enum.map(permissions, &([&1["namespace"], &1["name"], &1["id"]]))]
+    [["BUNDLE", "NAME", "ID"] | Enum.map(permissions, &([&1["bundle"], &1["name"], &1["id"]]))]
   end
   defp format_table(permission) do
     [
       ["ID",    permission.id],
-      ["Namespace", permission.namespace],
+      ["Bundle", permission.bundle],
       ["Name",  permission.name],
     ]
   end
