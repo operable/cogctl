@@ -122,19 +122,15 @@ defmodule Cogctl.Optparse do
     end
   end
 
-  defp maybe_read_from_stdin(options, specs, args) do
-    if :proplists.get_value(:stdin, options) do
-      stdin = read_from_stdin()
-      :getopt.parse(specs, args ++ stdin)
-    else
-      {:ok, {options, args}}
-    end
-  end
-
   defp parse_args(handler, args) do
     specs = opt_specs(handler)
-    result = with {:ok, {options, _}} <- :getopt.parse(specs, args) do
-      maybe_read_from_stdin(options, specs, args)
+    result = with {:ok, {options, remaining}} <- :getopt.parse(specs, args) do
+      if :proplists.get_value(:stdin, options) do
+        stdin = read_from_stdin()
+        :getopt.parse(specs, args ++ stdin)
+      else
+        {:ok, {options, remaining}}
+      end
     end
 
     case result do
