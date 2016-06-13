@@ -114,9 +114,30 @@ defmodule Cogctl.Optparse do
     :error
   end
 
+  defp read_from_stdin(data \\ '\n') do
+    case IO.read(:stdio, :line) do
+      :eof -> [data]
+      read_data ->
+        read_from_stdin(data ++ String.to_char_list(read_data))
+    end
+  end
+
+  defp maybe_read_from_stdin(options, specs, args) do
+    if :proplists.get_value(:stdin, options) do
+      stdin = read_from_stdin()
+      :getopt.parse(specs, args ++ stdin)
+    else
+      {:ok, {options, args}}
+    end
+  end
+
   defp parse_args(handler, args) do
     specs = opt_specs(handler)
-    case :getopt.parse(specs, args) do
+    result = with {:ok, {options, _}} <- :getopt.parse(specs, args) do
+      maybe_read_from_stdin(options, specs, args)
+    end
+
+    case result do
       {:ok, {options, remaining}} ->
         if show_help?(options) do
           :help
@@ -233,17 +254,17 @@ defmodule Cogctl.Optparse do
   end
 
   defp opt_specs(handler) do
-    handler.option_spec()
-    |> global_opts
+    handler.option_spec() ++ global_opts()
   end
 
-  defp global_opts(opts) do
-    opts ++ [{:help, ??, 'help', {:boolean, false}, 'Displays this brief help'},
+  defp global_opts do
+    [{:help, ??, 'help', {:boolean, false}, 'Displays this brief help'},
      {:host, ?h, 'host', {:string, :undefined}, 'Host name or network address of the target Cog instance'},
      {:port, ?p, 'port', {:integer, :undefined}, 'REST API port of the target Cog instances'},
      {:secure, ?s, 'secure', {:boolean, false}, 'Use HTTPS to connect to Cog'},
      {:rest_user, ?U, 'rest-user', {:string, :undefined}, 'REST API user'},
      {:rest_password, ?P, 'rest-password', {:string, :undefined}, 'REST API password'},
+     {:stdin, ?i, 'stdin', {:boolean, :false}, 'Read from stdin'},
      {:profile, :undefined, 'profile', {:string, :undefined}, '$HOME/.cogctl profile to use'}]
   end
 
