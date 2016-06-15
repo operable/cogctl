@@ -8,6 +8,7 @@ defmodule Cogctl.OptParse.Test do
 
   @standard_options [:help,
                      :host,
+                     :stdin,
                      :port,
                      :secure,
                      :rest_user,

@@ -30,7 +30,6 @@ defmodule Cogctl.Actions.Bundle.Install do
   def option_spec do
     [{:file, :undefined, :undefined, :string, 'Path to your bundle config file (required)'},
      {:templates, ?t, 'templates', {:string, 'templates'}, 'Path to your template directory'},
-     # TODO: Implement enabling bundles on install
      {:enabled, ?e, 'enable', {:boolean, false}, 'Enable bundle after installing'},
      {:verbose, ?v, 'verbose', {:boolean, false}, 'Verbose output'},
      {:"relay-groups", :undefined, 'relay-groups', {:list, :undefined}, 'List of relay group names separated by commas to assign the bundle'}]
@@ -81,11 +80,19 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   defp parse_config(params) do
-    with {:ok, config}         <- Spanner.Config.Parser.read_from_file(params.file),
+    with {:ok, config}         <- parse_string_or_file(params.file),
          {:ok, templates}      <- build_template_map(params.templates),
          {:ok, amended_config} <- maybe_add_templates(templates, config),
          {:ok, fixed_config}   <- validate_config(amended_config),
          do: {:ok, fixed_config}
+  end
+
+  defp parse_string_or_file(file) do
+    if File.exists?(file) do
+      Spanner.Config.Parser.read_from_file(file)
+    else
+      Spanner.Config.Parser.read_from_string(file)
+    end
   end
 
   defp validate_config(config) do
