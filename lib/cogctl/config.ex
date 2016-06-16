@@ -1,15 +1,19 @@
 defmodule Cogctl.Config do
 
-  defstruct [:values, :dirty]
+  defstruct [:filename, :values, :dirty]
 
   def load() do
-    case File.exists?(config_file) do
+    load(default_config_file)
+  end
+  def load(options) do
+    filename = :proplists.get_value(:config_file, options)
+    case File.exists?(filename) do
       false ->
-        {:ok, %__MODULE__{values: %{}, dirty: false}}
+        {:ok, %__MODULE__{filename: filename, values: %{}, dirty: false}}
       true ->
-        case ConfigParser.parse_file(config_file) do
+        case ConfigParser.parse_file(filename) do
           {:ok, config} ->
-            {:ok, %__MODULE__{values: config, dirty: false}}
+            {:ok, %__MODULE__{filename: filename, values: config, dirty: false}}
           error ->
             error
         end
@@ -19,14 +23,14 @@ defmodule Cogctl.Config do
   def save(%__MODULE__{dirty: false}) do
     :ok
   end
-  def save(%__MODULE__{values: values}) do
-    creating = not(File.exists?(config_file))
-    case File.open(config_file(:write), [:write]) do
+  def save(%__MODULE__{values: values}=config) do
+    creating = not(File.exists?(config_file(config)))
+    case File.open(config_file(:write, config), [:write]) do
       {:ok, fd} ->
         case write_values(fd, values, creating) do
           :ok ->
-            File.rename(config_file(:write), config_file)
-            File.chmod(config_file, 0o600)
+            File.rename(config_file(:write, config), config_file(config))
+            File.chmod(config_file(config), 0o600)
           error ->
             error
         end
@@ -82,15 +86,18 @@ defmodule Cogctl.Config do
     end
   end
 
-  defp config_file() do
-    config_file(:read)
+  defp config_file(%__MODULE__{}=config) do
+    config_file(:read, config)
+  end
+  defp config_file(:write, %__MODULE__{filename: filename}) do
+    filename <> ".new"
+  end
+  defp config_file(:read, %__MODULE__{filename: filename}) do
+    filename
   end
 
-  defp config_file(:write) do
-    Path.join(System.user_home!, ".cogctl.new")
-  end
-  defp config_file(:read) do
-    Path.join(System.user_home!, ".cogctl")
+  def default_config_file() do
+    System.get_env("COGCTL_CONFIG_FILE") || Path.join(System.user_home!, ".cogctl")
   end
 
 end

@@ -261,7 +261,8 @@ defmodule Cogctl.Optparse do
      {:rest_user, ?U, 'rest-user', {:string, :undefined}, 'REST API user'},
      {:rest_password, ?P, 'rest-password', {:string, :undefined}, 'REST API password'},
      {:stdin, ?i, 'stdin', {:boolean, :false}, 'Read from stdin'},
-     {:profile, :undefined, 'profile', {:string, :undefined}, '$HOME/.cogctl profile to use'}]
+     {:config_file, :undefined, 'config-file', {:string, Cogctl.Config.default_config_file}, 'Path to configuration file to use'},
+     {:profile, :undefined, 'profile', {:string, :undefined}, 'Profile from configuration file to use'}]
   end
 
   defp ensure_elixir_strings(items) do
