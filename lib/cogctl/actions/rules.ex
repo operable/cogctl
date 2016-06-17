@@ -20,7 +20,7 @@ defmodule Cogctl.Actions.Rules do
       {:ok, resp} ->
         rules = resp["rules"]
         rule_attrs = for rule <- rules do
-          [rule["id"], rule["command"], rule["rule"]]
+          [rule["id"], rule["command_name"], rule["rule"]]
         end
 
         display_output(Table.format([["ID", "COMMAND", "RULE TEXT"]] ++ rule_attrs, true))

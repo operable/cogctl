@@ -13,7 +13,10 @@ defmodule Cogctl.OptParse.Test do
                      :secure,
                      :rest_user,
                      :rest_password,
+                     :config_file,
                      :profile]
+
+  @default_options [config_file: Cogctl.Config.default_config_file]
 
   defp parse(str) do
     String.split(str)
@@ -38,6 +41,30 @@ defmodule Cogctl.OptParse.Test do
 
     assert handler == Cogctl.Actions.RelayGroups
     assert options == []
+    assert args == []
+  end
+
+  test "config_file defaults to ~/.cogctl" do
+    System.delete_env("COGCTL_CONFIG_FILE")
+    {handler, options, args} = parse("relay-groups")
+    config_file = :proplists.get_value(:config_file, options)
+    {_, split_options} = :proplists.split(options, @standard_options)
+
+    assert config_file == Cogctl.Config.default_config_file
+    assert handler == Cogctl.Actions.RelayGroups
+    assert split_options == []
+    assert args == []
+  end
+
+  test "config_file defaults to $COGCTL_CONFIG_FILE if set" do
+    System.put_env("COGCTL_CONFIG_FILE", "/home/operable/cogctl.conf")
+    {handler, options, args} = parse("relay-groups")
+    config_file = :proplists.get_value(:config_file, options)
+    {_, split_options} = :proplists.split(options, @standard_options)
+
+    assert config_file == "/home/operable/cogctl.conf"
+    assert handler == Cogctl.Actions.RelayGroups
+    assert split_options == []
     assert args == []
   end
 
