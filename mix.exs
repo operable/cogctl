@@ -23,6 +23,7 @@ defmodule Cogctl.Mixfile do
       # We override here because of a conflict in rebar. Spanner brings in emqtt which includes
       # rebar as a dep.
       {:getopt, github: "operable/getopt", override: true},
+      {:uuid, "~> 1.1.3"},
       # ExVCR is pointing to the github repo for ibrowse for some reason, so we'll just
       # override it here for now.
       {:ibrowse, "~> 4.2.2", override: true},
@@ -30,7 +31,7 @@ defmodule Cogctl.Mixfile do
       # We override poison here because spanner is set to 1.5.2 due to phoenix requirements
       {:poison, "~> 2.0", override: true},
       {:configparser_ex, "~> 0.2.0"},
-      {:cog_api, github: "operable/cog-api-client"},
+      {:cog_api, github: "operable/cog-api-client", branch: "kevsmith/central-dyn-config"},
       {:spanner, github: "operable/spanner"},
       {:exvcr, "~> 0.7.3", only: [:dev, :test]}
     ]
@@ -44,7 +45,8 @@ defmodule Cogctl.Mixfile do
   end
 
   defp aliases do
-    ["escript": ["deps.get", "deps.compile", "escript.build"]]
+    ["escript": ["deps.get", "deps.compile", "escript.build"],
+     "escript-dev": ["deps.compile", "escript.build"]]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
