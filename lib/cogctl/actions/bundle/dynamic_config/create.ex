@@ -5,7 +5,7 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig.Create do
   alias Cogctl.Actions.Bundle.DynamicConfig.Util
 
   def option_spec do
-    [{:bundle, 98, 'bundle', :string, 'Bundle name or id (required)'},
+    [{:bundle, ?b, 'bundle', :string, 'Bundle name or id (required)'},
      {:file, :undefined, :undefined, :string, 'Path to config.yaml (required)'}]
   end
 
@@ -22,10 +22,10 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig.Create do
   end
 
   defp render({:ok, %{"dynamic_configuration" => %{"bundle_name" => name}}}) do
-    "Dynamic config for bundle '#{name}' saved successfully." |> display_output
+    "Dynamic config for bundle '#{name}' saved successfully." |> display_output(true)
   end
-  defp render(error) do
-    IO.puts "Error: #{inspect error}"
+  defp render({:error, reason}) do
+    "#{reason}" |> display_error
   end
 
   defp load_config_file(file_name) do

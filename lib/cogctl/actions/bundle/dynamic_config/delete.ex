@@ -5,7 +5,7 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig.Delete do
   alias Cogctl.Actions.Bundle.DynamicConfig.Util
 
   def option_spec do
-    [{:bundle, 98, 'bundle', :string, 'Bundle name or id (required)'}]
+    [{:bundle, ?b, 'bundle', :string, 'Bundle name or id (required)'}]
   end
 
   def run(options, _args, _config, endpoint) do
