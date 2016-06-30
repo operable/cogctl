@@ -3,7 +3,7 @@ defmodule Cogctl.Mixfile do
 
   def project do
     [app: :cogctl,
-     version: "0.9.0",
+     version: "0.10.0",
      elixir: "~> 1.2",
      elixirc_options: [warnings_as_errors: System.get_env("ALLOW_WARNINGS") == nil],
      build_embedded: Mix.env == :prod,
