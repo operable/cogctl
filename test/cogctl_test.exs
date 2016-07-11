@@ -572,7 +572,7 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl relay-groups assign myrelays --bundles=#{Enum.join(bundle_names, ",")}") =~ ~r"""
-    Assigned 'bundle1, bundle2, bundle3' to relay group `myrelays`
+    Assigned "bundle1", "bundle2", "bundle3" to relay group "myrelays"
     """
 
     assert run("cogctl relay-groups info myrelays") =~ ~r"""
