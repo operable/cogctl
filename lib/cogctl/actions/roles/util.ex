@@ -1,7 +1,7 @@
 defmodule Cogctl.Actions.Roles.Util do
   alias Cogctl.Table
   alias CogApi.Resources.Role
-  import Cogctl.ActionUtil , only: [display_output: 1, display_error: 1]
+  import Cogctl.ActionUtil , only: [display_output: 1]
 
   def render(role_info, sort) do
     Table.format(role_info, sort) |> display_output
