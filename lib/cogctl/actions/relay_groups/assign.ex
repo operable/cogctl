@@ -22,12 +22,14 @@ defmodule Cogctl.Actions.RelayGroups.Assign do
   end
 
   defp do_assign(endpoint, params) do
-    IO.inspect params.bundles
     case CogApi.HTTP.Client.relay_group_add_bundles_by_name(params.relay_group, params.bundles, endpoint) do
       {:ok, _} ->
-        bundle_string = List.wrap(params.bundles)
+        bundle_string = params.bundles
+        |> List.wrap
+        |> Enum.map(&inspect/1)
         |> Enum.join(", ")
-        display_output("Assigned '#{bundle_string}' to relay group `#{params.relay_group}`")
+
+        display_output("Assigned #{bundle_string} to relay group #{inspect(params.relay_group)}")
       {:error, error} ->
         display_error(error)
     end
