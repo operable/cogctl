@@ -1,6 +1,6 @@
 defmodule Cogctl.Actions.RelayGroups.Util do
   alias Cogctl.Table
-  import Cogctl.ActionUtil , only: [display_output: 1, display_error: 1]
+  import Cogctl.ActionUtil , only: [display_output: 1]
 
   def get_details(group) do
     [{"Name", Map.fetch!(group, :name)},
