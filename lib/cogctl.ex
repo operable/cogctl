@@ -14,8 +14,6 @@ defmodule Cogctl do
   end
 
   def main(args) do
-    Application.start(:ibrowse)
-
     result = with {handler, options, remaining} <- Cogctl.Optparse.parse(args),
       {:ok, config} <- Cogctl.Config.load(options),
       {:ok, identity} <- configure_identity(options, config),

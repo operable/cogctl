@@ -15,7 +15,7 @@ defmodule Cogctl.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :yaml_elixir]]
+    [applications: [:cog_api, :logger, :yaml_elixir]]
   end
 
   defp deps do
