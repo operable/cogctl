@@ -261,7 +261,7 @@ defmodule Cogctl.Optparse do
     [{:help, ??, 'help', {:boolean, false}, 'Displays this brief help'},
      {:host, ?h, 'host', {:string, :undefined}, 'Host name or network address of the target Cog instance'},
      {:port, ?p, 'port', {:integer, :undefined}, 'REST API port of the target Cog instances'},
-     {:secure, ?s, 'secure', {:boolean, false}, 'Use HTTPS to connect to Cog'},
+     {:secure, ?s, 'secure', {:boolean, :undefined}, 'Use HTTPS to connect to Cog'},
      {:rest_user, ?U, 'rest-user', {:string, :undefined}, 'REST API user'},
      {:rest_password, ?P, 'rest-password', {:string, :undefined}, 'REST API password'},
      {:stdin, ?i, 'stdin', {:boolean, :false}, 'Read from stdin'},
