@@ -7,7 +7,7 @@ defmodule Cogctl.Actions.Triggers.Create do
     [{:name, :undefined, 'name', :string, 'Trigger name (required)'},
      {:pipeline, :undefined, 'pipeline', :string, 'Pipeline text (required)'},
      {:enabled, :undefined, 'enabled', {:boolean, :undefined}, 'Enabled'},
-     {:as_user, :undefined, 'as-user', {:string, :undefined}, 'User to execute pipeline as'},
+     {:as_user, :undefined, 'as-user', {:string, :undefined}, 'Username of user to execute pipeline as'},
      {:timeout_sec, :undefined, 'timeout-sec', {:string, :undefined}, 'Timeout (seconds)'},
      {:description, :undefined, 'description', {:string, :undefined}, 'Description'}]
   end
