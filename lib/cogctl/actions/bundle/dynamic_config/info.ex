@@ -9,12 +9,6 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig.Info do
      {:layer, :undefined, :undefined, {:string, :undefined}, 'Configuration layer; if not specified, "base" is assumed'}]
   end
 
-  # TODO: need to be able to specify a layer here if you just want to
-  # see base config. Need to distinguish between that and
-  # EVERYTHING... and that's going to have a different API "type".
-  #
-  # Might want a way to just list which config layers exist, too
-
   def run(options, _args, _config, endpoint) do
     bundle = Keyword.get(options, :bundle)
     with {:ok, {layer, name}} <- Util.layer_and_name(options),
