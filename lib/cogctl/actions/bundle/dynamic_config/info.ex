@@ -24,10 +24,12 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig.Info do
     display_error(message)
   end
   defp render({:ok, %{"dynamic_configuration" => %{"config" => config}}}) do
-    # It'd be nice to spit this back out as the YAML we actually
-    # consume, but alas, there doesn't seem to be an Elixir library
-    # that actually does that :/
-    Poison.encode!(config, pretty: true) |> display_output
+    # Amazingly, there doesn't seem to be an Elixir or Erlang library
+    # that actually encodes to YAML.
+    config
+    |> Enum.map(fn({k,v}) -> "#{k}: #{inspect v}" end)
+    |> Enum.join("\n")
+    |> display_output(true)
   end
 
   defp show_config(endpoint, bundle_id, layer, name) do
