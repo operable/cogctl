@@ -33,7 +33,7 @@ defmodule Cogctl.Actions.Groups do
     group_rows = [
       {"ID",    group.id},
       {"Name",  group.name},
-      {"Users", Enum.map(group.users, &(&1.email_address)) |> Enum.join(", ")},
+      {"Users", Enum.map(group.users, &(&1.username)) |> Enum.join(", ")},
       {"Roles", Enum.map(group.roles, &(&1.name)) |> Enum.join(", ")}
     ]
 

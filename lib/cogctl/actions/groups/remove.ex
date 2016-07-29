@@ -7,7 +7,7 @@ defmodule Cogctl.Actions.Groups.Remove do
 
   def option_spec do
     [{:group, :undefined, :undefined, :string, 'Group name (required)'},
-     {:email, :undefined, 'email', :string, 'User email address (required)'}]
+     {:user, :undefined, 'user', :string, 'User username (required)'}]
   end
 
   def run(options, _args, _config, %{token: nil}=endpoint) do
@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Groups.Remove do
 
   def run(options, _args, _config, endpoint) do
     group = Groups.find_by_name(endpoint, :proplists.get_value(:group, options))
-    user = option_to_struct(options, :email, %User{}, :email_address)
+    user = option_to_struct(options, :user, %User{}, :username)
     do_remove(endpoint, group, user)
   end
 
@@ -26,7 +26,7 @@ defmodule Cogctl.Actions.Groups.Remove do
   defp do_remove(endpoint, group, user) do
     case Client.group_remove_user(endpoint, group, user) do
       {:ok, updated_group} ->
-        message = "Removed #{user.email_address} from #{group.name}"
+        message = "Removed #{user.username} from #{group.name}"
         Groups.render(updated_group, message)
       {:error, message} ->
         display_error(message)
