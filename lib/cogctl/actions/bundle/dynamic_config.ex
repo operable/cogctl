@@ -33,7 +33,11 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig do
           ["#{config.layer}/#{config.name}"]
       end
     end)
-    display_output(Table.format([["LAYER"]] ++ rows, true))
+    if Enum.empty?(rows) do
+      :ok
+    else
+      display_output(Table.format(rows))
+    end
   end
 
 end
