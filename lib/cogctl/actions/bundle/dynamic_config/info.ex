@@ -9,12 +9,6 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig.Info do
      {:layer, :undefined, :undefined, {:string, :undefined}, 'Configuration layer; if not specified, "base" is assumed'}]
   end
 
-  # TODO: need to be able to specify a layer here if you just want to
-  # see base config. Need to distinguish between that and
-  # EVERYTHING... and that's going to have a different API "type".
-  #
-  # Might want a way to just list which config layers exist, too
-
   def run(options, _args, _config, endpoint) do
     bundle = Keyword.get(options, :bundle)
     with {:ok, {layer, name}} <- Util.layer_and_name(options),
@@ -30,10 +24,12 @@ defmodule Cogctl.Actions.Bundle.DynamicConfig.Info do
     display_error(message)
   end
   defp render({:ok, %{"dynamic_configuration" => %{"config" => config}}}) do
-    # It'd be nice to spit this back out as the YAML we actually
-    # consume, but alas, there doesn't seem to be an Elixir library
-    # that actually does that :/
-    Poison.encode!(config, pretty: true) |> display_output
+    # Amazingly, there doesn't seem to be an Elixir or Erlang library
+    # that actually encodes to YAML.
+    config
+    |> Enum.map(fn({k,v}) -> "#{k}: #{inspect v}" end)
+    |> Enum.join("\n")
+    |> display_output(true)
   end
 
   defp show_config(endpoint, bundle_id, layer, name) do
