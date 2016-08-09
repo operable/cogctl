@@ -63,7 +63,7 @@ defmodule CogctlTest do
     """
 
     run("cogctl groups create mememe")
-    run("cogctl groups add mememe --email=cog@localhost")
+    run("cogctl groups add mememe --user=admin")
     run("cogctl roles create mimimi")
     run("cogctl roles grant mimimi --group=cog-admin")
 
@@ -97,7 +97,7 @@ defmodule CogctlTest do
 
     run("cogctl roles revoke mimimi --group=cog-admin")
     run("cogctl roles delete mimimi")
-    run("cogctl groups remove mememe --email=cog@localhost")
+    run("cogctl groups remove mememe --user=admin")
     run("cogctl groups delete mememe")
 
     output = run("""
@@ -184,12 +184,12 @@ defmodule CogctlTest do
     Roles
     """
 
-    assert run("cogctl groups add admin --email=cog@localhost") =~ ~r"""
-    Added cog@localhost to admin
+    assert run("cogctl groups add admin --user=admin") =~ ~r"""
+    Added admin to admin
 
     ID     .*
     Name   admin
-    Users  cog@localhost
+    Users  admin
     Roles
     """
 
@@ -205,12 +205,12 @@ defmodule CogctlTest do
     assert run("cogctl groups info admin") =~ ~r"""
     ID     .*
     Name   admin
-    Users  cog@localhost
+    Users  admin
     Roles  tester
     """
 
-    assert run("cogctl groups remove admin --email=cog@localhost") =~ ~r"""
-    Removed cog@localhost from admin
+    assert run("cogctl groups remove admin --user=admin") =~ ~r"""
+    Removed admin from admin
 
     ID     .*
     Name   admin

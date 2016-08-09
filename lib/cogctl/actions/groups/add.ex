@@ -7,7 +7,7 @@ defmodule Cogctl.Actions.Groups.Add do
 
   def option_spec do
     [{:group, :undefined, :undefined, :string, 'Group name (required)'},
-     {:email, :undefined, 'email', :string, 'User email address (required)'}]
+     {:user, :undefined, 'user', :string, 'User username (required)'}]
   end
 
   def run(options, args, config, %{token: nil}=endpoint) do
@@ -16,7 +16,7 @@ defmodule Cogctl.Actions.Groups.Add do
 
   def run(options, _args, _config, endpoint) do
     group = Groups.find_by_name(endpoint, :proplists.get_value(:group, options))
-    user = option_to_struct(options, :email, %User{}, :email_address)
+    user = option_to_struct(options, :user, %User{}, :username)
     do_add(endpoint, group, user)
   end
 
@@ -25,13 +25,13 @@ defmodule Cogctl.Actions.Groups.Add do
   end
 
   defp do_add(_endpoint, _, :undefined) do
-    display_error("Email address is required")
+    display_error("User is required")
   end
 
   defp do_add(endpoint, group, user) do
     case Client.group_add_user(endpoint, group, user) do
       {:ok, updated_group} ->
-        message = "Added #{user.email_address} to #{group.name}"
+        message = "Added #{user.username} to #{group.name}"
         Groups.render(updated_group, message)
       {:error, message} ->
         display_error(message)
