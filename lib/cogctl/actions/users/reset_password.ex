@@ -11,7 +11,7 @@ defmodule Cogctl.Actions.Users.ResetPassword do
     password = Keyword.get(options, :password)
 
     case CogApi.HTTP.Users.reset_password(endpoint, token, password) do
-      {:ok, _user} -> :ok
+      :ok -> :ok
       {:error, error} -> display_error(error)
     end
   end
