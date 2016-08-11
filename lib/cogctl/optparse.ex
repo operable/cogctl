@@ -21,6 +21,8 @@ defmodule Cogctl.Optparse do
                   Cogctl.Actions.Users.Create,
                   Cogctl.Actions.Users.Update,
                   Cogctl.Actions.Users.Delete,
+                  Cogctl.Actions.Users.RequestPasswordReset,
+                  Cogctl.Actions.Users.ResetPassword,
                   Cogctl.Actions.Groups,
                   Cogctl.Actions.Groups.Info,
                   Cogctl.Actions.Groups.Create,
