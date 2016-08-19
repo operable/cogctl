@@ -20,20 +20,21 @@ defmodule Cogctl.Mixfile do
 
   defp deps do
     [
-      # We override here because of a conflict in rebar. Spanner brings in emqtt which includes
-      # rebar as a dep.
-      {:getopt, github: "operable/getopt", override: true},
-      {:uuid, "~> 1.1.3"},
-      # ExVCR is pointing to the github repo for ibrowse for some reason, so we'll just
-      # override it here for now.
-      {:ibrowse, "~> 4.2.2", override: true},
-      {:httpotion, "~> 2.1.0"},
-      # We override poison here because spanner is set to 1.5.2 due to phoenix requirements
-      {:poison, "~> 2.0", override: true},
-      {:configparser_ex, "~> 0.2.0"},
+      # Operable code
+      ########################################################################
       {:cog_api, github: "operable/cog-api-client"},
       {:spanner, github: "operable/spanner"},
-      {:exvcr, "~> 0.7.3", only: [:dev, :test]}
+
+      {:configparser_ex, "~> 0.2"},
+      # We override here because of a conflict in rebar. Spanner
+      # brings in emqtt which includes rebar as a dep.
+      {:getopt, github: "operable/getopt", override: true},
+      {:httpotion, "~> 3.0"},
+      {:uuid, "~> 1.1.3"},
+
+      # Testing
+      ########################################################################
+      {:exvcr, "~> 0.8", only: [:dev, :test]}
     ]
   end
 
