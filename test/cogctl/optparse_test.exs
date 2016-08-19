@@ -45,7 +45,6 @@ defmodule Cogctl.OptParse.Test do
   end
 
   test "config_file defaults to ~/.cogctl" do
-    System.delete_env("COGCTL_CONFIG_FILE")
     {handler, options, args} = parse("relay-groups")
     config_file = :proplists.get_value(:config_file, options)
     {_, split_options} = :proplists.split(options, @standard_options)
@@ -57,12 +56,11 @@ defmodule Cogctl.OptParse.Test do
   end
 
   test "config_file defaults to $COGCTL_CONFIG_FILE if set" do
-    System.put_env("COGCTL_CONFIG_FILE", "/home/operable/cogctl.conf")
     {handler, options, args} = parse("relay-groups")
     config_file = :proplists.get_value(:config_file, options)
     {_, split_options} = :proplists.split(options, @standard_options)
 
-    assert config_file == "/home/operable/cogctl.conf"
+    assert config_file == "#{System.get_env("HOME")}/.cogctl"
     assert handler == Cogctl.Actions.RelayGroups
     assert split_options == []
     assert args == []
