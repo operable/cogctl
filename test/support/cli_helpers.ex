@@ -38,6 +38,7 @@ defmodule Support.CliHelpers do
       args
       |> String.split
       |> smart_split([])
+      |> append_config_file
       |> Cogctl.main
     catch
       _, _ ->
@@ -49,6 +50,7 @@ defmodule Support.CliHelpers do
     args
     |> String.split
     |> smart_split([])
+    |> append_config_file
     |> Cogctl.main
   end
 
@@ -106,4 +108,10 @@ defmodule Support.CliHelpers do
       String.replace(str, "\"", "")
     end
   end
+
+  defp append_config_file([]), do: []
+  defp append_config_file(args) do
+    args ++ ["--config-file", "#{System.cwd!}/cogctl.conf"]
+  end
+
 end

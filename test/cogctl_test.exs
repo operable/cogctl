@@ -418,20 +418,20 @@ defmodule CogctlTest do
   end
 
   test "cogctl chat-handles" do
-    assert run("cogctl chat-handles create --user=admin --chat-provider=null --handle=admininator") =~ ~r"""
+    assert run("cogctl chat-handles create --user=admin --chat-provider=slack --handle=botci") =~ ~r"""
     ID             .*
     User           admin
-    Chat Provider  null
-    Handle         admininator
+    Chat Provider  slack
+    Handle         botci
     """
 
     assert run("cogctl chat-handles") =~ ~r"""
     USER   CHAT PROVIDER  HANDLE
-    admin  null           admininator
+    admin  slack          botci
     """
 
-    assert run("cogctl chat-handles delete --user=admin --chat-provider=null") =~ ~r"""
-    Deleted chat handle owned by admin for null chat provider
+    assert run("cogctl chat-handles delete --user=admin --chat-provider=slack") =~ ~r"""
+    Deleted chat handle owned by admin for slack chat provider
     """
 
     assert run("cogctl chat-handles") =~ ~r"""
