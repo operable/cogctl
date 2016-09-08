@@ -43,29 +43,6 @@ defmodule Support.BundleHelpers do
   end
 
   @doc """
-  Creates a deprecated config file
-  """
-  @spec create_old_config_file(String.t) :: Path.t
-  def create_old_config_file(name) do
-    File.mkdir_p!(CliHelpers.scratch_dir)
-    config_path = Path.join(CliHelpers.scratch_dir, "#{name}.yaml")
-
-    config = """
-    ---
-    name: #{name}
-    version: 0.0.1
-    cog_bundle_version: 2
-    commands:
-      bar:
-        executable: /bin/foobar
-        enforcing: false
-    """
-
-    File.write!(config_path, config)
-    config_path
-  end
-
-  @doc """
   Creates a templates directory structure with two templates, foo and bar, for
   slack and hipchat.
   """
