@@ -5,6 +5,7 @@ defmodule Cogctl.Optparse do
 
   @valid_actions [Cogctl.Actions.Bootstrap,
                   Cogctl.Actions.Profiles,
+                  Cogctl.Actions.Profiles.Create,
                   Cogctl.Actions.Bundle,
                   Cogctl.Actions.Bundle.Versions,
                   Cogctl.Actions.Bundle.Info,
