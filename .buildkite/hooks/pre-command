@@ -3,7 +3,6 @@
 set -e
 
 export DATABASE_URL=$DATABASE_URL.$BUILDKITE_BUILD_NUMBER
-export COG_ADAPTER="null"
 COG_DIR=cogctl_cog
 
 cd ..
@@ -30,8 +29,27 @@ elixir \
 -e "File.write!(\"pid.$BUILDKITE_BUILD_NUMBER\", System.get_pid)" \
 -S mix phoenix.server
 
-while ! nc -z localhost 4000; do
-  sleep 0.1
+sleep 2 # Wait for the pidfile to be written
+
+COG_PID=$(cat pid.$BUILDKITE_BUILD_NUMBER)
+
+while true
+do
+    if ps -p $COG_PID
+    then
+        if nc -z localhost 4000
+        then
+            # all done; the service is up
+            break
+        else
+            # Not up yet; try again later
+            sleep 1
+            continue
+        fi
+    else
+        echo "The cog server process couldn't come up for some reason!"
+        exit 1
+    fi
 done
 
 cd ../cogctl
