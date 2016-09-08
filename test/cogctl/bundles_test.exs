@@ -19,28 +19,6 @@ defmodule Cogctl.Actions.Bundles.Test do
     end
   end
 
-  test "installing a bundle from an old config file" do
-    use_cassette "installing_a_bad_config" do
-      config_path = BundleHelpers.create_old_config_file("oldfoo")
-
-      results = run("cogctl bundle install #{config_path} -v")
-
-      assert results =~ ~r"""
-      WARNING: [\s\S]+
-      """
-
-      assert results =~ ~r"""
-      Bundle ID:   .*
-      Version ID:  .*
-      Name:        oldfoo
-      Version:     0.0.1
-      Status:      Disabled
-      """
-
-      BundleHelpers.cleanup
-    end
-  end
-
   test "installing a bundle with templates" do
     use_cassette "installing_with_templates" do
       config_path = BundleHelpers.create_config_file("testfoo")
