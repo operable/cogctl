@@ -14,7 +14,7 @@ defmodule Cogctl.Actions.RelayGroups.Remove do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:relay_group, :relays])
     with_authentication(endpoint, &do_remove(&1, params))
   end
 

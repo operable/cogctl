@@ -7,7 +7,7 @@ defmodule Cogctl.Actions.Permissions do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:role])
     with_authentication(endpoint, &do_list(&1, params))
   end
 

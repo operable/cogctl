@@ -15,10 +15,8 @@ defmodule Cogctl.Actions.Triggers.Update do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
-    name = :proplists.get_value(:trigger, options)
-
-    with_authentication(endpoint, &do_update(&1, name, params))
+    params = convert_to_params(options, [:trigger, :name, :pipeline, :enabled, :as_user, :timeout_sec, :description])
+    with_authentication(endpoint, &do_update(&1, params[:trigger], params))
   end
 
   defp do_update(endpoint, trigger_name, params) do

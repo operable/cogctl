@@ -11,7 +11,7 @@ defmodule Cogctl.Actions.RelayGroups.Create do
     with_authentication(endpoint, &run(options, nil, nil, &1))
   end
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:name, :members])
     do_create(endpoint, params)
   end
 

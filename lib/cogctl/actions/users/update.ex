@@ -12,10 +12,8 @@ defmodule Cogctl.Actions.Users.Update do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
-
-    with_authentication(endpoint,
-                        &do_update(&1, :proplists.get_value(:user, options), params))
+    params = convert_to_params(options, [:user, :first_name, :last_name, :email_address, :username, :password])
+    with_authentication(endpoint, &do_update(&1, params[:user], params))
   end
 
   defp do_update(endpoint, user_username, params) do

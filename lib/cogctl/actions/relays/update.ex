@@ -10,7 +10,7 @@ defmodule Cogctl.Actions.Relays.Update do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:relay, :name, :token, :description])
     with_authentication(endpoint, &do_update(&1, params))
   end
 

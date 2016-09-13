@@ -8,7 +8,7 @@ defmodule Cogctl.Actions.Roles.Rename do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:role, :name])
     with_authentication(endpoint,
                         &do_rename(&1, :proplists.get_value(:role, options), params))
   end

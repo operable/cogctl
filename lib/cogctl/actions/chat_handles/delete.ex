@@ -7,7 +7,7 @@ defmodule Cogctl.Actions.ChatHandles.Delete do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:user, :chat_provider])
     with_authentication(endpoint, &do_delete(&1, params))
   end
 

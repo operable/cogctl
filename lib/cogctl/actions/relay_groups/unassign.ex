@@ -17,7 +17,7 @@ defmodule Cogctl.Actions.RelayGroups.Unassign do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:relay_group, :bundles])
     with_authentication(endpoint, &do_unassign(&1, params))
   end
 
