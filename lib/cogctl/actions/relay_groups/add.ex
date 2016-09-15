@@ -15,7 +15,7 @@ defmodule Cogctl.Actions.RelayGroups.Add do
 
   def run(options, _args, _config, endpoint) do
     # At least one relay is required, so we specify that here
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:relay_group, :relays])
     with_authentication(endpoint, &do_add(&1, params))
   end
 

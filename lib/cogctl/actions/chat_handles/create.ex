@@ -9,7 +9,7 @@ defmodule Cogctl.Actions.ChatHandles.Create do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:user, :chat_provider, :handle])
     with_authentication(endpoint, &do_create(&1, params))
   end
 

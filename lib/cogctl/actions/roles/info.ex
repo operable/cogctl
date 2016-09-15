@@ -9,7 +9,7 @@ defmodule Cogctl.Actions.Roles.Info do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:role, :permissions, :groups])
     with_authentication(endpoint, &do_info(&1, params))
   end
 

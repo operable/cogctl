@@ -36,7 +36,7 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:file, :templates, :enabled, :verbose, :"relay-groups"])
     with_authentication(endpoint, &do_install(&1, params))
   end
 

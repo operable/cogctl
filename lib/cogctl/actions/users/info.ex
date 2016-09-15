@@ -9,7 +9,7 @@ defmodule Cogctl.Actions.Users.Info do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:user, :groups, :roles])
     with_authentication(endpoint, &do_info(&1, params))
   end
 

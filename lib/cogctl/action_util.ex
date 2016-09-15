@@ -26,17 +26,14 @@ defmodule Cogctl.ActionUtil do
   end
 
   @doc """
-  Returns a map containing the key/value pairs of the
-  parameters for a command.
+  Strips out empty options and anything not present in the whitelist and
+  returns a map containing the key/value pairs of the parameters for a command.
   """
-  @spec convert_to_params([{atom(), any()}]) :: Map.t
-  def convert_to_params(options) do
-    Enum.reject(options, fn
-      ({_, nil}) -> true
-      ({_, :undefined}) -> true
-      ({_, ""}) -> true
-      (_) -> false
-    end)
+  @spec convert_to_params([{atom(), any()}], [atom()]) :: Map.t
+  def convert_to_params(options, whitelist) do
+    options
+    |> Enum.reject(&(elem(&1, 1) in [nil, :undefined, ""]))
+    |> Enum.filter(&(elem(&1, 0) in whitelist))
     |> Enum.into(%{})
   end
 

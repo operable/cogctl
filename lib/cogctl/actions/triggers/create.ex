@@ -13,7 +13,7 @@ defmodule Cogctl.Actions.Triggers.Create do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
+    params = convert_to_params(options, [:name, :pipeline, :enabled, :as_user, :timeout_sec, :description])
     with_authentication(endpoint, &do_create(&1, params))
   end
 

@@ -14,8 +14,7 @@ defmodule Cogctl.Actions.Users.Create do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options)
-
+    params = convert_to_params(options, [:first_name, :last_name, :email_address, :username, :password])
     with_authentication(endpoint, &do_create(&1, params))
   end
 
