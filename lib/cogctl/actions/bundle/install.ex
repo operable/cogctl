@@ -3,6 +3,7 @@ defmodule Cogctl.Actions.Bundle.Install do
 
   alias CogApi.HTTP.Client
   alias Cogctl.Table
+  alias Cogctl.BundleRegistry
   import Cogctl.Actions.Bundle.Helpers, only: [field: 2]
 
   @template_extension ".mustache"
@@ -28,7 +29,7 @@ defmodule Cogctl.Actions.Bundle.Install do
   """
 
   def option_spec do
-    [{:file, :undefined, :undefined, :string, 'Path to your bundle config file (required)'},
+    [{:bundle_or_path, :undefined, :undefined, :string, 'Name and verison of registered bundle or local path to bundle config (required). Examples: heroku, heroku:0.4.0, bundles/heroku/config.yaml'},
      {:templates, ?t, 'templates', {:string, 'templates'}, 'Path to your template directory'},
      {:enabled, ?e, 'enable', {:boolean, false}, 'Enable bundle after installing'},
      {:verbose, ?v, 'verbose', {:boolean, false}, 'Verbose output'},
@@ -36,7 +37,7 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [:file, :templates, :enabled, :verbose, :"relay-groups"])
+    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups"])
     with_authentication(endpoint, &do_install(&1, params))
   end
 
@@ -80,18 +81,25 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   defp parse_config(params) do
-    with {:ok, config}         <- parse_string_or_file(params.file),
+    with {:ok, config}         <- parse_bundle_or_path(params.bundle_or_path),
          {:ok, templates}      <- build_template_map(params.templates),
          {:ok, amended_config} <- maybe_add_templates(templates, config),
          {:ok, fixed_config}   <- validate_config(amended_config),
          do: {:ok, fixed_config}
   end
 
-  defp parse_string_or_file(file) do
-    if File.exists?(file) do
-      Spanner.Config.Parser.read_from_file(file)
+  defp parse_bundle_or_path(bundle_or_path) do
+    if File.exists?(bundle_or_path) do
+      Spanner.Config.Parser.read_from_file(bundle_or_path)
     else
-      Spanner.Config.Parser.read_from_string(file)
+      [bundle, version] = case String.split(bundle_or_path, ":", parts: 2) do
+        [bundle, version] ->
+          [bundle, version]
+        [bundle] ->
+          [bundle, "latest"]
+      end
+
+      BundleRegistry.get_config(bundle, version)
     end
   end
 
