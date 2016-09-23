@@ -89,17 +89,20 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   defp parse_bundle_or_path(bundle_or_path) do
-    if File.exists?(bundle_or_path) do
-      Spanner.Config.Parser.read_from_file(bundle_or_path)
-    else
-      [bundle, version] = case String.split(bundle_or_path, ":", parts: 2) do
-        [bundle, version] ->
-          [bundle, version]
-        [bundle] ->
-          [bundle, "latest"]
-      end
+    cond do
+      File.exists?(bundle_or_path) ->
+        Spanner.Config.Parser.read_from_file(bundle_or_path)
+      match?({:ok, _}, Poison.decode(bundle_or_path)) ->
+        Spanner.Config.Parser.read_from_string(bundle_or_path)
+      true ->
+        [bundle, version] = case String.split(bundle_or_path, ":", parts: 2) do
+          [bundle, version] ->
+            [bundle, version]
+          [bundle] ->
+            [bundle, "latest"]
+        end
 
-      BundleRegistry.get_config(bundle, version)
+        BundleRegistry.get_config(bundle, version)
     end
   end
 
