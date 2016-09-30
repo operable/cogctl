@@ -3,7 +3,6 @@ defmodule Cogctl.Actions.Bundle.Install do
 
   alias CogApi.HTTP.Client
   alias Cogctl.Table
-  alias Cogctl.BundleRegistry
   import Cogctl.Actions.Bundle.Helpers, only: [field: 2]
 
   @template_extension ".mustache"
@@ -42,11 +41,7 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   defp do_install(endpoint, params) do
-    result = with {:ok, config} <- parse_config(params),
-                  {:ok, bundle} <- install_bundle(endpoint, params, config),
-                  do: {:ok, bundle}
-
-    case result do
+    case install_bundle(endpoint, params) do
       {:ok, bundle_version} ->
         assign_to_relay_groups(endpoint, bundle_version, params)
 
@@ -80,20 +75,12 @@ defmodule Cogctl.Actions.Bundle.Install do
     |> display_output(params.verbose)
   end
 
-  defp parse_config(params) do
-    with {:ok, config}         <- parse_bundle_or_path(params.bundle_or_path),
-         {:ok, templates}      <- build_template_map(params.templates),
-         {:ok, amended_config} <- maybe_add_templates(templates, config),
-         {:ok, fixed_config}   <- validate_config(amended_config),
-         do: {:ok, fixed_config}
-  end
-
   defp parse_bundle_or_path(bundle_or_path) do
     cond do
       File.exists?(bundle_or_path) ->
-        Spanner.Config.Parser.read_from_file(bundle_or_path)
+        {:config, Spanner.Config.Parser.read_from_file(bundle_or_path)}
       match?({:ok, _}, Poison.decode(bundle_or_path)) ->
-        Spanner.Config.Parser.read_from_string(bundle_or_path)
+        {:config, Spanner.Config.Parser.read_from_string(bundle_or_path)}
       true ->
         [bundle, version] = case String.split(bundle_or_path, ":", parts: 2) do
           [bundle, version] ->
@@ -102,7 +89,7 @@ defmodule Cogctl.Actions.Bundle.Install do
             [bundle, "latest"]
         end
 
-        BundleRegistry.get_config(bundle, version)
+        {:registry, {bundle, version}}
     end
   end
 
@@ -120,9 +107,18 @@ defmodule Cogctl.Actions.Bundle.Install do
     end
   end
 
-  defp install_bundle(endpoint, params, config) do
-    params = Map.put(params, "config", config)
-    Client.bundle_install(endpoint, params)
+  defp install_bundle(endpoint, params) do
+    case parse_bundle_or_path(params.bundle_or_path) do
+      {:config, config} ->
+        with {:ok, templates}      <- build_template_map(params.templates),
+             {:ok, amended_config} <- maybe_add_templates(templates, config),
+             {:ok, fixed_config}   <- validate_config(amended_config) do
+          params = Map.put(params, "config", fixed_config)
+          Client.bundle_install(endpoint, params)
+        end
+      {:registry, {bundle, version}} ->
+        Client.bundle_install_from_registry(endpoint, bundle, version)
+    end
   end
 
   defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_groups}=params) do
