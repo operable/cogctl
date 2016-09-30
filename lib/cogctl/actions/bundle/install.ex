@@ -28,7 +28,8 @@ defmodule Cogctl.Actions.Bundle.Install do
   """
 
   def option_spec do
-    [{:bundle_or_path, :undefined, :undefined, :string, 'Name and verison of registered bundle or local path to bundle config (required). Examples: heroku, heroku:0.4.0, bundles/heroku/config.yaml'},
+    [{:bundle_or_path, :undefined, :undefined, :string, 'Name of registered bundle or local path to bundle config (required). Examples: heroku, bundles/heroku/config.yaml'},
+     {:version, :undefined, :undefined, {:string, 'latest'}, 'Version of registered bundle (defaults to the latest version)'},
      {:templates, ?t, 'templates', {:string, 'templates'}, 'Path to your template directory'},
      {:enabled, ?e, 'enable', {:boolean, false}, 'Enable bundle after installing'},
      {:verbose, ?v, 'verbose', {:boolean, false}, 'Verbose output'},
@@ -36,7 +37,7 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups"])
+    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups", :version])
     with_authentication(endpoint, &do_install(&1, params))
   end
 
@@ -75,20 +76,17 @@ defmodule Cogctl.Actions.Bundle.Install do
     |> display_output(params.verbose)
   end
 
-  defp parse_bundle_or_path(bundle_or_path) do
+  defp parse_bundle_or_path(params) do
+    bundle_or_path = params.bundle_or_path
+
     cond do
       File.exists?(bundle_or_path) ->
         {:config, Spanner.Config.Parser.read_from_file(bundle_or_path)}
       match?({:ok, _}, Poison.decode(bundle_or_path)) ->
         {:config, Spanner.Config.Parser.read_from_string(bundle_or_path)}
       true ->
-        [bundle, version] = case String.split(bundle_or_path, ":", parts: 2) do
-          [bundle, version] ->
-            [bundle, version]
-          [bundle] ->
-            [bundle, "latest"]
-        end
-
+        bundle = bundle_or_path
+        version = params.version
         {:registry, {bundle, version}}
     end
   end
@@ -108,7 +106,7 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   defp install_bundle(endpoint, params) do
-    case parse_bundle_or_path(params.bundle_or_path) do
+    case parse_bundle_or_path(params) do
       {:config, config} ->
         with {:ok, templates}      <- build_template_map(params.templates),
              {:ok, amended_config} <- maybe_add_templates(templates, config),
