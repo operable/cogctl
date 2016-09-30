@@ -19,6 +19,32 @@ defmodule Cogctl.Actions.Bundles.Test do
     end
   end
 
+  test "force installing a bundle" do
+    config_path = BundleHelpers.create_config_file("testfoo")
+
+    use_cassette "force_installing_a_bundle", match_requests_on: [:request_body] do
+      # initial install
+      assert run("cogctl bundle install -v #{config_path}") =~ ~r"""
+      Bundle ID:   .*
+      Version ID:  .*
+      Name:        testfoo
+      Version:     0.0.1
+      Status:      Disabled
+      """
+
+      # reinstall the same bundle with the force, -f, flag.
+      assert run("cogctl bundle install -v --force #{config_path}") =~ ~r"""
+      Bundle ID:   .*
+      Version ID:  .*
+      Name:        testfoo
+      Version:     0.0.1
+      Status:      Disabled
+      """
+
+      BundleHelpers.cleanup
+    end
+  end
+
   test "installing a bundle with templates" do
     use_cassette "installing_with_templates", match_requests_on: [:request_body] do
       config_path = BundleHelpers.create_config_file("testfoo")
