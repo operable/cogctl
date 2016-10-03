@@ -28,7 +28,8 @@ defmodule Cogctl.Actions.Bundle.Install do
   """
 
   def option_spec do
-    [{:file, :undefined, :undefined, :string, 'Path to your bundle config file (required)'},
+    [{:bundle_or_path, :undefined, :undefined, :string, 'Name of registered bundle or local path to bundle config (required). Examples: heroku, bundles/heroku/config.yaml'},
+     {:version, :undefined, :undefined, {:string, 'latest'}, 'Version of registered bundle (defaults to the latest version)'},
      {:templates, ?t, 'templates', {:string, 'templates'}, 'Path to your template directory'},
      {:enabled, ?e, 'enable', {:boolean, false}, 'Enable bundle after installing'},
      {:verbose, ?v, 'verbose', {:boolean, false}, 'Verbose output'},
@@ -36,16 +37,12 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [:file, :templates, :enabled, :verbose, :"relay-groups"])
+    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups", :version])
     with_authentication(endpoint, &do_install(&1, params))
   end
 
   defp do_install(endpoint, params) do
-    result = with {:ok, config} <- parse_config(params),
-                  {:ok, bundle} <- install_bundle(endpoint, params, config),
-                  do: {:ok, bundle}
-
-    case result do
+    case install_bundle(endpoint, params) do
       {:ok, bundle_version} ->
         assign_to_relay_groups(endpoint, bundle_version, params)
 
@@ -79,19 +76,18 @@ defmodule Cogctl.Actions.Bundle.Install do
     |> display_output(params.verbose)
   end
 
-  defp parse_config(params) do
-    with {:ok, config}         <- parse_string_or_file(params.file),
-         {:ok, templates}      <- build_template_map(params.templates),
-         {:ok, amended_config} <- maybe_add_templates(templates, config),
-         {:ok, fixed_config}   <- validate_config(amended_config),
-         do: {:ok, fixed_config}
-  end
+  defp parse_bundle_or_path(params) do
+    bundle_or_path = params.bundle_or_path
 
-  defp parse_string_or_file(file) do
-    if File.exists?(file) do
-      Spanner.Config.Parser.read_from_file(file)
-    else
-      Spanner.Config.Parser.read_from_string(file)
+    cond do
+      File.exists?(bundle_or_path) ->
+        {:config, Spanner.Config.Parser.read_from_file!(bundle_or_path)}
+      match?({:ok, _}, Poison.decode(bundle_or_path)) ->
+        {:config, Spanner.Config.Parser.read_from_string!(bundle_or_path)}
+      true ->
+        bundle = bundle_or_path
+        version = params.version
+        {:registry, {bundle, version}}
     end
   end
 
@@ -109,9 +105,18 @@ defmodule Cogctl.Actions.Bundle.Install do
     end
   end
 
-  defp install_bundle(endpoint, params, config) do
-    params = Map.put(params, "config", config)
-    Client.bundle_install(endpoint, params)
+  defp install_bundle(endpoint, params) do
+    case parse_bundle_or_path(params) do
+      {:config, config} ->
+        with {:ok, templates}      <- build_template_map(params.templates),
+             {:ok, amended_config} <- maybe_add_templates(templates, config),
+             {:ok, fixed_config}   <- validate_config(amended_config) do
+          params = Map.put(params, "config", fixed_config)
+          Client.bundle_install(endpoint, params)
+        end
+      {:registry, {bundle, version}} ->
+        Client.bundle_install_from_registry(endpoint, bundle, version)
+    end
   end
 
   defp assign_to_relay_groups(endpoint, bundle, %{"relay-groups": relay_groups}=params) do
