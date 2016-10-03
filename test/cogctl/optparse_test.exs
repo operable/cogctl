@@ -68,13 +68,13 @@ defmodule Cogctl.OptParse.Test do
 
   test "parses commands with options" do
     {handler, options, args} = parse("bundle install my_config.yaml --templates my_templates --enable")
-    file = :proplists.get_value(:file, options)
+    bundle_or_path = :proplists.get_value(:bundle_or_path, options)
     templates = :proplists.get_value(:templates, options)
     enabled = :proplists.get_value(:enabled, options)
     relay_groups = :proplists.get_value(:"relay-groups", options)
 
     assert handler == Cogctl.Actions.Bundle.Install
-    assert file == "my_config.yaml"
+    assert bundle_or_path == "my_config.yaml"
     assert templates == "my_templates"
     assert enabled == true
     assert relay_groups == []
@@ -85,7 +85,7 @@ defmodule Cogctl.OptParse.Test do
     # We test to see if "bundles create" prints usage info
     assert capture_parse("bundle install") =~ ~r(Usage: .*)
     # Then we check to see if it returns the correct value
-    assert_received {:error, "ERROR: Missing required arguments: 'file'"}
+    assert_received {:error, "ERROR: Missing required arguments: 'bundle_or_path'"}
   end
 
   test "lists are returned as elixir lists" do

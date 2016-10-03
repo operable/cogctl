@@ -81,9 +81,9 @@ defmodule Cogctl.Actions.Bundle.Install do
 
     cond do
       File.exists?(bundle_or_path) ->
-        {:config, Spanner.Config.Parser.read_from_file(bundle_or_path)}
+        {:config, Spanner.Config.Parser.read_from_file!(bundle_or_path)}
       match?({:ok, _}, Poison.decode(bundle_or_path)) ->
-        {:config, Spanner.Config.Parser.read_from_string(bundle_or_path)}
+        {:config, Spanner.Config.Parser.read_from_string!(bundle_or_path)}
       true ->
         bundle = bundle_or_path
         version = params.version
