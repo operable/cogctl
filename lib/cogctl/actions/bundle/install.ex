@@ -26,11 +26,12 @@ defmodule Cogctl.Actions.Bundle.Install do
      {:templates, ?t, 'templates', {:string, 'templates'}, 'Path to your template directory'},
      {:enabled, ?e, 'enable', {:boolean, false}, 'Enable bundle after installing'},
      {:verbose, ?v, 'verbose', {:boolean, false}, 'Verbose output'},
+     {:force, ?f, 'force', {:boolean, false}, 'Force bundle installation even if a bundle with the same version is already installed'},
      {:"relay-groups", :undefined, 'relay-groups', {:list, :undefined}, 'List of relay group names separated by commas to assign the bundle'}]
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups", :version])
+    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups", :version, :force])
     with_authentication(endpoint, &do_install(&1, params))
   end
 
@@ -103,7 +104,7 @@ defmodule Cogctl.Actions.Bundle.Install do
       {:config, config} ->
         with {:ok, amended_config}  <- add_templates_from_dir(config, params.templates),
              {:ok, valid_config}    <- validate_config(amended_config) do
-          Client.bundle_install(endpoint, %{"config" => valid_config})
+          Client.bundle_install(endpoint, %{"config" => valid_config, "force" => params[:force]})
         end
       {:registry, {bundle, version}} ->
         Client.bundle_install_from_registry(endpoint, bundle, version)
