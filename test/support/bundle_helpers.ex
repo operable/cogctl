@@ -30,7 +30,8 @@ defmodule Support.BundleHelpers do
     ---
     name: #{name}
     version: 0.0.1
-    cog_bundle_version: 3
+    cog_bundle_version: 4
+    description: Test bundle
     commands:
       bar:
         executable: /bin/foobar
@@ -43,17 +44,13 @@ defmodule Support.BundleHelpers do
   end
 
   @doc """
-  Creates a templates directory structure with two templates, foo and bar, for
-  slack and hipchat.
+  Creates a templates directory structure with two templates, foo and bar.
   """
   @spec create_templates() :: Path.t
   def create_templates do
-    Enum.each(["slack", "hipchat"], fn(adapter) ->
-      template_dir = Path.join(@template_dir, adapter)
-      File.mkdir_p!(template_dir)
+    File.mkdir_p!(@template_dir)
 
-      Enum.each(["foo", "bar"], &File.write!(Path.join(template_dir, "#{&1}.mustache"), "{{#{&1}}}"))
-    end)
+    Enum.each(["foo"], &File.write!(Path.join(@template_dir, "#{&1}.greenbar"), "~#{&1}~"))
     @template_dir
   end
 

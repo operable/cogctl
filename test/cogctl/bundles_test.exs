@@ -20,7 +20,7 @@ defmodule Cogctl.Actions.Bundles.Test do
   end
 
   test "installing a bundle with templates" do
-    use_cassette "installing_with_templates" do
+    use_cassette "installing_with_templates", match_requests_on: [:request_body] do
       config_path = BundleHelpers.create_config_file("testfoo")
       templates_path = BundleHelpers.create_templates
 
@@ -56,7 +56,6 @@ defmodule Cogctl.Actions.Bundles.Test do
       assert run("cogctl bundle") =~ table_string("""
       NAME         ENABLED VERSION
       operable     .*
-      site         \\(disabled\\)
       testbundle   \\(disabled\\)
       testbundle1  \\(disabled\\)
       """)
@@ -72,7 +71,6 @@ defmodule Cogctl.Actions.Bundles.Test do
       assert run("cogctl bundle -v") =~ table_string("""
       NAME         ENABLED VERSION         INSTALLED VERSIONS      BUNDLE ID
       operable     [0-9]+\.[0-9]+\.[0-9]+  [0-9]+\.[0-9]+\.[0-9]+  .*
-      site         \\(disabled\\)          [0-9]+\.[0-9]+\.[0-9]+  .*
       testbundle   \\(disabled\\)          [0-9]+\.[0-9]+\.[0-9]+  .*
       """)
 
