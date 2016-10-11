@@ -22,8 +22,8 @@ defmodule Cogctl.Mixfile do
     [
       # Operable code
       ########################################################################
-      {:cog_api, github: "operable/cog-api-client", branch: "v0.15.0"},
-      {:spanner, github: "operable/spanner", branch: "v0.15.0"},
+      {:cog_api, github: "operable/cog-api-client", tag: "0.15.0"},
+      {:spanner, github: "operable/spanner", tag: "0.15.0"},
 
       {:configparser_ex, "~> 0.2"},
       # We override here because of a conflict in rebar. Spanner
