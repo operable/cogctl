@@ -21,8 +21,6 @@ defmodule Cogctl.Actions.Users.Create do
   defp do_create(endpoint, params) do
     case CogApi.HTTP.Users.create(endpoint, params) do
       {:ok, user} ->
-        username = user.username
-
         user_attrs = for {title, attr} <- [{"ID", :id}, {"Username", :username}, {"First Name", :first_name}, {"Last Name", :last_name}, {"Email", :email_address}] do
           generate_table_row(title, Map.fetch!(user, attr))
         end

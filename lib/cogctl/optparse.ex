@@ -172,7 +172,7 @@ defmodule Cogctl.Optparse do
             options
           value ->
             new_value = cast(type, value)
-            updated = [{name, new_value}] ++ :proplists.delete(name, options)
+            [{name, new_value}] ++ :proplists.delete(name, options)
         end
       (_, options) ->
         options
