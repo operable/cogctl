@@ -17,7 +17,13 @@ else
 
   cd $COG_DIR
   git fetch origin
-  git reset --hard origin/master
+
+  # If this build is being triggered from a Cog build, then there
+  # should be a $COG_BRANCH variable set. If not, just use the master
+  # branch.
+  BRANCH=${COG_BRANCH:-master}
+  echo "Running cog from the ${BRANCH} branch"
+  git reset --hard origin/${BRANCH}
 fi
 
 mix do deps.get, ecto.create, ecto.migrate
