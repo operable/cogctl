@@ -17,7 +17,23 @@ else
 
   cd $COG_DIR
   git fetch origin
-  git reset --hard origin/master
+
+  # If this build is being triggered from a Cog build, then there
+  # should be a $COG_BRANCH variable set. If not, see if Cog has a
+  # branch named the same as what we're building. Othwerwise, just use
+  # the master branch.
+  if [ -z ${COG_BRANCH+notset} ]
+  then
+      if git ls-remote --exit-code --heads https://github.com/operable/cog refs/heads/${BUILDKITE_BRANCH} > /dev/null 2>&1
+      then
+          COG_BRANCH=${BUILDKITE_BRANCH}
+      else
+          COG_BRANCH='master'
+      fi
+  fi
+
+  echo "Running cog from the ${COG_BRANCH} branch"
+  git reset --hard origin/${COG_BRANCH}
 fi
 
 mix do deps.get, ecto.create, ecto.migrate
