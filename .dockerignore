@@ -1,4 +1,9 @@
 .git
-_build
-deps
-data
+/_build
+/cover
+/deps
+erl_crash.dump
+*.ez
+cogctl
+*.swp
+cogctl.conf

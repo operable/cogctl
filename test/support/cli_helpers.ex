@@ -54,8 +54,19 @@ defmodule Support.CliHelpers do
     |> Cogctl.main
   end
 
-  def ensure_started do
+  def ensure_started() do
     case run("cogctl bootstrap") do
+      "Already bootstrapped\n" ->
+        :ok
+      "Bootstrapped\n" ->
+        :ok
+      response ->
+        IO.puts(:stderr, "Error when bootstrapping: #{inspect response}")
+        raise "An instance of cog must be running."
+    end
+  end
+  def ensure_started(host, port) do
+    case run("cogctl bootstrap --host=#{host} --port=#{port}") do
       "Already bootstrapped\n" ->
         :ok
       "Bootstrapped\n" ->

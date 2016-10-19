@@ -1,0 +1,38 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.5
+    cpu_shares: 512
+    environment:
+      - POSTGRES_USER=cog
+      - POSTGRES_PASSWORD=cog
+  cog:
+    image: operable/cog-preview:latest
+    command: /home/operable/cog/scripts/docker-start
+    depends_on:
+      - postgres
+    expose:
+      # Using `expose` instead of `ports` to prevent port clashes on
+      # the test host in case multiple tests are running
+      # simultaneously. These ports don't need to be available on the
+      # host, just within the compose network. Really, for this test,
+      # we really only need port 4000.
+      - 1883
+      - 4000
+      - 4001
+      - 4002
+    environment:
+      - COG_MQTT_HOST=0.0.0.0
+      - DATABASE_URL=ecto://cog:cog@postgres:5432/cog
+      - SLACK_API_TOKEN=${SLACK_API_TOKEN}
+      - COG_SLACK_ENABLED=1
+  cogctl:
+    build:
+      context: .
+      dockerfile: Dockerfile.ci
+    command: bash # Gotta give it something
+    depends_on:
+      - cog
+    environment:
+      - COGCTL_COG_HOST=cog
+      - COGCTL_COG_PORT=4000
