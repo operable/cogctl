@@ -5,10 +5,14 @@ defmodule Support.CliCase do
     quote do
       import Support.CliCase
       import Support.CliHelpers
+
+      @moduletag :external
     end
   end
 
   setup do
-    Support.CliHelpers.ensure_started
+    host = System.get_env("COGCTL_COG_HOST") || "localhost"
+    port = System.get_env("COGCTL_COG_PORT") || "4000"
+    Support.CliHelpers.ensure_started(host, port)
   end
 end
