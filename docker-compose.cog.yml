@@ -1,0 +1,6 @@
+version: '2'
+services:
+  cog:
+    build:
+      context: ./local_cog
+      dockerfile: Dockerfile
