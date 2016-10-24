@@ -73,15 +73,16 @@ defmodule Cogctl.Actions.Bundle.Install do
   defp parse_bundle_or_path(params) do
     bundle_or_path = params.bundle_or_path
 
-    cond do
-      File.exists?(bundle_or_path) ->
-        {:config, Spanner.Config.Parser.read_from_file!(bundle_or_path)}
-      match?({:ok, _}, Poison.decode(bundle_or_path)) ->
-        {:config, Spanner.Config.Parser.read_from_string!(bundle_or_path)}
-      true ->
-        bundle = bundle_or_path
-        version = params.version
-        {:registry, {bundle, version}}
+    # bundle_or_path could be a path to a config, the actual config if we are
+    # recieving it on stdin, or the name of a bundle in the warehouse registry.
+    # So first we try to parse the config as if it were a file or string, if
+    # those both fail we assume it's a bundle in the registry.
+    with {:error, _} <- Spanner.Config.Parser.read_from_file(bundle_or_path),
+         {:error, _} <- Spanner.Config.Parser.read_from_string(bundle_or_path) do
+      {:registry, {bundle_or_path, params.version}}
+    else
+      {:ok, config} ->
+        {:config, config}
     end
   end
 
