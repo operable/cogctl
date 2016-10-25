@@ -26,7 +26,16 @@ defmodule Support.BundleHelpers do
     File.mkdir_p!(CliHelpers.scratch_dir)
     config_path = Path.join(CliHelpers.scratch_dir, "#{name}.yaml")
 
-    config = """
+    File.write!(config_path, create_config_str(name))
+    config_path
+  end
+
+  @doc """
+  Creates a simple bundle config and returns it as a string
+  """
+  @spec create_config_str(String.t) :: String.t
+  def create_config_str(name) do
+    """
     ---
     name: #{name}
     version: 0.0.1
@@ -38,9 +47,6 @@ defmodule Support.BundleHelpers do
         rules:
         - "allow"
     """
-
-    File.write!(config_path, config)
-    config_path
   end
 
   @doc """

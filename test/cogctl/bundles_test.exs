@@ -62,6 +62,39 @@ defmodule Cogctl.Actions.Bundles.Test do
     end
   end
 
+  test "installing a bundle with stdin" do
+    # We create a config file and split it on newlines
+    config = BundleHelpers.create_config_str("stdin_test")
+
+    # We have to mock stdin bits
+    {:ok, pid} = StringIO.open(config)
+    :meck.new(IO, [:passthrough])
+    :meck.expect(IO, :read, fn
+                 (:stdio, :line) ->
+                   case :meck.passthrough([pid, :line]) do
+                     :eof ->
+                       # We unload the mock when we get to the end of the file
+                       # so we don't conflict with exVCR
+                       :meck.unload(IO)
+                       :eof
+                      data ->
+                        data
+                   end
+                 (device, line) -> :meck.passthrough([device, line])
+    end)
+
+    use_cassette "installing_with_stdin", match_requests_on: [:request_body] do
+      # assert that we can install a bundle via stdin
+      assert run("cogctl bundle install -v -i") =~ ~r"""
+        Bundle ID:   .*
+        Version ID:  .*
+        Name:        stdin_test
+        Version:     0.0.1
+        Status:      Disabled
+        """
+    end
+  end
+
   test "uninstalling a bundle" do
     use_cassette "uninstalling_a_bundle" do
       BundleHelpers.create_bundle("foobar")
