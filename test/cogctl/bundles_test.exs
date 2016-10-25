@@ -65,33 +65,26 @@ defmodule Cogctl.Actions.Bundles.Test do
   test "installing a bundle with stdin" do
     # We create a config file and split it on newlines
     config = BundleHelpers.create_config_str("stdin_test")
-             |> String.split("\n")
-             # We want to split the string on newlines but they should be
-             # include at the end of each line so the yaml parser works properly.
-             |> Enum.map(&(&1 <> "\n"))
 
     # We have to mock stdin bits
-    # First we start up a task to return the config like IO.read would
-    {:ok, pid} = Task.start_link(fn -> stdio_mock(config) end)
-    # Then we mock IO.read
+    {:ok, pid} = StringIO.open(config)
     :meck.new(IO, [:passthrough])
     :meck.expect(IO, :read, fn
                  (:stdio, :line) ->
-                   send(pid, {:read, self()})
-                   receive do
-                     {:line, line} -> line
+                   case :meck.passthrough([pid, :line]) do
                      :eof ->
-                       # We unload the mock after reading the config file
-                       # to prevent clashes with exVCR
+                       # We unload the mock when we get to the end of the file
+                       # so we don't conflict with exVCR
                        :meck.unload(IO)
                        :eof
+                      data ->
+                        data
                    end
-                 (device, line) -> :meck.passthrough(device, line)
+                 (device, line) -> :meck.passthrough([device, line])
     end)
 
     use_cassette "installing_with_stdin", match_requests_on: [:request_body] do
       # assert that we can install a bundle via stdin
-
       assert run("cogctl bundle install -v -i") =~ ~r"""
         Bundle ID:   .*
         Version ID:  .*
@@ -177,18 +170,4 @@ defmodule Cogctl.Actions.Bundles.Test do
       """)
     end
   end
-
-  defp stdio_mock([line | rest]) do
-    receive do
-      {:read, caller} ->
-        send(caller, {:line, line})
-        stdio_mock(rest)
-    end
-  end
-  defp stdio_mock([]) do
-    receive do
-      {:read, caller} -> send(caller, :eof)
-    end
-  end
-
 end
