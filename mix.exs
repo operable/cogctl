@@ -30,7 +30,7 @@ defmodule Cogctl.Mixfile do
       # brings in emqtt which includes rebar as a dep.
       {:getopt, github: "operable/getopt", override: true},
       {:httpotion, "~> 3.0"},
-      {:uuid, "~> 1.1.3"},
+      {:uuid, "~> 1.1.5"},
 
       # Testing
       ########################################################################

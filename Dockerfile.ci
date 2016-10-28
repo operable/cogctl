@@ -1,4 +1,4 @@
-FROM operable/elixir:1.3.1-r2
+FROM operable/elixir:1.3.4-r0
 
 COPY mix.exs mix.lock /code/
 WORKDIR /code
