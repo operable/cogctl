@@ -1,5 +1,7 @@
 # cogctl
 
+[![Build status](https://badge.buildkite.com/a4a3d029f3d60a6bd97066c61ad96631147cadfd356468832b.svg?branch=master)](https://buildkite.com/operable/cogctl)
+
 CLI admin interface for [Cog](https://github.com/operable/cog).
 
 ## Setting up
