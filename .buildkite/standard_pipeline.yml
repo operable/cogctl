@@ -1,0 +1,36 @@
+steps:
+  - command: "true"
+    label: ":docker: Build Test Image"
+    # Image compiles test code so it will be cached for other downstream tests
+    env:
+      BUILDKITE_DOCKER: true
+      BUILDKITE_DOCKER_FILE: Dockerfile.ci
+    agents:
+      - docker=1.12.1
+
+  - wait
+
+  - command: "mix escript"
+    label: ":elixir: Escript Build"
+    env:
+      MIX_ENV: prod
+      BUILDKITE_DOCKER: true
+      BUILDKITE_DOCKER_FILE: Dockerfile.ci
+    agents:
+      - docker=1.12.1
+
+  - command: "mix test --exclude=external"
+    label: ":elixir: Unit Tests"
+    env:
+      BUILDKITE_DOCKER: true
+      BUILDKITE_DOCKER_FILE: Dockerfile.ci
+    agents:
+      - docker=1.12.1
+
+  - command: ".buildkite/scripts/integration.sh"
+    label: ":elixir: Integration Tests"
+    env:
+      BUILDKITE_DOCKER_COMPOSE_CONTAINER: cogctl
+      BUILDKITE_DOCKER_COMPOSE_FILE: docker-compose.ci.yml
+    agents:
+      - docker=1.12.1

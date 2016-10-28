@@ -6,3 +6,4 @@ erl_crash.dump
 /cogctl
 *.swp
 cogctl.conf
+/local_cog
