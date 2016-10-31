@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -uo pipefail
+set -euo pipefail
 
 echo -e "--- :git: Checking out cog @ branch \033[0;32m${COG_BRANCH}\033[0m"
 rm -Rf local_cog
@@ -16,6 +16,8 @@ COMPOSE_ARGS="--file docker-compose.ci.yml --file docker-compose.cog.yml --proje
 
 echo "--- :docker: Building Docker Images"
 docker-compose $COMPOSE_ARGS build --pull
+
+set +e # we'll manage exit status from here on
 
 echo "--- :hammer: Running Integration Tests"
 docker-compose $COMPOSE_ARGS run cogctl .buildkite/scripts/integration.sh
