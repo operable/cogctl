@@ -9,7 +9,7 @@
   "ibrowse": {:hex, :ibrowse, "4.2.2", "b32b5bafcc77b7277eff030ed32e1acc3f610c64e9f6aea19822abcadf681b4b", [:rebar3], []},
   "jsx": {:hex, :jsx, "2.6.2", "213721e058da0587a4bce3cc8a00ff6684ced229c8f9223245c6ff2c88fbaa5a", [:mix, :rebar], []},
   "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:rebar, :make], []},
-  "piper": {:git, "https://github.com/operable/piper.git", "93a0034334b237cafd96cebb51257a7c3f4c14b1", []},
+  "piper": {:git, "https://github.com/operable/piper.git", "fc2e22bf82c9ddc5e8b19f3bb3ecb03878023041", []},
   "poison": {:hex, :poison, "2.1.0", "f583218ced822675e484648fa26c933d621373f01c6c76bd00005d7bd4b82e27", [:mix], []},
   "spanner": {:git, "https://github.com/operable/spanner.git", "aee1e7f8b9fd88f3018e2d4e0a79817d6e815d02", []},
   "uuid": {:hex, :uuid, "1.1.5", "96cb36d86ee82f912efea4d50464a5df606bf3f1163d6bdbb302d98474969369", [:mix], []},
