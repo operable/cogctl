@@ -31,7 +31,7 @@ defmodule Cogctl.Actions.Bundle.Install do
   end
 
   def run(options, _args, _config, endpoint) do
-    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups", :version, :force])
+    params = convert_to_params(options, [:bundle_or_path, :templates, :enabled, :verbose, :"relay-groups", :version, :force, :stdin])
     with_authentication(endpoint, &do_install(&1, params))
   end
 
@@ -70,19 +70,33 @@ defmodule Cogctl.Actions.Bundle.Install do
     |> display_output(params.verbose)
   end
 
+  # If input comes in on stdin then we know that we are dealing with
+  # a bundle config string.
+  defp parse_bundle_or_path(%{stdin: true}=params) do
+    case Spanner.Config.Parser.read_from_string(params.bundle_or_path) do
+      {:ok, config} ->
+        {:config, config}
+      error ->
+        error
+    end
+  end
+  # If we aren't getting input on stdin we could be dealing with a
+  # config file or the name of a bundle in warehouse.
   defp parse_bundle_or_path(params) do
     bundle_or_path = params.bundle_or_path
 
-    # bundle_or_path could be a path to a config, the actual config if we are
-    # recieving it on stdin, or the name of a bundle in the warehouse registry.
-    # So first we try to parse the config as if it were a file or string, if
-    # those both fail we assume it's a bundle in the registry.
-    with {:error, _} <- Spanner.Config.Parser.read_from_file(bundle_or_path),
-         {:error, _} <- Spanner.Config.Parser.read_from_string(bundle_or_path) do
-      {:registry, {bundle_or_path, params.version}}
+    # If a file exists then we parse the config from the file name.
+    if File.exists?(bundle_or_path) do
+      case Spanner.Config.Parser.read_from_file(bundle_or_path) do
+        {:ok, config} ->
+          {:config, config}
+        error ->
+          error
+      end
+    # Otherwise we assume that the user is specifying a bundle in the
+    # registry.
     else
-      {:ok, config} ->
-        {:config, config}
+      {:registry, {bundle_or_path, params.version}}
     end
   end
 
@@ -109,6 +123,8 @@ defmodule Cogctl.Actions.Bundle.Install do
         end
       {:registry, {bundle, version}} ->
         Client.bundle_install_from_registry(endpoint, bundle, version)
+      {:error, error} ->
+        {:error, error}
     end
   end
 
