@@ -26,7 +26,7 @@ defmodule Cogctl.Actions.Roles.Revoke do
       {:ok, _resp} ->
         display_output("Revoked #{role} from #{group_to_revoke}")
       {:error, error} ->
-        display_error(error["errors"])
+        display_error(error)
     end
   end
 
