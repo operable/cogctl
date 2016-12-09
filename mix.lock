@@ -1,4 +1,4 @@
-%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "ba3b9e9ad9e89b4385c6ac374ae0e84ff32b16dd", []},
+%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "ba3b9e9ad9e89b4385c6ac374ae0e84ff32b16dd", [branch: "v0.17.0"]},
   "configparser_ex": {:hex, :configparser_ex, "0.2.1", "47a15fa6ebc7d5284bd6dbe1a88be7315fde91a1328915739509c5b75e26eb93", [:mix], []},
   "ex_json_schema": {:hex, :ex_json_schema, "0.5.1", "83356e5a673d6fbe75da612a44b8f84942711630414d8be5e342f3597b03939a", [:mix], []},
   "exactor": {:hex, :exactor, "2.2.0", "2a7418b82d974fe8276edd62c1facf4a9dc06339cdf11b5dcd10359e107fe5c3", [:mix], []},
@@ -9,9 +9,9 @@
   "ibrowse": {:hex, :ibrowse, "4.2.2", "b32b5bafcc77b7277eff030ed32e1acc3f610c64e9f6aea19822abcadf681b4b", [:rebar3], []},
   "jsx": {:hex, :jsx, "2.6.2", "213721e058da0587a4bce3cc8a00ff6684ced229c8f9223245c6ff2c88fbaa5a", [:mix, :rebar], []},
   "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:rebar, :make], []},
-  "piper": {:git, "https://github.com/operable/piper.git", "20995259bba28b0cc30bf1f25e5eeb96441fc48a", []},
+  "piper": {:git, "https://github.com/operable/piper.git", "0d642bba9ff201a9437f4b077ae3a506ebf8b6a0", []},
   "poison": {:hex, :poison, "2.1.0", "f583218ced822675e484648fa26c933d621373f01c6c76bd00005d7bd4b82e27", [:mix], []},
-  "spanner": {:git, "https://github.com/operable/spanner.git", "646eed9a885053d21bb43323e6551518b3b0cec2", []},
+  "spanner": {:git, "https://github.com/operable/spanner.git", "646eed9a885053d21bb43323e6551518b3b0cec2", [branch: "v0.17.0"]},
   "uuid": {:hex, :uuid, "1.1.5", "96cb36d86ee82f912efea4d50464a5df606bf3f1163d6bdbb302d98474969369", [:mix], []},
   "yamerl": {:hex, :yamerl, "0.3.2", "9eac1537d251e926f47763ab1db0d9e6e8f2397646c290d58aa6ceebc6832fb7", [:rebar3], []},
   "yaml_elixir": {:hex, :yaml_elixir, "1.2.1", "4a8ee3b25598100c710ff11dde4d79b6335608ac092d69aab45cc7475b5abc4d", [:mix], [{:yamerl, "~> 0.3.2", [hex: :yamerl, optional: false]}]}}
