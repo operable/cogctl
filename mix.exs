@@ -3,7 +3,7 @@ defmodule Cogctl.Mixfile do
 
   def project do
     [app: :cogctl,
-     version: "0.17.0",
+     version: "1.0.0-beta.1",
      elixir: "~> 1.3.1",
      elixirc_options: [warnings_as_errors: System.get_env("ALLOW_WARNINGS") == nil],
      build_embedded: Mix.env == :prod,
@@ -22,8 +22,8 @@ defmodule Cogctl.Mixfile do
     [
       # Operable code
       ########################################################################
-      {:cog_api, github: "operable/cog-api-client", branch: "v0.17.0"},
-      {:spanner, github: "operable/spanner", branch: "v0.17.0"},
+      {:cog_api, github: "operable/cog-api-client", branch: "v1.0.0-beta.1"},
+      {:spanner, github: "operable/spanner", branch: "v1.0.0-beta.1"},
 
       {:configparser_ex, "~> 0.2"},
       # We override here because of a conflict in rebar. Spanner
