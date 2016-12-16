@@ -11,19 +11,18 @@ defmodule CogctlTest do
     run("cogctl bundles delete #{name}")
 
     # Create some templates
-    Enum.each(["slack", "hipchat"], fn(adapter) ->
-      template_dir = Path.join(@template_dir, adapter)
-      File.mkdir_p!(template_dir)
-
-      Enum.each(["foo", "bar"], &File.write!(Path.join(template_dir, "#{&1}.mustache"), "{{#{&1}}}"))
-    end)
+    File.mkdir_p!(@template_dir)
+    Enum.each(["foo", "bar"],
+              &File.write!(Path.join(@template_dir, "#{&1}.greenbar"),
+                           "Lorem ipsum #{&1}"))
 
     # Create a config file
     config = """
     ---
     name: #{name}
     version: 0.0.1
-    cog_bundle_version: 3
+    cog_bundle_version: 5
+    description: "Does stuff"
     commands:
       bar:
         executable: /bin/foobar
@@ -554,7 +553,8 @@ defmodule CogctlTest do
     bundle_names = Enum.map(1..3, &"bundle#{&1}")
     Enum.each(bundle_names, fn(name) ->
       pre_bundle_create(name)
-      run("cogctl bundle install --templates #{@template_dir} #{Path.join(@scratch_dir, "#{name}.yaml")}")
+      yaml_path = Path.join(@scratch_dir, "#{name}.yaml")
+      run("cogctl bundle install --templates #{@template_dir} #{yaml_path}")
     end)
 
     pre_bundle_create("bundle4")
