@@ -611,16 +611,35 @@ defmodule CogctlTest do
 
   test "cogctl triggers" do
 
+    # Set up some users for the triggers
+    run("""
+    cogctl users create
+      --first-name=Trigger
+      --last-name=User1
+      --email=trigger1@operable.io
+      --username=trigger_user1
+      --password=password
+    """)
+
+    run("""
+    cogctl users create
+      --first-name=Trigger
+      --last-name=User2
+      --email=trigger2@operable.io
+      --username=trigger_user2
+      --password=password
+    """)
+
     assert run("cogctl triggers") =~ ~r"""
     Name  ID  Enabled  Pipeline
     """
 
-    assert run("cogctl triggers create --name=echo_stuff --pipeline=echo_stuff --as-user=somebody --timeout-sec=60 --description=echo_some_stuff") =~ ~r"""
+    assert run("cogctl triggers create --name=echo_stuff --pipeline=echo_stuff --as-user=trigger_user1 --timeout-sec=60 --description=echo_some_stuff") =~ ~r"""
     ID              .*
     Name            echo_stuff
     Pipeline        echo_stuff
     Enabled         true
-    As User         somebody
+    As User         trigger_user1
     Timeout \(sec\)   60
     Description     echo_some_stuff
     Invocation URL  .*
@@ -636,7 +655,7 @@ defmodule CogctlTest do
     Name            echo_stuff
     Pipeline        echo_stuff
     Enabled         true
-    As User         somebody
+    As User         trigger_user1
     Timeout \(sec\)   60
     Description     echo_some_stuff
     Invocation URL  .*
@@ -649,14 +668,14 @@ defmodule CogctlTest do
     assert run("cogctl triggers enable echo_stuff") =~ ~r"""
     Enabled trigger echo_stuff
     """
-    assert run("cogctl triggers update echo_stuff --timeout-sec=120 --as-user=somebody_else --pipeline=another_command") =~ ~r"""
+    assert run("cogctl triggers update echo_stuff --timeout-sec=120 --as-user=trigger_user2 --pipeline=another_command") =~ ~r"""
     Updated echo_stuff
 
     ID              .*
     Name            echo_stuff
     Pipeline        another_command
     Enabled         true
-    As User         somebody_else
+    As User         trigger_user2
     Timeout \(sec\)   120
     Description     echo_some_stuff
     Invocation URL  .*
@@ -665,6 +684,10 @@ defmodule CogctlTest do
     assert run("cogctl triggers delete echo_stuff") =~ ~r"""
     Deleted echo_stuff
     """
+
+    run("cogctl users delete trigger_user1")
+    run("cogctl users delete trigger_user2")
+
   end
 
 end
