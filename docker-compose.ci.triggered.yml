@@ -1,0 +1,4 @@
+version: '2'
+services:
+  cog:
+    image: "${COG_IMAGE}"
