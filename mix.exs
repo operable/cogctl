@@ -22,7 +22,7 @@ defmodule Cogctl.Mixfile do
     [
       # Operable code
       ########################################################################
-      {:cog_api, github: "operable/cog-api-client"},
+      {:cog_api, github: "operable/cog-api-client", branch: "peck/incompatible-bundles"},
       {:spanner, github: "operable/spanner"},
 
       {:configparser_ex, "~> 0.2"},
