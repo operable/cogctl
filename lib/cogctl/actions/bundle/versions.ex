@@ -2,7 +2,6 @@ defmodule Cogctl.Actions.Bundle.Versions do
   use Cogctl.Action, "bundle versions"
 
   alias CogApi.HTTP.Client
-  alias Cogctl.Actions.Bundle.Helpers
   alias Cogctl.Table
 
   @moduledoc """
@@ -32,7 +31,7 @@ defmodule Cogctl.Actions.Bundle.Versions do
 
   defp render(bundle_versions, false) do
     headers = ["VERSION", "STATUS"]
-    versions = Enum.map(bundle_versions, &([&1.version, Helpers.status(&1)]))
+    versions = Enum.map(bundle_versions, &([&1.version, &1.status]))
 
     Table.format([headers] ++ versions)
     |> display_output
@@ -41,7 +40,7 @@ defmodule Cogctl.Actions.Bundle.Versions do
     headers = ["VERSION", "STATUS", "INSTALLED ON", "ID"]
     versions = Enum.map(bundle_versions,
                         &([&1.version,
-                           Helpers.status(&1),
+                           &1.status,
                            &1.inserted_at,
                            &1.id]))
 
