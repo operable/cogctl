@@ -1,4 +1,4 @@
-%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "ba3b9e9ad9e89b4385c6ac374ae0e84ff32b16dd", []},
+%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "f9c81617c3ea0653f481345efd18ef90b91728ae", []},
   "configparser_ex": {:hex, :configparser_ex, "0.2.1", "47a15fa6ebc7d5284bd6dbe1a88be7315fde91a1328915739509c5b75e26eb93", [:mix], []},
   "ex_json_schema": {:hex, :ex_json_schema, "0.5.1", "83356e5a673d6fbe75da612a44b8f84942711630414d8be5e342f3597b03939a", [:mix], []},
   "exactor": {:hex, :exactor, "2.2.0", "2a7418b82d974fe8276edd62c1facf4a9dc06339cdf11b5dcd10359e107fe5c3", [:mix], []},

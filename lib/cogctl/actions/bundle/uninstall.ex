@@ -7,6 +7,7 @@ defmodule Cogctl.Actions.Bundle.Uninstall do
      {:bundle_version, :undefined, :undefined, {:string, :undefined}, 'Bundle version'},
      {:verbose, ?v, 'verbose', {:boolean, false}, 'Verbose output'},
      {:clean, ?c, 'clean', {:boolean, false}, 'Uninstall all disabled bundle versions'},
+     {:incompatible, ?x, 'incompatible', {:boolean, false}, 'Uninstall all incompatibe versions of the bundle'},
      {:all, ?a, 'all', {:boolean, false}, 'Uninstall all versions'}]
   end
 
@@ -22,6 +23,8 @@ defmodule Cogctl.Actions.Bundle.Uninstall do
     verbose = :proplists.get_value(:verbose, options)
 
     cond do
+      :proplists.get_value(:incompatible, options) ->
+        with_authentication(endpoint, &uninstall_incompatible(&1, bundle_name, verbose))
       :proplists.get_value(:all, options) ->
         with_authentication(endpoint, &uninstall_all(&1, bundle_name, verbose))
       :proplists.get_value(:clean, options) ->
@@ -56,7 +59,25 @@ defmodule Cogctl.Actions.Bundle.Uninstall do
     end
   end
 
-  # If the tries to uninstall everything without the '--all' flag, we warn the user
+  defp uninstall_incompatible(endpoint, bundle_name, verbose) do
+    # Grab all versions for the specified bundle
+    case Client.bundle_version_index_by_name(endpoint, bundle_name) do
+      {:ok, bundle_versions} ->
+        # Then filter out all compatible bundles and grab the version
+        case Enum.filter_map(bundle_versions, &(&1.incompatible), &(&1.version)) do
+          [] ->
+            # If there are no incompatible bundles, we do nothing
+            display_output("Nothing to uninstall.", verbose)
+          versions_to_remove ->
+            # If there are incompatible bundles we uninstall them
+            uninstall_versions(endpoint, bundle_name, versions_to_remove, verbose)
+        end
+      {:error, error} ->
+        display_error(error)
+    end
+  end
+
+  # If the user tries to uninstall everything without the '--all' flag, we warn the user
   # and do nothing else.
   defp uninstall_versions(_endpoint, bundle_name, [], _verbose) do
     display_error("Can't uninstall '#{bundle_name}'. You must specify either '--all' or '--clean'.")
