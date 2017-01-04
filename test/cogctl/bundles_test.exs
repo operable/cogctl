@@ -159,14 +159,14 @@ defmodule Cogctl.Actions.Bundles.Test do
   test "showing bundle info for the default bundle(operable)" do
     use_cassette "bundle_info_operable" do
       assert run("cogctl bundle info operable") =~ table_string("""
-      Bundle ID:           .*
-      Version ID:          .*
-      Name:                operable
-      Installed Versions:  .*
-      Status:              Enabled
-      Version:             .*
-      Commands:            .*
-      Permissions:         .*
+      Bundle ID:    .*
+      Version ID:   .*
+      Name:         operable
+      Versions:     .*
+      Status:       Enabled
+      Version:      .*
+      Commands:     .*
+      Permissions:  .*
       """)
     end
   end

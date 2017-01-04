@@ -561,14 +561,14 @@ defmodule CogctlTest do
     run("cogctl bundle install --enable --relay-groups=myrelays #{Path.join(@scratch_dir, "bundle4.yaml")}")
 
     assert run("cogctl bundle info bundle4") =~ ~r"""
-    Bundle ID:           .*
-    Version ID:          .*
-    Name:                bundle4
-    Installed Versions:  0.0.1
-    Status:              Enabled
-    Version:             0.0.1
-    Commands:            bar
-    Relay Groups:        myrelays
+    Bundle ID:     .*
+    Version ID:    .*
+    Name:          bundle4
+    Versions:      0.0.1
+    Status:        Enabled
+    Version:       0.0.1
+    Commands:      bar
+    Relay Groups:  myrelays
     """
 
     assert run("cogctl relay-groups assign myrelays --bundles=#{Enum.join(bundle_names, ",")}") =~ ~r"""
