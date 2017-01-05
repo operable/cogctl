@@ -1,5 +1,0 @@
-steps:
-  - command: ".buildkite/scripts/triggered_integration.sh"
-    label: ":cogops: Integration Tests Against Cog"
-    agents:
-      - docker=1.12.1

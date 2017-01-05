@@ -7,6 +7,8 @@ services:
       - POSTGRES_USER=cog
       - POSTGRES_PASSWORD=cog
   cog:
+    # TODO: Once we're pushing "edge" (or whatever) images from the
+    # Cog pipeline, we should use them here.
     image: operable/cog-preview:latest
     command: /home/operable/cog/scripts/docker-start
     depends_on:
