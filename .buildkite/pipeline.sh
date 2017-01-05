@@ -11,8 +11,6 @@ cat <<EOF
 steps:
   - command: .buildkite/scripts/wait-for-it.sh cog:4000 -s -t ${COG_TIMEOUT} -- mix test --only=external
     label: ":cogops: Integration Tests Against ${COG_IMAGE}"
-    agents:
-      queue: beta
     plugins:
       docker-compose:
         run: cogctl
@@ -26,8 +24,6 @@ else
     cat <<EOF
 steps:
   - label: ":docker: Build Test Image"
-    agents:
-      queue: beta # TODO: dedicated builder queue
     plugins:
       docker-compose:
         build: test
@@ -40,8 +36,6 @@ steps:
     command: "mix escript"
     env:
       MIX_ENV: prod
-    agents:
-      queue: beta
     plugins:
       docker-compose:
         run: test
@@ -51,8 +45,6 @@ steps:
     command: "mix test --exclude=external"
     env:
       MIX_ENV: test
-    agents:
-      queue: beta
     plugins:
       docker-compose:
         run: test
@@ -64,7 +56,5 @@ steps:
       docker-compose:
         run: cogctl
         config: docker-compose.ci.yml
-    agents:
-      queue: beta
 EOF
 fi
