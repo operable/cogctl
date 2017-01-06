@@ -283,23 +283,22 @@ defmodule CogctlTest do
 
   test "cogctl permissions" do
     assert run("cogctl permissions") =~ table_string("""
-    BUNDLE     NAME                ID
-    operable   manage_commands     .*
-    operable   manage_groups       .*
-    operable   manage_permissions  .*
-    operable   manage_relays       .*
-    operable   manage_roles        .*
-    operable   manage_triggers     .*
-    operable   manage_users        .*
+    NAME                         ID
+    operable:manage_commands     .*
+    operable:manage_groups       .*
+    operable:manage_permissions  .*
+    operable:manage_relays       .*
+    operable:manage_roles        .*
+    operable:manage_triggers     .*
+    operable:manage_users        .*
     """)
 
     # Make sure the permission doesn't exist first
     run("cogctl permissions delete site:echo")
 
     assert run("cogctl permissions create site:echo") =~ ~r"""
-    ID      .*
-    Bundle  site
-    Name    echo
+    ID    .*
+    Name  site:echo
     """
 
     # Make sure the role doesn't exist
@@ -315,8 +314,8 @@ defmodule CogctlTest do
     """
 
     assert run("cogctl permissions --role=developer") =~ ~r"""
-    BUNDLE  NAME  ID
-    site    echo  .*
+    NAME       ID
+    site:echo  .*
     """
 
     assert run("cogctl roles info developer") =~ ~r"""
