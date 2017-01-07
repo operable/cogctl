@@ -56,5 +56,16 @@ steps:
       docker-compose:
         run: cogctl
         config: docker-compose.ci.yml
+
+EOF
+
+COGCTL_IMAGE="operable/cogctl-testing:ci-build-${BUILDKITE_BUILD_NUMBER}-${BUILDKITE_COMMIT::8}"
+cat <<EOF
+
+  - wait
+
+  - label: ":docker: Build image"
+    command: .buildkite/scripts/build_and_push_docker_image.sh ${COGCTL_IMAGE}
+
 EOF
 fi
