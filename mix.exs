@@ -25,7 +25,7 @@ defmodule Cogctl.Mixfile do
       {:cog_api, github: "operable/cog-api-client"},
       {:spanner, github: "operable/spanner"},
 
-      {:configparser_ex, "~> 0.2"},
+      {:configparser_ex, github: "operable/configparser_ex", branch: "vanstee/disable-comments"},
       # We override here because of a conflict in rebar. Spanner
       # brings in emqtt which includes rebar as a dep.
       {:getopt, github: "operable/getopt", override: true},
