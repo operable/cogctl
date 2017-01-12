@@ -1,5 +1,5 @@
 %{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "f9c81617c3ea0653f481345efd18ef90b91728ae", []},
-  "configparser_ex": {:git, "https://github.com/operable/configparser_ex.git", "2fc49d3a0f79dc983293a48bf00a15cd087b5ac9", [branch: "vanstee/disable-comments"]},
+  "configparser_ex": {:git, "https://github.com/operable/configparser_ex.git", "3d7dde3df793137bb1ab6cfbd7815faf98d04a4b", [branch: "vanstee/disable-comments"]},
   "ex_json_schema": {:hex, :ex_json_schema, "0.5.1", "83356e5a673d6fbe75da612a44b8f84942711630414d8be5e342f3597b03939a", [:mix], []},
   "exactor": {:hex, :exactor, "2.2.0", "2a7418b82d974fe8276edd62c1facf4a9dc06339cdf11b5dcd10359e107fe5c3", [:mix], []},
   "exjsx": {:hex, :exjsx, "3.2.0", "7136cc739ace295fc74c378f33699e5145bead4fdc1b4799822d0287489136fb", [:mix], [{:jsx, "~> 2.6.2", [hex: :jsx, optional: false]}]},
