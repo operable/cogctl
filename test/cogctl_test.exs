@@ -503,6 +503,8 @@ defmodule CogctlTest do
     Adding 'test-relay' to relay group 'mygroup': Ok.
     """
 
+    run("cogctl relay-groups remove group --relays test-relay")
+    run("cogctl relay-groups remove mygroup --relays test-relay")
     run("cogctl relays delete test-relay")
     run("cogctl relay-groups delete mygroup")
   end
@@ -604,6 +606,8 @@ defmodule CogctlTest do
     Name  testgroup
     """
 
+    run("cogctl relay-groups remove testgroup test-relay")
+    run("cogctl relay-groups remove testgroup my-test")
     run("cogctl relays delete test-relay my-test")
     run("cogctl relay-groups delete testgroup")
   end
