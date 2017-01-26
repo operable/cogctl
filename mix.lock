@@ -1,4 +1,4 @@
-%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "a0ff84847a11ea5e8fd6dc4696e41078fcb3bc0d", []},
+%{"cog_api": {:git, "https://github.com/operable/cog-api-client.git", "a0ff84847a11ea5e8fd6dc4696e41078fcb3bc0d", [branch: "release_testing/chris/v1.0.0-beta.2"]},
   "configparser_ex": {:git, "https://github.com/operable/configparser_ex.git", "3d7dde3df793137bb1ab6cfbd7815faf98d04a4b", [branch: "vanstee/disable-comments"]},
   "ex_json_schema": {:hex, :ex_json_schema, "0.5.1", "83356e5a673d6fbe75da612a44b8f84942711630414d8be5e342f3597b03939a", [:mix], []},
   "exactor": {:hex, :exactor, "2.2.0", "2a7418b82d974fe8276edd62c1facf4a9dc06339cdf11b5dcd10359e107fe5c3", [:mix], []},
@@ -11,7 +11,7 @@
   "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:rebar, :make], []},
   "piper": {:git, "https://github.com/operable/piper.git", "8ca5d26df470d98c90ffd58412081a0d2ddd3ead", []},
   "poison": {:hex, :poison, "2.1.0", "f583218ced822675e484648fa26c933d621373f01c6c76bd00005d7bd4b82e27", [:mix], []},
-  "spanner": {:git, "https://github.com/operable/spanner.git", "9a826e37397c84ff2e90954b9c8f89541aaad79e", []},
+  "spanner": {:git, "https://github.com/operable/spanner.git", "9a826e37397c84ff2e90954b9c8f89541aaad79e", [branch: "release_testing/chris/v1.0.0-beta.2"]},
   "uuid": {:hex, :uuid, "1.1.5", "96cb36d86ee82f912efea4d50464a5df606bf3f1163d6bdbb302d98474969369", [:mix], []},
   "yamerl": {:hex, :yamerl, "0.3.2", "9eac1537d251e926f47763ab1db0d9e6e8f2397646c290d58aa6ceebc6832fb7", [:rebar3], []},
   "yaml_elixir": {:hex, :yaml_elixir, "1.2.1", "4a8ee3b25598100c710ff11dde4d79b6335608ac092d69aab45cc7475b5abc4d", [:mix], [{:yamerl, "~> 0.3.2", [hex: :yamerl, optional: false]}]}}
