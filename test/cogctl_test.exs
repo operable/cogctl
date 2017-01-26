@@ -593,6 +593,8 @@ defmodule CogctlTest do
     """
 
     # Cleanup the bundle bits when we are finished
+    Enum.each(bundle_names, &run("cogctl relay-groups unassign myrelays --bundles #{&1}"))
+    run("cogctl relay-groups unassign myrelays --bundles bundle4")
     Enum.each(bundle_names, &run("cogctl bundle disable #{&1}"))
     Enum.each(bundle_names, &run("cogctl bundle uninstall --all #{&1}"))
     run("cogctl bundle uninstall bundle4 --all")
@@ -601,15 +603,15 @@ defmodule CogctlTest do
     assert run("cogctl relay-groups delete myrelays") =~ ~r"""
     Deleted relay group `myrelays`
     """
-    assert run("cogctl relay-groups create testgroup --members relay1,test-relay,relay3") =~ ~r"""
+    assert run("cogctl relay-groups create testgroup --members test-relay") =~ ~r"""
     ID    .*
     Name  testgroup
     """
 
-    run("cogctl relay-groups remove testgroup test-relay")
-    run("cogctl relay-groups remove testgroup my-test")
-    run("cogctl relays delete test-relay my-test")
+    run("cogctl relay-groups remove testgroup --relays test-relay")
     run("cogctl relay-groups delete testgroup")
+    run("cogctl relays delete test-relay")
+    run("cogctl relays delete my-test")
   end
 
   test "cogctl triggers" do
