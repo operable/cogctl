@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 
 @click.command()
-@click.argument("url", required=True, default="http://localhost:4000")
+@click.argument("url", default="http://localhost:4000")
 @click.option("--status", is_flag=True, default=False,
               help="Query the bootstrap status, instead of bootstrapping",
               show_default=True)

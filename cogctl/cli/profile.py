@@ -27,24 +27,19 @@ def profile(ctx):
             click.echo()
 
 
-# TODO: validate that name isn't already taken
-# TODO: use a password_option instead
+# TODO: validate that name isn't already taken?
+# TODO: use a password_option instead?
 @profile.command()
 @click.argument("name")
-@click.option("--host", default="localhost", show_default=True)
-@click.option("--port", default=4000, show_default=True)
-@click.option("--secure", is_flag=True, default=False,
-              help="Use HTTPS?", show_default=True)
-@click.option("--rest-user", required=True)
-@click.option("--rest-password", required=True)
+@click.argument("url")
+@click.argument("user")
+@click.argument("password")
 @click.pass_obj
-def create(state, name, host, port, secure, rest_user, rest_password):
+def create(state, name, url, user, password):
     """
-    Add a new profile to a `.cogctl` file.
+    Add a new profile to a the configuration file.
     """
-    state.configuration.add(name, {"host": host,
-                                   "port": port,
-                                   "secure": secure,
-                                   "user": rest_user,
-                                   "password": rest_password})
+    state.configuration.add(name, {"url": url,
+                                   "user": user,
+                                   "password": password})
     state.configuration.write()
