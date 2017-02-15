@@ -2,7 +2,9 @@ import click
 from click_didyoumean import DYMGroup
 import click_repl
 from prompt_toolkit.history import FileHistory
-import cogctl.cli.config as config
+from cogctl.cli.config import CogctlConfig
+
+
 import os
 from cogctl.cli.bootstrap import bootstrap
 from cogctl.cli.bundle.main import bundle
@@ -17,13 +19,15 @@ from cogctl.cli.rule import rule
 from cogctl.cli.state import State
 from cogctl.cli.token import token
 from cogctl.cli.trigger import trigger
+from cogctl.cli.upgrade_configuration import upgrade_configuration
 from cogctl.cli.user import user
 from cogctl.cli.version import version
 
 
 # List of all top level commands
 COMMANDS = [bootstrap, bundle, chat_handle, group, permission, profile,
-            relay, relay_group, role, rule, token, trigger, user, version]
+            relay, relay_group, role, rule, token, trigger, upgrade_configuration,
+            user, version]
 
 
 @click.group(cls=DYMGroup)
@@ -50,39 +54,38 @@ def cli(ctx, config_file, profile, url, user, password, verbose):
     """
 
     state = State()
-
     config_file = os.path.abspath(os.path.expanduser(config_file))
-    state.config_file = config_file
     state.verbosity = verbose
 
-    if os.path.isfile(config_file):
-        try:
-            state.configuration = config.read_config(config_file)
-        except KeyError:
-            raise click.BadParameter("The configuration file '%s' does not "
-                                     "specify a default profile, and is thus "
-                                     "invalid" % config_file,
-                                     param_hint=['--config-file'])
+    try:
+        state.configuration = CogctlConfig(config_file)
+    except KeyError:
+        raise click.BadParameter("The given configuration file is not valid",
+                                 param_hint=["--config-file"])
 
     if profile:
-        if state.configuration:
-            profile_data = state.configuration.get(profile)
-            if profile_data:
-                state.profile = state.configuration[profile]
-            else:
-                raise click.BadParameter("Profile '%s' was not found in "
-                                         "configuration file '%s'"
-                                         % (profile, config_file),
-                                         param_hint=['--profile'])
-        else:
-            raise click.BadParameter("If you specify a profile, the "
-                                     "configuration file must exist",
-                                     param_hint=['--config-file', '--profile'])
+        try:
+            state.profile = state.configuration.profile(profile)
+        except KeyError:
+            raise click.BadParameter("Profile '{}' was not found in "
+                                     "configuration file '{}'".format(
+                                         profile, config_file),
+                                     param_hint=['--profile'])
     else:
-        if state.configuration:
-            profile = next((p for p in state.configuration.values()
-                            if p['default']))
-            state.profile = profile
+        try:
+            state.profile = state.configuration.default()
+        except KeyError:
+            # If we go this far, if the file exists, it already has a
+            # default profile. Thus, this only happens when the config
+            # file does not exist, which can be OK when a user is
+            # first setting up.
+
+            # TODO: test behavior when no cogctl file is present, and
+            # sufficient profile information is not present, but user
+            # attempts to make an API call
+            #
+            # Probably need to make a real Profile object
+            pass
 
     if url:
         state.profile["url"] = url

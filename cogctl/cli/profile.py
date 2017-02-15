@@ -1,6 +1,5 @@
 import click
 from click_didyoumean import DYMGroup
-from cogctl.cli.config import add_profile
 
 
 @click.group(invoke_without_command=True, cls=DYMGroup)
@@ -15,11 +14,11 @@ def profile(ctx):
     if ctx.invoked_subcommand is None:
         config = ctx.obj.configuration
 
-        names = sorted(config.keys())
-
+        default = config.default_profile_name()
+        names = config.profiles()
         for profile_name in names:
-            profile = config[profile_name]
-            if profile["default"]:
+            profile = config.profile(profile_name)
+            if profile_name == default:
                 click.echo("Profile: %s (default)" % profile_name)
             else:
                 click.echo("Profile: %s" % profile_name)
@@ -29,6 +28,7 @@ def profile(ctx):
 
 
 # TODO: validate that name isn't already taken
+# TODO: use a password_option instead
 @profile.command()
 @click.argument("name")
 @click.option("--host", default="localhost", show_default=True)
@@ -42,8 +42,9 @@ def create(state, name, host, port, secure, rest_user, rest_password):
     """
     Add a new profile to a `.cogctl` file.
     """
-    add_profile(state.config_file, name, {"host": host,
-                                          "port": port,
-                                          "secure": secure,
-                                          "user": rest_user,
-                                          "password": rest_password})
+    state.configuration.add(name, {"host": host,
+                                   "port": port,
+                                   "secure": secure,
+                                   "user": rest_user,
+                                   "password": rest_password})
+    state.configuration.write()

@@ -5,8 +5,7 @@ class State:
     def __init__(self):
         self.configuration = {}
         self.verbosity = 0
-        self.profile = None
-        self.config_file = None
+        self.profile = {}
         self._api = None
 
     @property

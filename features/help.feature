@@ -20,19 +20,20 @@ Feature: Provide basic help
         --help                  Show this message and exit.
 
       Commands:
-        bootstrap
-        bundle       Manage command bundles and their config.
-        chat-handle  Manage user chat handles.
-        group        Manage Cog user groups.
-        permission   Manage permissions.
-        profile      Manage Cog profiles.
-        relay        Manage relays.
-        relay-group  Manage relay groups.
-        role         Manage roles and role grants.
-        rule         Manage rules.
-        shell        Starts a interactive cogctl session.
-        token        Generate a Cog API token.
-        trigger      Create, edit, delete, and view Cog triggers.
-        user         Manage Cog users.
-        version      Display version and build information.
+        bootstrap              Bootstrap a Cog server.
+        bundle                 Manage command bundles and their config.
+        chat-handle            Manage user chat handles.
+        group                  Manage Cog user groups.
+        permission             Manage permissions.
+        profile                Manage Cog profiles.
+        relay                  Manage relays.
+        relay-group            Manage relay groups.
+        role                   Manage roles and role grants.
+        rule                   Manage rules.
+        shell                  Starts a interactive cogctl session.
+        token                  Generate a Cog API token.
+        trigger                Create, edit, delete, and view Cog triggers.
+        upgrade-configuration  Upgrade old configuration files.
+        user                   Manage Cog users.
+        version                Display version and build information.
       """
