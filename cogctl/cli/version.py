@@ -27,7 +27,7 @@ def get_build_version():
     """
 
     if getattr(sys, 'frozen', False):
-        bundle_dir = sys._MEIPASS
+        bundle_dir = sys._MEIPASS  # pragma: nocover
     else:
         bundle_dir = os.path.dirname(cogctl.__file__)
 
@@ -36,5 +36,5 @@ def get_build_version():
     if not os.path.exists(filename):
         return 'unknown'
 
-    with open(filename) as fh:
-        return fh.read().strip()
+    with open(filename) as f:  # pragma: nocover
+        return f.read().strip()
