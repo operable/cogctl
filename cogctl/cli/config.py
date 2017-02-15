@@ -12,7 +12,6 @@ class CogctlConfig():
             # If the file exists it should be valid, so just try to
             # get the default profile name and the default profile
             self._config = ConfigObj(filename)
-            self.default_profile_name()
             self.default()
         else:
             self._config = ConfigObj()
