@@ -1,10 +1,15 @@
 import requests
+from cogctl.exceptions import CogctlAPICredentialsException
 
 
 def from_profile(profile):
-    url = profile["url"]
-    user = profile["user"]
-    password = profile["password"]
+    try:
+        url = profile["url"]
+        user = profile["user"]
+        password = profile["password"]
+    except KeyError:
+        raise CogctlAPICredentialsException()
+
     api = Api(url, username=user, password=password)
     return api
 

@@ -1,6 +1,7 @@
 import click
 import requests
 from functools import update_wrapper
+from cogctl.exceptions import CogctlAPICredentialsException
 
 
 def error_handler(f):
@@ -11,10 +12,16 @@ def error_handler(f):
         try:
             return f(*args, **kwargs)
 
+        except CogctlAPICredentialsException:
+            raise click.ClickException(
+                "Must set URL, user, and password to make API calls")
+
         except requests.exceptions.ConnectionError as err:
             url = err.request.url
             raise click.ClickException(
-                "Could not establish HTTP connection to %s" % url)
+                "Could not establish HTTP connection to {}. "
+                "Please check your host, user, and password "
+                "settings.".format(url))
 
         except requests.exceptions.HTTPError as err:
             resp = err.response

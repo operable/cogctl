@@ -79,12 +79,6 @@ def cli(ctx, config_file, profile, url, user, password, verbose):
             # default profile. Thus, this only happens when the config
             # file does not exist, which can be OK when a user is
             # first setting up.
-
-            # TODO: test behavior when no cogctl file is present, and
-            # sufficient profile information is not present, but user
-            # attempts to make an API call
-            #
-            # Probably need to make a real Profile object
             pass
 
     if url:
