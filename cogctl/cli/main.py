@@ -30,7 +30,7 @@ COMMANDS = [bootstrap, bundle, chat_handle, group, permission, profile,
             user, version]
 
 
-@click.group(cls=DYMGroup)
+@click.group(cls=DYMGroup)  # noqa: C901
 @click.option("--config-file", "-c", type=click.Path(exists=False),
               default="~/.cogctl", envvar='COGCTL_CONFIG_FILE',
               help="Path to an INI-formatted configuration file",

@@ -32,7 +32,7 @@ def cogctl(cli_state):
                       catch_exceptions=False)
 
 
-@pytest.fixture
+@pytest.fixture  # noqa: C901
 def mocks(cli_state):
     root = cli_state.profile["url"]
 

@@ -8,12 +8,14 @@ clean:
 	rm -Rf dist
 
 lint:
-        # Bumped up to handle long string literals
-        # in unit tests
-	flake8 --max-line-length=85
+	flake8 --max-line-length=85 --max-complexity=10
 
 test:
-	pytest --cov-report=term:skip-covered --cov=cogctl
+		pytest -vv \
+	--cov-report=term:skip-covered \
+	--cov-report=html \
+	--cov=cogctl \
+	--cov-fail-under=95
 
 acceptance:
 	bin/cucumber
