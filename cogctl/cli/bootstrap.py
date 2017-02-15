@@ -1,29 +1,31 @@
 import click
 import cogctl
 from cogctl.api import Api
-from cogctl.cli.config import add_profile
+from urllib.parse import urlparse
 
 
 @click.command()
+@click.argument("url", default="http://localhost:4000")
 @click.option("--status", is_flag=True, default=False,
               help="Query the bootstrap status, instead of bootstrapping",
               show_default=True)
-@click.option("--host", default="localhost", show_default=True)
-@click.option("--port", default=4000, show_default=True)
-@click.option("--secure", is_flag=True, default=False,
-              help="Use HTTPS?", show_default=True)
 @click.pass_obj
 @cogctl.error_handler
-def bootstrap(state, status, host, port, secure):
-    # TODO: unify this with the rest of the profile code
-    if secure:
-        protocol = "https"
-    else:
-        protocol = "http"
+def bootstrap(state, url, status):
+    """Bootstrap a Cog server.
 
-    api_root = "%s://%s:%s" % (protocol, host, port)
+    If no URL is supplied, the command defaults to operating on
+    http://localhost:4000.
 
-    api = Api(api_root)
+    Following a successful bootstrapping, the returned password and
+    user information are added to cogctl's configuration file as a new
+    profile, named for the hostname of the server being
+    bootstrapped. If this is the first profile to be added to this
+    configuration file, it will be marked as the default.
+
+    """
+
+    api = Api(url)
 
     if status:
         result = api.bootstrap_status()
@@ -41,9 +43,9 @@ def bootstrap(state, status, host, port, secure):
         else:
             user = result['bootstrap']['username']
             password = result['bootstrap']['password']
+            profile_name = urlparse(url).hostname
 
-            add_profile(state.config_file, host, {"host": host,
-                                                  "port": port,
-                                                  "secure": secure,
-                                                  "user": user,
-                                                  "password": password})
+            state.configuration.add(profile_name, {"url": url,
+                                                   "user": user,
+                                                   "password": password})
+            state.configuration.write()

@@ -1,108 +1,108 @@
+import copy
+import os
+from configobj import ConfigObj
 from collections import OrderedDict
-from configparser import ConfigParser
 
 
-def read_config(file):
-    return ini_file_to_map(file)
+class CogctlConfig():
 
-
-def add_profile(file, profile_name, profile):
-    # Use OrderedDict just to ensure that the individual entries (in
-    # an INI file, at any rate) are always written out
-    # deterministically. If nothing else, this makes testing a bit
-    # easier.
-    new_profile = OrderedDict([
-        ("host", profile.pop("host")),
-        ("port", profile.pop("port")),
-        ("secure", profile.pop("secure")),
-        ("user", profile.pop("user")),
-        ("password", profile.pop("password"))])
-
-    return add_ini_section(file, profile_name, new_profile)
-
-########################################################################
-
-
-def read_file(ini):
-    config = ConfigParser(comment_prefixes=("#"),
-                          interpolation=None)
-    config.read(ini)
-    return config  # TODO: return type here (ini or netrc)
-
-
-def ini_file_to_map(ini):
-    """Convert an INI-formatted file into a plain dict"""
-
-    config = read_file(ini)
-
-    data = {}
-    default = None
-
-    for section in config.sections():
-        if section == "defaults":
-            default = config[section]["profile"]
+    def __init__(self, filename):
+        self.filename = filename
+        if os.path.isfile(filename):
+            # If the file exists it should be valid, so just try to
+            # get the default profile name and the default profile
+            self._config = ConfigObj(filename)
+            self.default()
         else:
-            section_data = {"default": False}
-            for key in config[section]:
-                section_data[key] = config[section][key]
+            self._config = ConfigObj()
 
-            data[section] = normalize_entry(section_data)
+    def profile(self, profile):
+        """
+        Raises KeyError if no such profile exists
+        """
 
-    data[default]["default"] = True
-    return data
+        # Without copying, we're modifying the in-memory
+        # representation of the config file
+        p = copy.deepcopy(self._config[profile])
+        return CogctlConfig._normalize_entry(p)
 
+    def default_profile_name(self):
+        return self._config['defaults']['profile']
 
-def normalize_entry(entry):
-    """Consolidates url information into a single value.
+    def default(self):
+        return self.profile(self.default_profile_name())
 
-    Our INI-based configuration sections split up the Cog API root URL
-    information across three different options:
+    def add(self, profile_name, profile):
+        # NOTE: Doesn't do any kind of normalization or converting
+        # back to our legacy format... absent any other work, this
+        # will result in a mixture of old and new formats for each
+        # entry.
 
-    * "secure": a Boolean indicating whether or not to use HTTPS
-    * "host"
-    * "port"
+        if 'defaults' not in self._config:
+            self._config['defaults'] = {'profile': profile_name}
 
-    Here, we consolidate all these values into a single "url" value,
-    place it into the entry, and remove the now-unneeded options that
-    comprise it.
-    """
-    if entry.pop("secure") == "true":
-        protocol = "https"
-    else:
-        protocol = "http"
+        # Controlling the ordering of keys in the new profile makes
+        # for deterministic testing when we write out new entries.
+        ordered = OrderedDict()
+        for k in sorted(profile.keys()):
+            ordered[k] = profile[k]
 
-    host = entry.pop("host")
-    port = entry.pop("port")
-    entry["url"] = "%s://%s:%s" % (protocol, host, port)
-    return entry
+        self._config[profile_name] = ordered
 
+    def write(self):
+        # We manage the writing ourselves, because the object may have
+        # been initialized with a file that does not exist. Using
+        # ConfigObj's create_empty=True keyword makes things
+        # complicated because it creates the empty file at object
+        # creation time, not write time, which means we could be
+        # creating empty (and thus invalid) configuration files.
+        with open(self.filename, "wb") as f:
+            self._config.write(f)
 
-def add_ini_section(file, section, options):
-    config = read_file(file)
+    def profiles(self):
+        """ Return a sorted list of profiles present."""
+        return sorted([p for p in self._config.keys()
+                       if p != "defaults"])
 
-    # TODO: Do this here!
+    def update_profile(self, profile_name):
+        """Updates an old secure/host/port profile to a modern url-based one.
 
-    # add options to the section in a predictable order to aid testing
-    # for k in sorted(options.keys()):
-    #     config[section][k] = options[k]
-    if (not config.has_section('defaults')):
-        config['defaults'] = {'profile': section}
+        """
+        p = self.profile(profile_name)
 
-    config[section] = options
+        ordered = OrderedDict()
+        for k in sorted(p.keys()):
+            ordered[k] = p[k]
 
-    # UGH
-    #
-    # configparser spits out booleans as "True" and "False", which
-    # could cause issues with any other software that's reading the
-    # config file as well (mainly the Elixir version of cogctl,
-    # really).
-    #
-    # In the absence of any clear way to manage this output, we'll
-    # resort to this ugly hack :|
-    for section in config.sections():
-        if "secure" in config[section]:
-            secure = config[section]["secure"]
-            config[section]["secure"] = secure.lower()
+        self._config[profile_name] = ordered
 
-    with open(file, 'w') as configfile:
-        config.write(configfile)
+    @staticmethod
+    def _normalize_entry(entry):
+        """Consolidates url information into a single value.
+
+        Our old (Elixir implementation) INI-based configuration
+        sections split up the Cog API root URL information across
+        three different options:
+
+        * "secure": a Boolean indicating whether or not to use HTTPS
+        * "host"
+        * "port"
+
+        Here, we consolidate all these values into a single "url" value,
+        place it into the entry, and remove the now-unneeded options that
+        comprise it.
+
+        """
+        if entry.get("url"):
+            # Consider it already normalized
+            return entry
+
+        if entry.pop("secure") == "true":
+            protocol = "https"
+        else:
+            protocol = "http"
+
+        host = entry.pop("host")
+        port = entry.pop("port")
+        entry["url"] = "%s://%s:%s" % (protocol, host, port)
+        return entry

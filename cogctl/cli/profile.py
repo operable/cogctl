@@ -1,6 +1,5 @@
 import click
 from click_didyoumean import DYMGroup
-from cogctl.cli.config import add_profile
 
 
 @click.group(invoke_without_command=True, cls=DYMGroup)
@@ -15,11 +14,11 @@ def profile(ctx):
     if ctx.invoked_subcommand is None:
         config = ctx.obj.configuration
 
-        names = sorted(config.keys())
-
+        default = config.default_profile_name()
+        names = config.profiles()
         for profile_name in names:
-            profile = config[profile_name]
-            if profile["default"]:
+            profile = config.profile(profile_name)
+            if profile_name == default:
                 click.echo("Profile: %s (default)" % profile_name)
             else:
                 click.echo("Profile: %s" % profile_name)
@@ -28,22 +27,19 @@ def profile(ctx):
             click.echo()
 
 
-# TODO: validate that name isn't already taken
+# TODO: validate that name isn't already taken?
+# TODO: use a password_option instead?
 @profile.command()
 @click.argument("name")
-@click.option("--host", default="localhost", show_default=True)
-@click.option("--port", default=4000, show_default=True)
-@click.option("--secure", is_flag=True, default=False,
-              help="Use HTTPS?", show_default=True)
-@click.option("--rest-user", required=True)
-@click.option("--rest-password", required=True)
+@click.argument("url")
+@click.argument("user")
+@click.argument("password")
 @click.pass_obj
-def create(state, name, host, port, secure, rest_user, rest_password):
+def create(state, name, url, user, password):
     """
-    Add a new profile to a `.cogctl` file.
+    Add a new profile to a the configuration file.
     """
-    add_profile(state.config_file, name, {"host": host,
-                                          "port": port,
-                                          "secure": secure,
-                                          "user": rest_user,
-                                          "password": rest_password})
+    state.configuration.add(name, {"url": url,
+                                   "user": user,
+                                   "password": password})
+    state.configuration.write()
