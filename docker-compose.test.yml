@@ -1,8 +1,0 @@
-version: '2'
-services:
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile.ci
-    environment:
-      - "MIX_ENV=${MIX_ENV}"

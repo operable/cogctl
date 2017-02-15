@@ -1,0 +1,53 @@
+steps:
+  # TODO: Build image first
+
+  - label: "Lint the build scripts"
+    plugins:
+      operable/shellcheck:
+        script:
+          - .buildkite/scripts/acceptance.sh
+          - .buildkite/scripts/build.sh
+          - .buildkite/scripts/run_cucumber.sh
+
+  - label: "Lint with Flake"
+    command: make lint
+    plugins:
+      docker-compose:
+        run: test
+        config: docker-compose.ci.yml
+
+  - label: "Unit Test with Pytest"
+    command: make test
+    plugins:
+      docker-compose:
+        run: test
+        config: docker-compose.ci.yml
+
+  - wait
+
+  # TODO: Eventually, we'll build this on several platforms, and
+  # package up the results. For now, though, we'll just build
+  - label: "Alpine (musl) Build"
+    command: ".buildkite/scripts/build.sh"
+    env:
+      PLATFORM: alpine
+
+  - label: ":ubuntu: (glibc) Build"
+    command: ".buildkite/scripts/build.sh"
+    env:
+      PLATFORM: ubuntu
+
+  - wait
+
+  - label: ":cucumber: Alpine Test!"
+    command: ".buildkite/scripts/acceptance.sh"
+    env:
+      PLATFORM: alpine
+      IMAGE: operable/ruby:2.3.1-r0
+
+  - label: ":debian: :cucumber: Test!"
+    command: ".buildkite/scripts/acceptance.sh"
+    env:
+      PLATFORM: ubuntu
+      IMAGE: ruby:2.3.3 # <-- technically based on Debian; also actually has python on it (but it's python 2)
+                        # Consider building something based on debian:jessie-slim instead

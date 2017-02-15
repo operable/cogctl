@@ -4,7 +4,6 @@
 /deps
 erl_crash.dump
 *.ez
-cogctl
 *.swp
 cogctl.conf
 /local_cog
