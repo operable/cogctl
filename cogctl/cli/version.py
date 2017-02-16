@@ -21,7 +21,7 @@ def get_build_version():
     built.
     """
 
-    return _load_bundled_file('GITSHA')
+    return _read_bundled_file('GITSHA')
 
 
 def get_build_tag():
@@ -31,10 +31,10 @@ def get_build_tag():
     being built. If no file is found then the string `'dev'` is used.
     """
 
-    return _load_bundled_file('GITTAG', default='dev')
+    return _read_bundled_file('GITTAG', default='dev')
 
 
-def _load_bundled_file(name, default='unknown'):
+def _read_bundled_file(name, default='unknown'):
     """
     Return the contents of a bundled file.
 
