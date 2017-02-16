@@ -1,4 +1,4 @@
-import cogctl as cogctl_module
+import re
 from cogctl.cli.version import version
 
 
@@ -6,6 +6,6 @@ def test_version(cogctl):
     result = cogctl(version)
 
     assert result.exit_code == 0
-    assert result.output == """\
-cogctl {} (build: unknown)
-""".format(cogctl_module.__version__)
+    expr = re.compile('^cogctl ([a-z0-9\-/])+ \(build: (([a-f0-9]){7}|unknown)\)')
+    output = result.output.strip()
+    assert re.fullmatch(expr, output) is not None
