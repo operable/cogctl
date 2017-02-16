@@ -8,8 +8,9 @@ tmp
 bin/*
 !bin/cocgtl
 
-# Generated file for `cogctl version` command
+# Generated files for `cogctl version` command
 cogctl/GITSHA
+cogctl/GITTAG
 
 # Standard Python ignores, as generated at Github
 ########################################################################

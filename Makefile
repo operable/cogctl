@@ -1,7 +1,7 @@
 .PHONY=build
 build: clean
-	scripts/write-git-sha
-	pyinstaller --onefile --add-data cogctl/GITSHA:. bin/cogctl
+	scripts/write-git-info
+	pyinstaller --onefile --add-data cogctl/GITSHA:. --add-data cogctl/GITTAG:. bin/cogctl
 
 clean:
 	rm -Rf build
