@@ -3,7 +3,7 @@
 set -euo pipefail
 
 echo "--- :hammer_and_wrench: Build it!"
-scripts/write-git-sha
+scripts/write-git-info
 
 builder_container=cogctl-builder${PLATFORM}-${BUILDKITE_BUILD_NUMBER}-${BUILDKITE_COMMIT}
 docker build \
@@ -16,7 +16,7 @@ docker run \
        --volume "$(pwd)"/dist:/src/dist \
        --rm \
        "${builder_container}" \
-       pyinstaller --onefile --add-data cogctl/GITSHA:. bin/cogctl
+       pyinstaller --onefile --add-data cogctl/GITSHA:. --add-data cogctl/GITTAG:. bin/cogctl
 
 echo "--- :package: Upload artifact"
 package_name=cogctl-${PLATFORM}-${BUILDKITE_BUILD_NUMBER}-${BUILDKITE_COMMIT}
