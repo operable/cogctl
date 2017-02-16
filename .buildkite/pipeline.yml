@@ -8,6 +8,7 @@ steps:
           - .buildkite/scripts/acceptance.sh
           - .buildkite/scripts/build.sh
           - .buildkite/scripts/run_cucumber.sh
+          - .buildkite/scripts/push_image.sh
 
   - label: "Lint with Flake"
     command: make lint
@@ -25,8 +26,6 @@ steps:
 
   - wait
 
-  # TODO: Eventually, we'll build this on several platforms, and
-  # package up the results. For now, though, we'll just build
   - label: "Alpine (musl) Build"
     command: ".buildkite/scripts/build.sh"
     env:
@@ -51,3 +50,17 @@ steps:
       PLATFORM: ubuntu
       IMAGE: ruby:2.3.3 # <-- technically based on Debian; also actually has python on it (but it's python 2)
                         # Consider building something based on debian:jessie-slim instead
+
+  - wait
+
+  - label: ":docker: Push Alpine Image"
+    command: ".buildkite/scripts/push_image.sh"
+    branches: "master"
+    env:
+      PLATFORM: alpine
+
+  - label: ":docker: Push Ubuntu Image"
+    command: ".buildkite/scripts/push_image.sh"
+    branches: "master"
+    env:
+      PLATFORM: ubuntu
