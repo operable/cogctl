@@ -6,4 +6,4 @@ Feature: Provide version information
     short Git SHA of the commit from which the binary was built.
 
     When I successfully run `cogctl version`
-    Then the output should match /^cogctl 1.0.0-beta \(build: [a-f0-9]{7}\)/
+    Then the output should match / \(build: [a-f0-9]{7}\)$/
