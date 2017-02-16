@@ -1,10 +1,15 @@
 import requests
+from cogctl.exceptions import CogctlAPICredentialsException
 
 
 def from_profile(profile):
-    url = profile["url"]
-    user = profile["user"]
-    password = profile["password"]
+    try:
+        url = profile["url"]
+        user = profile["user"]
+        password = profile["password"]
+    except KeyError:
+        raise CogctlAPICredentialsException()
+
     api = Api(url, username=user, password=password)
     return api
 
@@ -274,11 +279,11 @@ class Api:
 
     def _modify_relay_association(self, group, kind, op, items):
         if kind not in ("relays", "bundles"):
-            raise Exception(
+            raise Exception(  # pragma: nocover
                 "'{}' is not a valid value for 'kind' argument".format(kind))
 
         if op not in ("add", "remove"):
-            raise Exception(
+            raise Exception(  # pragma: nocover
                 "'{}' is not a valid value for 'op' argument".format(op))
 
         r = self.post("/v1/relay_groups/{}/{}".format(group["id"], kind),
@@ -431,12 +436,9 @@ class Api:
         else:
             return r.json()
 
-    def put(self, path, data={}, authed=True):
-        if authed:
-            headers = Api.headers(self.token())
-        else:
-            headers = Api.headers()
-
+    # We don't have any unauthenticated PUTs
+    def put(self, path, data={}):
+        headers = Api.headers(self.token())
         r = requests.put("%s%s" % (self.api_root, path),
                          headers=headers,
                          json=data)
@@ -451,12 +453,9 @@ class Api:
         else:
             return r.json()
 
-    def delete(self, path, authed=True):
-        if authed:
-            headers = Api.headers(self.token())
-        else:
-            headers = Api.headers()
-
+    # We don't have any unauthenticated DELETEs
+    def delete(self, path):
+        headers = Api.headers(self.token())
         r = requests.delete("%s%s" % (self.api_root, path),
                             headers=headers)
 

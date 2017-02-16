@@ -1,7 +1,7 @@
 import click
 import requests
-import re
 from functools import update_wrapper
+from cogctl.exceptions import CogctlAPICredentialsException
 
 
 def error_handler(f):
@@ -12,21 +12,20 @@ def error_handler(f):
         try:
             return f(*args, **kwargs)
 
+        except CogctlAPICredentialsException:
+            raise click.ClickException(
+                "Must set URL, user, and password to make API calls")
+
         except requests.exceptions.ConnectionError as err:
             url = err.request.url
             raise click.ClickException(
-                "Could not establish HTTP connection to %s" % url)
+                "Could not establish HTTP connection to {}. "
+                "Please check your host, user, and password "
+                "settings.".format(url))
 
         except requests.exceptions.HTTPError as err:
             resp = err.response
             json = resp.json()
-
-            # This is what comes back when trying to delete a bundle
-            # that's currently enabled; we should make the API consistent.
-            if (resp.status_code == 403 and
-                    'error' in json and
-                    re.compile("^Cannot delete .* because it is currently enabled$").match(json['error'])):  # noqa: E501
-                raise click.ClickException(json['error'])
 
             # This is currently due to a fluke in what Cog sends back
             # for invalid credentials

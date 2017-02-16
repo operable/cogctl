@@ -30,7 +30,7 @@ COMMANDS = [bootstrap, bundle, chat_handle, group, permission, profile,
             user, version]
 
 
-@click.group(cls=DYMGroup)
+@click.group(cls=DYMGroup)  # noqa: C901
 @click.option("--config-file", "-c", type=click.Path(exists=False),
               default="~/.cogctl", envvar='COGCTL_CONFIG_FILE',
               help="Path to an INI-formatted configuration file",
@@ -79,12 +79,6 @@ def cli(ctx, config_file, profile, url, user, password, verbose):
             # default profile. Thus, this only happens when the config
             # file does not exist, which can be OK when a user is
             # first setting up.
-
-            # TODO: test behavior when no cogctl file is present, and
-            # sufficient profile information is not present, but user
-            # attempts to make an API call
-            #
-            # Probably need to make a real Profile object
             pass
 
     if url:

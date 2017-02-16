@@ -108,6 +108,17 @@ Groups
 """
 
 
+def test_role_create_with_already_taken_name(cogctl):
+    result = cogctl(role.create, ["monkey"])
+
+    assert result.exit_code == 2
+    assert result.output == """\
+Usage: create [OPTIONS] NAME
+
+Error: Invalid value for "name": Role with name "monkey" already exists
+"""
+
+
 def test_role_info(cogctl):
     result = cogctl(role.info, ["monkey"])
 
@@ -154,6 +165,22 @@ def test_role_grant(cogctl):
 
     assert result.exit_code == 0
     assert result.output == ""
+
+
+def test_grant_with_fully_namespaced_permission(cogctl):
+    result = cogctl(role.grant, ["monkey", "operable:manage_roles"])
+    assert result.exit_code == 0
+    assert result.output == ""
+
+
+def test_grant_with_fully_namespaced_but_nonexistent_permission(cogctl):
+    result = cogctl(role.grant, ["monkey", "operable:manage_stuff"])
+    assert result.exit_code == 2
+    assert result.output == """\
+Usage: grant [OPTIONS] ROLE PERMISSION
+
+Error: Invalid value for "permission": "operable:manage_stuff" was not found
+"""
 
 
 def test_role_revoke(cogctl):

@@ -129,6 +129,16 @@ def test_permission_info_with_invalid_permission(cogctl):
     assert "Error: %s: %s" % (bad_param, error) in result.output
 
 
+def test_info_with_permission_with_too_many_segments(cogctl):
+    result = cogctl(permission.info, ["foo:bar:baz"])
+    assert result.exit_code == 2
+    assert result.output == """\
+Usage: info [OPTIONS] PERMISSION
+
+Error: Invalid value for "permission": Invalid permission name "foo:bar:baz"
+"""
+
+
 def test_permission_delete(cogctl):
     result = cogctl(permission.delete, ["test_perm"])
 
