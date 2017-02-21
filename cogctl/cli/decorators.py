@@ -27,13 +27,6 @@ def error_handler(f):
             resp = err.response
             json = resp.json()
 
-            # This is currently due to a fluke in what Cog sends back
-            # for invalid credentials
-            if (resp.status_code == 403 and
-                    'errors' in json and
-                    json['errors'] == "invalid credentials"):
-                raise click.ClickException("invalid credentials")
-
             # This is what currently comes back when trying to delete
             # a relay group that has members or assigned bundles.
             #
@@ -45,6 +38,10 @@ def error_handler(f):
                     json["errors"].get("id")):
                 raise click.ClickException(" ".join(json["errors"]["id"]))
 
-            raise click.ClickException(" ".join(json["errors"]))
+            errors = json["errors"]
+            if type(errors) == list:
+                raise click.ClickException(" ".join(json["errors"]))
+            else:
+                raise click.ClickException(errors)
 
     return update_wrapper(wrapped, f)
