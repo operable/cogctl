@@ -1,3 +1,4 @@
+import json
 import pytest
 from cogctl.cli import chat_handle
 import responses
@@ -50,19 +51,37 @@ def mocks(request, cli_state):
                  status=200)
 
         # Chat Handle Create
-        rsps.add(responses.POST,
-                 "%s/users/%s/chat_handles" % (base_url, user_id),
-                 json={"chat_handle": {
-                         "id": chat_handle_id,
-                         "handle": "vansterminator",
-                         "chat_provider_user_id": "U025BE7LH",
-                         "user": {
-                             "id": "acd4da74-8b6d-43ce-990e-63b62700f734",
-                             "username": "vanstee"},
-                         "chat_provider": {
-                             "id": "dad4fd69-0871-400a-8f1d-611767de26ba",
-                             "name": "slack"}}},
-                 status=201)
+        def create_callback(req):
+            payload = json.loads(req.body.decode())
+
+            # Simulate an already-taken handle
+            if payload["chat_handle"]["handle"] == "THIS_NAME_ALREADY_TAKEN":
+                body = {"errors":
+                        {"handle":
+                         ["Another user has claimed this chat handle"]}}
+                return (422,
+                        {'content-type': 'application/json'},
+                        json.dumps(body))
+
+            body = {"chat_handle": {
+                "id": chat_handle_id,
+                "handle": "vansterminator",
+                "chat_provider_user_id": "U025BE7LH",
+                "user": {
+                    "id": "acd4da74-8b6d-43ce-990e-63b62700f734",
+                    "username": "vanstee"},
+                "chat_provider": {
+                    "id": "dad4fd69-0871-400a-8f1d-611767de26ba",
+                    "name": "slack"}}}
+
+            return (201,
+                    {'content-type': 'application/json'},
+                    json.dumps(body))
+
+        rsps.add_callback(responses.POST,
+                          "%s/users/%s/chat_handles" % (base_url, user_id),
+                          callback=create_callback,
+                          content_type="application/json")
 
         # Chat Handle Delete
         rsps.add(responses.DELETE,
@@ -113,8 +132,18 @@ Handle         vansterminator
 """
 
 
+def test_chat_handle_already_taken(cogctl):
+    result = cogctl(chat_handle.create, ["vanstee", "slack",
+                                         "THIS_NAME_ALREADY_TAKEN"])
+
+    assert result.exit_code == 1
+    assert result.output == """\
+Error: Another user has claimed this chat handle
+"""
+
+
 def test_chat_handle_delete(cogctl):
     result = cogctl(chat_handle.delete, ["vanstee", "slack"])
 
-    # assert result.exit_code == 0
+    assert result.exit_code == 0
     assert result.output == ""

@@ -38,6 +38,11 @@ def error_handler(f):
                     "id" in json["errors"]):
                 raise click.ClickException(" ".join(json["errors"]["id"]))
 
+            if (resp.status_code == 422 and
+                    "errors" in json and
+                    "handle" in json["errors"]):
+                raise click.ClickException(" ".join(json["errors"]["handle"]))
+
             errors = json["errors"]
             if type(errors) == list:
                 raise click.ClickException(" ".join(json["errors"]))
