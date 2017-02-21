@@ -35,7 +35,7 @@ def error_handler(f):
             # (since that's what the server checks first).
             if (resp.status_code == 422 and
                     "errors" in json and
-                    json["errors"].get("id")):
+                    "id" in json["errors"]):
                 raise click.ClickException(" ".join(json["errors"]["id"]))
 
             errors = json["errors"]
