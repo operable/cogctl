@@ -6,23 +6,13 @@ echo "--- :hammer_and_wrench: Build it!"
 
 tag="${PLATFORM}-${BUILDKITE_BUILD_NUMBER}-${BUILDKITE_COMMIT}"
 builder_container="operable/cogctl-testing:${tag}"
+package_name=cogctl-${PLATFORM}-${BUILDKITE_BUILD_NUMBER}-${BUILDKITE_COMMIT}
 
-docker build \
-       --tag "${builder_container}" \
-       --label="git_commit=${BUILDKITE_COMMIT}" \
-       --file Dockerfile."${PLATFORM}" .
-
-mkdir output
-
-docker run \
-       --volume "$(pwd)"/output:/src/output \
-       --rm \
-       "${builder_container}" \
-       cp /usr/bin/cogctl /src/output
+PLATFORM="$PLATFORM" DOCKER_TAG="$builder_container" BINARY_NAME="$package_name" make exe
 
 echo "--- :package: Upload artifact"
 package_name=cogctl-${PLATFORM}-${BUILDKITE_BUILD_NUMBER}-${BUILDKITE_COMMIT}
-mv output/cogctl "${package_name}"
+mv binaries/"${package_name}" "${package_name}"
 buildkite-agent artifact upload "${package_name}"
 
 echo "--- :docker: Pushing ${builder_container}"
