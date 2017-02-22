@@ -38,10 +38,21 @@ def error_handler(f):
                     "id" in json["errors"]):
                 raise click.ClickException(" ".join(json["errors"]["id"]))
 
+            # The chat handle errors are kind of messy right now. When
+            # trying to set a chat handle that doesn't even exist in
+            # your chat provider, we return {"errors": "User with
+            # handle '$HANDLE' not found"}. When another user has
+            # already claimed the handle, "errors" is a list of
+            # strings.
+            #
+            # :(
             if (resp.status_code == 422 and
                     "errors" in json and
                     "handle" in json["errors"]):
-                raise click.ClickException(" ".join(json["errors"]["handle"]))
+                if type(json["errors"]) == dict:
+                    raise click.ClickException(" ".join(json["errors"]["handle"]))
+                else:
+                    raise click.ClickException(json["errors"])
 
             errors = json["errors"]
             if type(errors) == list:

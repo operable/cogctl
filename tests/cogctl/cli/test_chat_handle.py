@@ -63,6 +63,15 @@ def mocks(request, cli_state):
                         {'content-type': 'application/json'},
                         json.dumps(body))
 
+            if payload["chat_handle"]["handle"] == "THIS_NAME_DOESNT_EXIST":
+                # Yes, this is gross, but it's what the API currently
+                # returns in this special snowflake case :(
+                body = {"errors":
+                        "User with handle 'THIS_NAME_DOESNT_EXIST' not found"}
+                return (422,
+                        {'content-type': 'application/json'},
+                        json.dumps(body))
+
             body = {"chat_handle": {
                 "id": chat_handle_id,
                 "handle": "vansterminator",
@@ -139,6 +148,16 @@ def test_chat_handle_already_taken(cogctl):
     assert result.exit_code == 1
     assert result.output == """\
 Error: Another user has claimed this chat handle
+"""
+
+
+def test_chat_handle_nonexistent_handle(cogctl):
+    result = cogctl(chat_handle.create, ["vanstee", "slack",
+                                         "THIS_NAME_DOESNT_EXIST"])
+
+    assert result.exit_code == 1
+    assert result.output == """\
+Error: User with handle 'THIS_NAME_DOESNT_EXIST' not found
 """
 
 
