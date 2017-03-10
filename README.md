@@ -1,6 +1,8 @@
 cogctl: Command-Line Administration Interface for Cog
 #####################################################
 
+[![Build Status](https://travis-ci.org/operable/cogctl.svg?branch=master)](https://travis-ci.org/operable/cogctl)
+
 `cogctl` is a CLI tool for administering a
 [Cog](https://github.com/operable/cog) chat server installation.
 
