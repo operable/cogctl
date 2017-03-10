@@ -13,9 +13,16 @@ lint:
 	flake8 --max-line-length=85 --max-complexity=10
 
 test:
-		pytest -vv \
+	pytest -vv \
 	--cov-report=term:skip-covered \
 	--cov-report=html \
+	--cov=cogctl \
+	--cov-fail-under=95
+
+# Don't worry about making reports, since we're going to send
+# everything to Coveralls.io anyway
+travis-test:
+	pytest -vv \
 	--cov=cogctl \
 	--cov-fail-under=95
 

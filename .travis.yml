@@ -1,18 +1,17 @@
-sudo: required
+language: python
+python:
+  - 3.5
 
-services:
-  - docker
-
-before_install:
-  - docker build -t operable/cogctl-testing -f Dockerfile.ci .
-
-# Parallelize these tasks
-env:
-  - TARGET=lint
-  - TARGET=test
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
 
 script:
-  - docker run -it --rm operable/cogctl-testing make $TARGET
+  - make lint
+  - make travis-test
+
+after_success:
+  coveralls
 
 notifications:
   slack:
