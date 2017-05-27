@@ -1,4 +1,4 @@
-appdirs==1.4.0
+appdirs==1.4.3
 click==6.7
 cookies==2.2.1
 coverage==4.3.4
