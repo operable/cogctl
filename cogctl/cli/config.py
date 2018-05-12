@@ -49,6 +49,14 @@ class CogctlConfig():
 
         self._config[profile_name] = ordered
 
+    def set_default(self, profile_name):
+        """ Update the default profile. Raise KeyError if no such profile exists
+        """
+        if profile_name not in self.profiles():
+            raise KeyError("Profile does not exist")
+
+        self._config['defaults']['profile'] = profile_name
+
     def write(self):
         # We manage the writing ourselves, because the object may have
         # been initialized with a file that does not exist. Using

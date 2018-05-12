@@ -1,5 +1,17 @@
 import click
+import cogctl
 from click_didyoumean import DYMGroup
+
+
+def validate_profile(context, param, value):
+    """
+    Validates existance of profile.
+    Returns the profile name if it exists; otherwise throws BadParameter
+    """
+    if value in context.obj.configuration.profiles():
+        return value
+    else:
+        raise click.BadParameter("\"%s\" was not found" % value)
 
 
 @click.group(invoke_without_command=True, cls=DYMGroup)
@@ -42,4 +54,16 @@ def create(state, name, url, user, password):
     state.configuration.add(name, {"url": url,
                                    "user": user,
                                    "password": password})
+    state.configuration.write()
+
+
+@profile.command()
+@click.argument("name", callback=validate_profile)
+@click.pass_obj
+@cogctl.error_handler
+def default(state, name):
+    """
+    Sets the default profile in the configuration file.
+    """
+    state.configuration.set_default(name)
     state.configuration.write()
