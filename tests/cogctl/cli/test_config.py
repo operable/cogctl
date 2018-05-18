@@ -227,3 +227,15 @@ user = tester
 def test_comment_characters_in_values_can_be_quoted(config_with_comments):
     password = config_with_comments.profile("localhost")["password"]
     assert password == "sooperseekrit#with_a_hash"
+
+
+def test_set_default_updates_default(classic_config):
+    classic_config.set_default("testing")
+    assert classic_config.default() == {'password': 'testpass',
+                                        'url': 'https://cog.testing.com:1234',
+                                        'user': 'tester'}
+
+
+def test_set_default_missing_profile(classic_config):
+    with pytest.raises(KeyError):
+        classic_config.set_default("missing")
